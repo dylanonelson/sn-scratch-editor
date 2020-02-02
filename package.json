@@ -1,13 +1,13 @@
 {
   "name": "sn-prose-editor",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "dev": "webpack-dev-server"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dylan Nelson",
   "license": "ISC",
   "devDependencies": {
     "css-loader": "^3.4.2",
