@@ -18,5 +18,8 @@
   },
   "dependencies": {
     "sn-components-api": "^1.2.8"
+  },
+  "sn": {
+    "main": "index.html"
   }
 }
