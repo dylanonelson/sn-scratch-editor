@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    publicPath: './dist',
     index: './index.html',
     port: 1104,
   },
