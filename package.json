@@ -3,15 +3,20 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server",
+    "build:dev": "webpack --mode development",
+    "build:prd": "webpack --mode production"
   },
   "keywords": [],
   "author": "Dylan Nelson",
   "license": "ISC",
   "devDependencies": {
     "css-loader": "^3.4.2",
+    "file-loader": "^5.0.2",
     "style-loader": "^1.1.3",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.2"
