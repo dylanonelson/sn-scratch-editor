@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
   devServer: {
-    publicPath: './dist',
+    publicPath: '/dist/',
     index: './index.html',
     port: 1104,
   },
@@ -20,14 +20,14 @@ module.exports = {
         exclude: '/node_modules/',
       },
       {
-        exclude: '/node_modules/',
-        options: {
-          name: '[name].[ext]',
-        },
-        test: /\.html$/i,
-        loader: 'file-loader',
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'source-map-loader'
       },
     ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
   },
   output: {
     filename: 'bundle.js',

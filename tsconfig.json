@@ -1,9 +1,15 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "baseUrl": ".",
     "module": "es6",
     "noImplicitAny": true,
+    "outDir": "./dist/",
     "sourceMap": true,
-    "target": "es6"
+    "target": "es6",
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
+    ]
   }
 }
