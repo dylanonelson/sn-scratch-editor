@@ -4,6 +4,22 @@
     <script defer src="./dist/bundle.js"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="toolbar">
+        <button data=format="paragraph">
+          paragraph
+        </button>
+        <button data-format="heading1">
+          heading1
+        </button>
+        <button data-format="heading2">
+          heading2
+        </button>
+        <button data-format="bullet_list">
+          bulleted list
+        </button>
+      </div>
+      <div id="editor" spellcheck="false"></div>
+    </div>
   </body>
 </html>

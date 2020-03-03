@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
     "baseUrl": ".",
     "module": "es6",
-    "noImplicitAny": true,
     "outDir": "./dist/",
     "sourceMap": true,
     "target": "es6",

@@ -12,8 +12,10 @@
   "author": "Dylan Nelson",
   "license": "ISC",
   "devDependencies": {
+    "@types/orderedmap": "^1.0.0",
     "@types/prosemirror-commands": "^1.0.1",
     "@types/prosemirror-keymap": "^1.0.1",
+    "@types/prosemirror-schema-list": "^1.0.1",
     "css-loader": "^3.4.2",
     "file-loader": "^5.0.2",
     "source-map-loader": "^0.2.4",
@@ -27,9 +29,11 @@
   "dependencies": {
     "@types/prosemirror-model": "^1.7.2",
     "@types/prosemirror-state": "^1.2.3",
+    "orderedmap": "^1.1.1",
     "prosemirror-commands": "^1.1.3",
     "prosemirror-keymap": "^1.1.3",
     "prosemirror-model": "^1.9.1",
+    "prosemirror-schema-list": "^1.1.2",
     "prosemirror-state": "^1.3.2",
     "prosemirror-transform": "^1.2.3",
     "prosemirror-view": "^1.14.2",
