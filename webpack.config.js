@@ -24,10 +24,21 @@ module.exports = {
         test: /\.js$/,
         loader: 'source-map-loader'
       },
+      {
+        exclude: '/node_modules/',
+        test: /\.html$/i,
+        loader: 'html-node-loader',
+      },
     ],
   },
   resolve: {
     extensions: ['.ts', '.js'],
+  },
+  resolveLoader: {
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, 'loaders'),
+    ],
   },
   output: {
     filename: 'bundle.js',

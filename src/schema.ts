@@ -1,9 +1,8 @@
-import { addListNodes } from 'prosemirror-schema-list';
+import { bulletList, listItem } from 'prosemirror-schema-list';
 import OrderedMap from 'orderedmap';
 
 import {
   DOMOutputSpecArray,
-  Node,
   NodeSpec,
   Schema,
 } from 'prosemirror-model';
@@ -12,6 +11,18 @@ const EDITOR_CLS = 'sn-prose-editor';
 
 const docSpec: NodeSpec = {
   content: 'block+',
+  toDOM(node) {
+    return [
+      'main',
+      { 'class': EDITOR_CLS },
+      0,
+    ];
+  },
+  parseDOM: [
+    {
+      tag: 'main',
+    },
+  ],
 };
 
 const heading1Spec: NodeSpec = {
@@ -43,38 +54,85 @@ const heading2Spec: NodeSpec = {
       0
     ];
   },
+  parseDOM: [{ tag: 'h2' }],
 };
 
 const paragraphSpec: NodeSpec = {
   content: 'inline*',
   group: 'block',
-  toDOM(node: Node): DOMOutputSpecArray {
+  toDOM(node) {
     return [
       'p',
       { 'class': EDITOR_CLS },
       0,
     ];
-  }
+  },
+  parseDOM: [{ tag: 'p' }],
+};
+
+const checklistItemSpec: NodeSpec = {
+  attrs: {
+    checked: {
+      default: false,
+    },
+  },
+  content: 'inline*',
+  defining: true,
+  group: 'block',
+  toDOM(node) {
+    return [
+      'div',
+      { 'class': 'checklist-item' },
+      [
+        'input',
+        {
+          type: 'checkbox',
+          ...(node.attrs.checked && { checked: 'true' }),
+        },
+      ],
+      [
+        'p',
+        0
+      ],
+    ];
+  },
+  parseDOM: [{
+    contentElement: 'p',
+    tag: 'div.checklist-item',
+    getAttrs(node) {
+      // Will be type Node when parseDOM supplies a 'tag' rule
+      const input = (node as HTMLElement).querySelector('input');
+      return {
+        checked: !!(input as HTMLInputElement).checked,
+      };
+    },
+  }],
 };
 
 const textSpec: NodeSpec = {
   group: 'inline',
 };
 
-let spec = {
-  nodes: OrderedMap.from({
+const spec = {
+  nodes: {
     doc: docSpec,
     // Order matters here. pm apparently inserts the first valid node on enter.
     paragraph: paragraphSpec,
+    checklist_item: checklistItemSpec,
+    unordered_list: {
+      ...bulletList,
+      content: 'list_item+',
+      group: 'block',
+    },
+    list_item: {
+      ...listItem,
+      content: 'paragraph+',
+    },
     heading1: heading1Spec,
     heading2: heading2Spec,
     text: textSpec,
-  }),
-  marks: OrderedMap.from({
-  }),
+  },
+  marks: {},
 };
 
-export const schema = new Schema({
-  nodes: addListNodes(spec.nodes, 'paragraph', 'block'),
-  marks: spec.marks,
-});
+export const schema = new Schema(spec);

@@ -1,19 +1,29 @@
 import './styles.css';
 import 'prosemirror-view/style/prosemirror.css'
 import ComponentManager from 'sn-components-api';
-import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { EditorView } from 'prosemirror-view';
-import { EditorState } from 'prosemirror-state';
-import { splitListItem } from 'prosemirror-schema-list';
+import { EditorState, Plugin } from 'prosemirror-state';
+import { DOMParser } from 'prosemirror-model';
 import { ToolbarPlugin } from './ToolbarPlugin';
 import { schema } from './schema';
+import { nodeViews } from './nodeViews';
+import { keymapPlugins } from './keymaps';
+import aliceDocNode from './sample-docs/alice.html';
 
 interface AppWindow extends Window {
   view: EditorView;
 }
 
 declare const window: AppWindow;
+
+function getInitialDoc() {
+  if (process.env.NODE_ENV !== 'production') {
+    return DOMParser.fromSchema(schema)
+      .parse(aliceDocNode as unknown as Node);
+  }
+  return schema.nodes.doc.create({}, schema.nodes.paragraph.createAndFill());
+}
 
 function init() {
   const componentManager = new ComponentManager([
@@ -26,13 +36,15 @@ function init() {
     document.querySelector('#editor'),
     {
       state: EditorState.create({
-        doc: schema.nodes.doc.create({}, schema.nodes.paragraph.createAndFill()),
+        doc: getInitialDoc(),
         plugins: [
-          keymap({
-            'Enter': splitListItem(schema.nodes.bullet_list)
-          }),
-          keymap(baseKeymap),
+          ...keymapPlugins,
           new ToolbarPlugin(document.querySelector('#toolbar')),
+          new Plugin({
+            props: {
+              nodeViews
+            },
+          }),
         ],
       }),
     },

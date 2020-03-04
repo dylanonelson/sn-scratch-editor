@@ -1,0 +1,7 @@
+.checklist-item p {
+  padding-left: 30px;
+}
+
+.checklist-item input {
+  position: absolute;
+}

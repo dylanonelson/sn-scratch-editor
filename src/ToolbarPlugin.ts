@@ -2,7 +2,7 @@ import { Plugin, EditorState, Transaction } from 'prosemirror-state';
 import { Selection } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
-import { Schema, NodeType } from 'prosemirror-model';
+import { Schema, NodeType, NodeRange } from 'prosemirror-model';
 import { findWrapping } from 'prosemirror-transform';
 import { schema } from './schema';
 import { chainCommands, selectParentNode, wrapIn, setBlockType } from 'prosemirror-commands';
@@ -23,14 +23,27 @@ export class ToolbarPlugin extends Plugin {
 
   private toggleList = (listType: NodeType, itemType: NodeType) => {
     const { dispatch, state } = this.view;
-    const { tr } = state;
-    const { $from, $to } = state.selection;
-    tr.wrap(
-      $from.blockRange($to),
-      findWrapping($from.blockRange($to), itemType),
-    );
-    dispatch(tr);
+
+    chainCommands(
+      wrapInList(listType),
+      liftListItem(itemType),
+    )(state, dispatch);
   }
+
+  private toggleChecklistItem = () => {
+    const { dispatch, state } = this.view;
+    const { doc, tr } = state;
+    const { $from, $to } = state.selection;
+    const blockRange = $from.blockRange($to);
+
+    for (let index = blockRange.startIndex; index < blockRange.endIndex; index += 1) {
+      if (blockRange.parent.child(index).type === schema.nodes.checklist_item) {
+        this.swapTextBlock(schema.nodes.paragraph);
+        return;
+      }
+    }
+    this.swapTextBlock(schema.nodes.checklist_item);
+  };
 
   constructor(el: Element) {
     super({
@@ -71,8 +84,12 @@ export class ToolbarPlugin extends Plugin {
         this.swapTextBlock(schema.nodes.heading2);
         break;
       }
-      case 'bullet_list': {
-        this.toggleList(schema.nodes.bullet_list, schema.nodes.list_item);
+      case 'unordered_list': {
+        this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+        break;
+      }
+      case 'checklist_item': {
+        this.toggleChecklistItem();
         break;
       }
       default: {
