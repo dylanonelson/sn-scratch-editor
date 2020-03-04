@@ -1,7 +1,78 @@
-.checklist-item p {
-  padding-left: 30px;
+body {
+  font-family: 'Roboto Slab', serif;
+  font-size: 15px;
+}
+
+* {
+  border: 0;
+  font-size: inherit;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+}
+
+div.ProseMirror {
+  padding: 35px 50px;
+}
+
+h1.sn-prose-editor {
+  font-size: 18px;
+  font-weight: 300;
+  margin-bottom: 12px;
+}
+
+* + h1.sn-prose-editor {
+  margin-top: 22px;
+}
+
+h2.sn-prose-editor {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+*:not(h1) + h2.sn-prose-editor {
+  margin-top: 24px;;
+}
+
+div.ProseMirror > p.sn-prose-editor {
+  margin-bottom: 10px;
+}
+
+ul {
+  margin-left: 25px;
+  margin-bottom: 16px;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: right;
+}
+
+.checklist-item {
+  margin-bottom: 5px;
+}
+
+*:not(.checklist-item) + .checklist-item {
+  margin-top: 10px;
+}
+
+.checklist-item:first-child {
+  margin-top: 20px;
 }
 
 .checklist-item input {
-  position: absolute;
+  margin-right: 15px;
+  position: relative;
+  top: 1px;
+}
+
+button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
 }

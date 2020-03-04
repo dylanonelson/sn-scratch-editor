@@ -7,7 +7,7 @@ import { schema } from './schema';
 
 export const keymapPlugins: Plugin[] = [
   keymap({
-    Enter: splitListItem(schema.nodes.bullet_list)
+    Enter: splitListItem(schema.nodes.list_item)
   }),
   keymap({
     Enter: (state, dispatch) => {
@@ -16,6 +16,14 @@ export const keymapPlugins: Plugin[] = [
         return false;
       }
       tr.deleteSelection();
+      const next$From = tr.doc.resolve(from);
+      if (next$From.parent.nodeSize === 2){
+        const nextFrom = next$From.pos;
+        // The node is empty
+        tr.replaceWith(nextFrom - 1, nextFrom + 1, schema.nodes.paragraph.createAndFill());
+        dispatch(tr);
+        return true;
+      }
       tr.split(from, undefined, [{
         type: schema.nodes.checklist_item,
         attrs: { checked: false }

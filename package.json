@@ -27,10 +27,12 @@
     "webpack-dev-server": "^3.10.2"
   },
   "dependencies": {
+    "@types/prosemirror-inputrules": "^1.0.2",
     "@types/prosemirror-model": "^1.7.2",
     "@types/prosemirror-state": "^1.2.3",
     "orderedmap": "^1.1.1",
     "prosemirror-commands": "^1.1.3",
+    "prosemirror-inputrules": "^1.1.2",
     "prosemirror-keymap": "^1.1.3",
     "prosemirror-model": "^1.9.1",
     "prosemirror-schema-list": "^1.1.2",
