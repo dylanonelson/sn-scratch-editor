@@ -57,7 +57,21 @@ export class ToolbarPlugin extends Plugin {
         };
       },
       props: {
-        handleKeyDown(view, e) {
+        handleKeyDown: (view, e) => {
+          const isT = e.which === 84;
+          const hasCtrl = e.ctrlKey;
+          if (isT && hasCtrl) {
+            this.toggleChecklistItem();
+            return true;
+          }
+
+          const is7 = e.which === 55;
+          const hasMod = e.metaKey;
+          if (is7 && hasMod) {
+            this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+            return true;
+          }
+
           return false;
         }
       }
@@ -75,6 +89,7 @@ export class ToolbarPlugin extends Plugin {
     switch (dataFormatStr) {
       case 'paragraph': {
         this.swapTextBlock(schema.nodes.paragraph);
+        break;
       }
       case 'heading1': {
         this.swapTextBlock(schema.nodes.heading1);
