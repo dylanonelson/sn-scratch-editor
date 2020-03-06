@@ -61,10 +61,6 @@ li {
   margin-top: 10px;
 }
 
-.checklist-item:first-child {
-  margin-top: 20px;
-}
-
 .checklist-item input {
   margin-right: 15px;
   position: relative;

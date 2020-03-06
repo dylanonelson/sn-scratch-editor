@@ -16,6 +16,7 @@
     "@types/prosemirror-commands": "^1.0.1",
     "@types/prosemirror-keymap": "^1.0.1",
     "@types/prosemirror-schema-list": "^1.0.1",
+    "@types/uuid": "^7.0.0",
     "css-loader": "^3.4.2",
     "file-loader": "^5.0.2",
     "source-map-loader": "^0.2.4",
@@ -23,6 +24,7 @@
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.2"
   },
@@ -39,7 +41,8 @@
     "prosemirror-state": "^1.3.2",
     "prosemirror-transform": "^1.2.3",
     "prosemirror-view": "^1.14.2",
-    "sn-components-api": "^1.2.8"
+    "sn-components-api": "^1.2.8",
+    "uuid": "^7.0.2"
   },
   "sn": {
     "main": "index.html"
