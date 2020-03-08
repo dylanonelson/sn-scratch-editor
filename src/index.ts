@@ -5,15 +5,12 @@ import ComponentManager from 'sn-components-api';
 import { baseKeymap } from 'prosemirror-commands';
 import { EditorView } from 'prosemirror-view';
 import { EditorState, Plugin } from 'prosemirror-state';
-import { DOMParser } from 'prosemirror-model';
 import { inputRulesPlugin } from './inputRules';
 import { ToolbarPlugin } from './ToolbarPlugin';
 import { schema } from './schema';
 import { client } from './client';
 import { nodeViews } from './nodeViews';
 import { keymapPlugins } from './keymaps';
-import aliceDocNode from './sample-docs/alice.html';
-import taskDocNode from './sample-docs/task.html';
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -22,10 +19,6 @@ interface AppWindow extends Window {
 declare const window: AppWindow;
 
 function getDocForNewEditorState() {
-  if (process.env.NODE_ENV !== 'production') {
-    return DOMParser.fromSchema(schema)
-      .parse(taskDocNode as unknown as Node);
-  }
   return client.latestDoc
     ? schema.nodeFromJSON(client.latestDoc)
     : schema.topNodeType.createAndFill();

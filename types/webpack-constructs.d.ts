@@ -1,3 +1,4 @@
 declare module '*.html' {
-  export default Node;
+  const node: Node;
+  export default node;
 }

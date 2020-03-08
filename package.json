@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server",
+    "dev:demo": "DEMO=true webpack-dev-server --mode development",
+    "dev:sn": "webpack-dev-server --mode development",
     "build:dev": "webpack --mode development",
     "build:prd": "webpack --mode production"
   },

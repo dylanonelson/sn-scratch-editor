@@ -72,6 +72,24 @@ export class ToolbarPlugin extends Plugin {
             return true;
           }
 
+          const isU = e.which === 85;
+          if (isU && hasCtrl) {
+            this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+            return true;
+          }
+
+          const isPlus = e.which === 187;
+          if (isPlus && hasCtrl) {
+            this.swapTextBlock(schema.nodes.heading2);
+            return true;
+          }
+
+          const isJ = e.which === 74;
+          if (isJ && hasCtrl) {
+            this.swapTextBlock(schema.nodes.paragraph);
+            return true;
+          }
+
           return false;
         }
       }

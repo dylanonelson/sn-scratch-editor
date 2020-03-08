@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+import { DOMParser } from 'prosemirror-model';
 import ComponentManager from 'sn-components-api';
+import { schema } from './schema';
+import aliceNode from './sample-docs/alice.html';
 
 const SN_ITEM_SAVE_KEY = 'com.dylanonelson.sn-editor';
 
@@ -83,14 +86,6 @@ class Client {
     return getDoc(this._item);
   }
 
-  shouldCallListeners = (nextItem, previousItem) => {
-    if (nextItem.isMetadataUpdate) {
-      return false;
-    }
-    return getUuid(nextItem) !== getUuid(previousItem)
-      || getLastSavedBy(nextItem) !== this._id;
-  }
-
   onUpdate(callback: ({}) => void) {
     this._listeners.push(callback);
     return () => {
@@ -115,6 +110,27 @@ class Client {
     };
     this.componentManager.saveItemWithPresave(toSave);
   }
+
+  shouldCallListeners = (nextItem, previousItem) => {
+    if (nextItem.isMetadataUpdate) {
+      return false;
+    }
+    return getUuid(nextItem) !== getUuid(previousItem)
+      || getLastSavedBy(nextItem) !== this._id;
+  }
 }
 
-export const client = new Client();
+class DemoClient {
+  constructor() {}
+  get latestDoc() {
+    return DOMParser.fromSchema(schema)
+      .parse(aliceNode).toJSON();
+  }
+  ready() {
+    return Promise.resolve();
+  }
+  onUpdate() {}
+  saveNote() {}
+}
+
+export const client = process.env.DEMO === 'true' ? new DemoClient() : new Client();
