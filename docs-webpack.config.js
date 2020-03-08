@@ -4,8 +4,12 @@ const config = require('./webpack.config.js');
 
 config.output.path = path.resolve(__dirname, 'docs')
 config.plugins = config.plugins
-  .filter(plugin => !(plugin instanceof webpack.EnvironmentPlugin))
-  .concat([new webpack.EnvironmentPlugin({ DEMO: 'true' })]);
+  .concat([
+    new webpack.NormalModuleReplacementPlugin(
+      /src\/client\.ts$/,
+      './demoClient.ts'
+    ),
+  ]);
 
 config.devServer = {
   port: 1104,

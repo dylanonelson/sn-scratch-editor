@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { DOMParser } from 'prosemirror-model';
 import ComponentManager from 'sn-components-api';
 import { schema } from './schema';
-import aliceNode from './demo-doc.node';
 
 const SN_ITEM_SAVE_KEY = 'com.dylanonelson.sn-editor';
 
@@ -120,19 +119,4 @@ class Client {
   }
 }
 
-class DemoClient {
-  constructor() {}
-  get latestDoc() {
-    console.log('latestDoc');
-    console.log(aliceNode);
-    return DOMParser.fromSchema(schema)
-      .parse(aliceNode).toJSON();
-  }
-  ready() {
-    return Promise.resolve();
-  }
-  onUpdate() {}
-  saveNote() {}
-}
-
-export const client = process.env.DEMO === 'true' ? new DemoClient() : new Client();
+export const client = new Client();

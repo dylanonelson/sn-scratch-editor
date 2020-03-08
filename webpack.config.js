@@ -52,7 +52,6 @@ module.exports = {
   },
   plugins: [
     ...(process.env.ANALYZE === 'true' ? [new BundleAnalyzerPlugin()] : []),
-    new webpack.EnvironmentPlugin({ DEMO: 'false' }),
   ],
   resolve: {
     extensions: ['.ts', '.js'],
