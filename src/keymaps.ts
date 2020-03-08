@@ -10,7 +10,7 @@ export const keymapPlugins: Plugin[] = [
     Enter: splitListItem(schema.nodes.list_item)
   }),
   keymap({
-    Enter: (state, dispatch) => {
+    Enter(state, dispatch) {
       const { selection: { $from, from }, tr } = state;
       if ($from.parent.type !== schema.nodes.checklist_item) {
         return false;

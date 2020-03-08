@@ -12,7 +12,9 @@ body {
 }
 
 div.ProseMirror {
-  padding: 35px 50px;
+  position: relative;
+  /* 80px top padding to account for 40px toolbar */
+  padding: 80px 15px 40px 15px;
 }
 
 h1.sn-prose-editor {
@@ -36,6 +38,10 @@ h2.sn-prose-editor {
 
 div.ProseMirror > p.sn-prose-editor {
   margin-bottom: 10px;
+}
+
+*:not(ul) + ul {
+  margin-top: 10px;
 }
 
 ul {
@@ -62,13 +68,72 @@ li {
 }
 
 .checklist-item input {
+  cursor: pointer;
   margin-right: 15px;
   position: relative;
   top: 1px;
 }
 
-button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
+#toolbar {
+  background-color: var(--sn-stylekit-background-color, white);
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  min-width: 365px;
+  overflow: scroll;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+button[data-format]:hover {
+  background-color: #ddd;
+}
+
+button.selected {
+  border: 1px solid #ddd;
+}
+
+button[data-format] {
+  background-color: var(--sn-stylekit-background-color, white);
   border-radius: 2px;
+  cursor: pointer;
+  height: 45px;
+  padding: 10px 25px;
+  width: 75px;
+}
+
+button[data-format] {
+  margin-right: 15px;
+}
+
+button[data-format]:last-child {
+  margin-right: 0;
+}
+
+button[data-format] i {
+  display: block;
+  height: 25px;
+  width: 25px;
+}
+
+button[data-format=paragraph] i {
+  background: url(./assets/notes-24px.svg);
+  background-size: cover;
+}
+
+button[data-format=checklist_item] i {
+  background: url(./assets/check_box-24px.svg);
+  background-size: cover;
+}
+
+button[data-format=heading] i {
+  background: url(./assets/format_size-24px.svg);
+  background-size: cover;
+}
+
+button[data-format=unordered_list] i {
+  background: url(./assets/format_list_bulleted-24px.svg);
+  background-size: cover;
 }
