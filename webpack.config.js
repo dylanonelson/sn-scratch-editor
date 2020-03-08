@@ -6,23 +6,37 @@ module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
   devServer: {
-    publicPath: '/dist/',
-    index: './index.html',
     port: 1104,
   },
   module: {
     rules: [
       {
-        test: /\.css$/i,
+        exclude: '/node_modules/',
+        test: /\.node$/i,
+        loader: 'html-node-loader',
+      },
+      {
+        test: /\.svg$/i,
         use: [
-          'style-loader',
           {
-            loader: 'css-loader',
+            loader: 'file-loader',
             options: {
-              url: false,
+              name: '[name].[ext]',
+              outputPath: 'assets',
             },
           },
-          ],
+        ],
+      },
+      {
+        test: /\.(css|html)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+            },
+          },
+        ],
       },
       {
         test: /\.ts$/i,
@@ -34,18 +48,11 @@ module.exports = {
         test: /\.js$/,
         loader: 'source-map-loader'
       },
-      {
-        exclude: '/node_modules/',
-        test: /\.html$/i,
-        loader: 'html-node-loader',
-      },
     ],
   },
   plugins: [
     ...(process.env.ANALYZE === 'true' ? [new BundleAnalyzerPlugin()] : []),
-    new webpack.EnvironmentPlugin({
-      DEMO: 'false',
-    }),
+    new webpack.EnvironmentPlugin({ DEMO: 'false' }),
   ],
   resolve: {
     extensions: ['.ts', '.js'],

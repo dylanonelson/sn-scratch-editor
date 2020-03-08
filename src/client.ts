@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DOMParser } from 'prosemirror-model';
 import ComponentManager from 'sn-components-api';
 import { schema } from './schema';
-import aliceNode from './sample-docs/alice.html';
+import aliceNode from './demo-doc.node';
 
 const SN_ITEM_SAVE_KEY = 'com.dylanonelson.sn-editor';
 
@@ -123,6 +123,8 @@ class Client {
 class DemoClient {
   constructor() {}
   get latestDoc() {
+    console.log('latestDoc');
+    console.log(aliceNode);
     return DOMParser.fromSchema(schema)
       .parse(aliceNode).toJSON();
   }

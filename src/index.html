@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Standard Notes Prose Editor</title>
+    <script defer src="./bundle.js"></script>
+    <link href="./prosemirror.css" rel="stylesheet">
+    <link href="./styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto+Slab:400,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body>
+    <div id="root">
+      <div id="editor" spellcheck="false"></div>
+      <div id="toolbar">
+        <button title="promote heading (ctrl + =)" data-format="heading"><i></i></button>
+        <button title="make paragraph (ctrl + j)" data-format="paragraph"><i></i></button>
+        <button title="make unordered list (ctrl + u)" data-format="unordered_list"><i></i></button>
+        <button title="make checklist item (ctrl + t)" data-format="checklist_item"><i></i></button>
+      </div>
+    </div>
+  </body>
+</html>

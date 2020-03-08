@@ -1,5 +1,11 @@
-import './styles.css';
 import 'prosemirror-view/style/prosemirror.css'
+import './index.html';
+import './styles.css';
+import './assets/check_box-24px.svg';
+import './assets/format_list_bulleted-24px.svg';
+import './assets/format_size-24px.svg';
+import './assets/notes-24px.svg';
+
 import { v4 as uuidv4 } from 'uuid';
 import ComponentManager from 'sn-components-api';
 import { baseKeymap } from 'prosemirror-commands';

@@ -1,4 +1,4 @@
-declare module '*.html' {
+declare module '*.node' {
   const node: Node;
   export default node;
 }
