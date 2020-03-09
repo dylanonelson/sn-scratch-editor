@@ -17,20 +17,40 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     div.appendChild(input);
     div.appendChild(p);
 
-    const handler = () => {
+    const focusHandler = (event: MouseEvent) => {
+      const { relatedTarget, target } = event;
+      if (relatedTarget !== input) {
+        // Input is taking focus
+        return;
+      }
+
+      const viewHasFocus = target === view.dom;
+      if (viewHasFocus) {
+        // The view was focused before the input
+        view.focus();
+      }
+    };
+
+    const clickHandler = (event: MouseEvent) => {
+      if (event.target !== input) {
+        return;
+      }
       const checked = input.checked;
       const { tr } = view.state;
       const pos = (getPos as () => number)();
-      view.dispatch(tr.setNodeMarkup(pos, undefined, { checked }));
+      tr.setNodeMarkup(pos, undefined, { checked })
+      view.dispatch(tr);
     };
 
-    input.addEventListener('click', handler);
+    view.dom.addEventListener('blur', focusHandler);
+    view.dom.addEventListener('click', clickHandler);
 
     return {
       dom: div,
       contentDOM: p,
       destroy() {
-        input.removeEventListener('click', handler);
+        view.dom.removeEventListener('blur', focusHandler);
+        view.dom.removeEventListener('click', clickHandler);
       },
     };
   },
