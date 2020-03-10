@@ -1,15 +1,19 @@
 {
-  "name": "sn-prose-editor",
+  "name": "sn-scratchpad-editor",
   "version": "0.0.1",
   "description": "",
   "scripts": {
     "build": "npm run build:docs && npm run build:dist",
     "build:dist": "webpack --mode production",
     "build:docs": "webpack --config=docs-webpack.config.js",
+    "deploy": "npm run build && firebase deploy",
     "dev:dist": "webpack-dev-server --mode development",
     "dev:docs": "webpack-dev-server --config=docs-webpack.config.js --mode development"
   },
-  "keywords": [],
+  "keywords": [
+    "Standard Notes",
+    "ProseMirror"
+  ],
   "author": "Dylan Nelson",
   "license": "ISC",
   "devDependencies": {

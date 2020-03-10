@@ -39,6 +39,14 @@ module.exports = {
         ],
       },
       {
+        test: /\.json$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+        },
+        type: 'javascript/auto',
+      },
+      {
         test: /\.ts$/i,
         use: ['ts-loader'],
         exclude: '/node_modules/',
