@@ -7,7 +7,7 @@ import {
   Schema,
 } from 'prosemirror-model';
 
-const EDITOR_CLS = 'sn-prose-editor';
+const EDITOR_CLS = 'sn-editor';
 
 const docSpec: NodeSpec = {
   content: 'block+',

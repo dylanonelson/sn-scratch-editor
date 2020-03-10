@@ -17,26 +17,26 @@ div.ProseMirror {
   padding: 80px 15px 40px 15px;
 }
 
-h1.sn-prose-editor {
+h1.sn-editor {
   font-size: 18px;
   font-weight: 300;
   margin-bottom: 12px;
 }
 
-* + h1.sn-prose-editor {
+* + h1.sn-editor {
   margin-top: 22px;
 }
 
-h2.sn-prose-editor {
+h2.sn-editor {
   font-weight: 700;
   margin-bottom: 10px;
 }
 
-*:not(h1) + h2.sn-prose-editor {
+*:not(h1) + h2.sn-editor {
   margin-top: 24px;;
 }
 
-div.ProseMirror > p.sn-prose-editor {
+div.ProseMirror > p.sn-editor {
   margin-bottom: 10px;
 }
 
