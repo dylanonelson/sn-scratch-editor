@@ -6,9 +6,58 @@ import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { Schema, NodeType, NodeRange } from 'prosemirror-model';
 import { findWrapping } from 'prosemirror-transform';
 import { schema } from './schema';
-import { chainCommands, selectParentNode, wrapIn, setBlockType } from 'prosemirror-commands';
+import {
+  chainCommands,
+  selectParentNode,
+  setBlockType,
+  wrapIn,
+} from 'prosemirror-commands';
 
 const APPLY_FORMAT_ATTR = 'data-format';
+
+type Command = typeof selectParentNode;
+
+const toggleChecklistItemState: Command = function (state: EditorState, dispatch: EditorView['dispatch']) {
+  const { $from, $to } = state.selection;
+
+  const blockRange = $from.blockRange($to);
+
+  let hasChecked = false
+  for (
+    let index = blockRange.startIndex,
+      child = blockRange.parent.child(index);
+    index < blockRange.endIndex;
+    index += 1
+  ) {
+    if (child.type !== schema.nodes.checklist_item) {
+      return false;
+    }
+    if (child.attrs.checked) {
+      hasChecked = true;
+      break;
+    }
+  }
+
+  if (!dispatch) {
+    return true;
+  }
+
+  const { tr } = state;
+  for (
+    let index = blockRange.startIndex,
+      child = blockRange.parent.child(index),
+      pos = blockRange.start;
+    index < blockRange.endIndex;
+    index += 1
+  ) {
+    tr.setNodeMarkup(pos, undefined, { checked: hasChecked ? false : true });
+    pos += child.nodeSize;
+  }
+
+
+  dispatch(tr);
+  return true;
+}
 
 export class ToolbarPlugin extends Plugin {
   private view: EditorView;
@@ -140,18 +189,14 @@ export class ToolbarPlugin extends Plugin {
             return true;
           }
 
+          const isSpace = e.which === 32;
+          if (hasCtrl && isSpace) {
+            return toggleChecklistItemState(this.view.state, this.view.dispatch);
+          }
+
           return false;
         }
       },
-      state: {
-        apply(tr) {
-        },
-        init(config, state) {
-          return {
-            selectedFormat: this.getSelectedFormat(state.selection),
-          }
-        }
-      }
     });
   }
 

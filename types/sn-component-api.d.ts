@@ -22,11 +22,15 @@ interface SaveCompleteCallback {
 }
 
 declare module 'sn-components-api' {
-    class ComponentManager {
-      constructor(permissions: ExtensionPermission[], onReady?: () => void);
-      streamContextItem(callback: (item: ContextItem) => void): void;
-      saveItemWithPresave(item: Item, presave?: PresaveCallback, callback?: SaveCompleteCallback): void;
-    }
+  class ComponentManager {
+    constructor(permissions: ExtensionPermission[], onReady?: () => void);
+    streamContextItem(callback: (item: ContextItem) => void): void;
+    saveItemWithPresave(item: Item, presave?: PresaveCallback, callback?: SaveCompleteCallback): void;
+  }
 
-    export = ComponentManager;
+  export = ComponentManager;
+
+  interface Test {
+    a: boolean;
+  }
 }
