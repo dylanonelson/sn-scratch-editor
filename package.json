@@ -1,6 +1,6 @@
 {
   "name": "sn-scratchpad-editor",
-  "version": "0.0.1",
+  "version": "0.0.9",
   "description": "",
   "scripts": {
     "build": "npm run build:docs && npm run build:dist",
