@@ -18,7 +18,7 @@ div.ProseMirror {
 }
 
 h1.sn-editor {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 300;
   margin-bottom: 12px;
 }
@@ -32,7 +32,7 @@ h2.sn-editor {
   margin-bottom: 10px;
 }
 
-*:not(h1) + h2.sn-editor {
+.ProseMirror *:not(h1) + h2.sn-editor {
   margin-top: 24px;;
 }
 
@@ -40,17 +40,36 @@ div.ProseMirror > p.sn-editor {
   margin-bottom: 10px;
 }
 
-*:not(ul) + ul {
+*:not(ul, ol) + ul {
   margin-top: 10px;
 }
 
-ul {
+*:not(ul, ol) + ol {
+  margin-top: 10px;
+}
+
+ul, ol {
   margin-left: 25px;
   margin-bottom: 16px;
 }
 
+li > ul {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+li > ol {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
 li {
   margin-bottom: 5px;
+}
+
+code {
+  font-family: 'Roboto Mono', monospace;
+  background: #efefef;
 }
 
 .checklist-item {
@@ -63,8 +82,8 @@ li {
   margin-bottom: 5px;
 }
 
-*:not(.checklist-item) + .checklist-item {
-  margin-top: 10px;
+.checklist-item + *:not(.checklist-item) {
+  margin-top: 16px;
 }
 
 .checklist-item input {
@@ -85,17 +104,22 @@ li {
 #toolbar {
   background-color: var(--sn-stylekit-background-color, white);
   border-bottom: 1px solid #ccc;
-  display: flex;
-  justify-content: right;
-  min-width: 365px;
+  white-space: nowrap;
 }
 
 button[data-format]:hover {
   background-color: #eee;
 }
 
-button.selected {
-  border-bottom: 2px solid #aaa;
+button.selected:after {
+  background: #aaa;
+  bottom: 0;
+  content: '';
+  display: block;
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: 0;
 }
 
 button[data-format] {
@@ -103,7 +127,20 @@ button[data-format] {
   cursor: pointer;
   height: 40px;
   padding: 10px 20px;
+  position: relative;
   width: 65px;
+}
+
+button[data-format=link]:before {
+  background: #ccc;
+  bottom: 7px;
+  content: '';
+  display: block;
+  /* half the 10px margin */
+  left: -5px;
+  position: absolute;
+  top: 7px;
+  width: 1px;
 }
 
 button[data-format] {
@@ -112,7 +149,7 @@ button[data-format] {
 
 button[data-format] i {
   display: block;
-  height: 20px;
+  height: 25px;
 }
 
 button[data-format=paragraph] i {
@@ -132,5 +169,30 @@ button[data-format=heading] i {
 
 button[data-format=unordered_list] i {
   background: url(./assets/format_list_bulleted-24px.svg);
+  background-size: cover;
+}
+
+button[data-format=strong] i {
+  background: url('./assets/format_bold-24px.svg');
+  background-size: cover;
+}
+
+button[data-format=em] i {
+  background: url('./assets/format_italic-24px.svg');
+  background-size: cover;
+}
+
+button[data-format=code] i {
+  background: url('./assets/code-24px.svg');
+  background-size: cover;
+}
+
+button[data-format=link] i {
+  background: url('./assets/link-24px.svg');
+  background-size: cover;
+}
+
+button[data-format=ordered_list] i {
+  background: url('./assets/format_list_numbered-24px.svg');
   background-size: cover;
 }

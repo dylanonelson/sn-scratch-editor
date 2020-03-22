@@ -1,11 +1,17 @@
 import { Plugin, EditorState, Transaction } from 'prosemirror-state';
 import { Selection } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view';
-import { ResolvedPos } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
-import { Schema, NodeType, NodeRange } from 'prosemirror-model';
+import {
+  MarkType,
+  NodeRange,
+  NodeType,
+  ResolvedPos,
+  Schema,
+} from 'prosemirror-model';
 import { findWrapping } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
+import { toggleMark } from 'prosemirror-commands';
 import { schema } from './schema';
 import {
   chainCommands,
@@ -115,7 +121,7 @@ export class ToolbarPlugin extends Plugin {
       // so it can subsequently become a list
       this.swapTextBlock(schema.nodes.paragraph);
       const { dispatch, state } = this.view;
-      wrapInList(schema.nodes.unordered_list)(state, dispatch);
+      wrapInList(listType)(state, dispatch);
     }
   }
 
@@ -132,7 +138,15 @@ export class ToolbarPlugin extends Plugin {
       }
     }
     this.swapTextBlock(schema.nodes.checklist_item);
-  };
+  }
+
+  private activateLinkModal = () => {
+  }
+
+  private toggleMark = (mark: MarkType) => {
+    toggleMark(mark)(this.view.state, this.view.dispatch);
+    this.view.focus();
+  }
 
   constructor(el: Element) {
     super({
@@ -144,14 +158,24 @@ export class ToolbarPlugin extends Plugin {
             el.removeEventListener('click', this.handleToolbarClick);
           },
           update: (view, previousState) => {
-            const previousSelectedFormat = this.getSelectedFormatAttr(previousState);
-            if (previousSelectedFormat) {
-              el.querySelector(`[data-format=${previousSelectedFormat}]`).classList.remove('selected');
+            const previouslySelectedAttrs = this.getSelectedFormatAttrs(previousState);
+            if (previouslySelectedAttrs) {
+              previouslySelectedAttrs.forEach(attr => {
+                const btn = el.querySelector(`[data-format=${attr}]`);
+                if (btn) {
+                  btn.classList.remove('selected');
+                }
+              });
             }
 
-            const selectedFormat = this.getSelectedFormatAttr(view.state);
-            if (selectedFormat) {
-              el.querySelector(`[data-format=${selectedFormat}]`).classList.add('selected');
+            const selectedAttrs = this.getSelectedFormatAttrs(view.state);
+            if (selectedAttrs) {
+              selectedAttrs.forEach(attr => {
+                const btn = el.querySelector(`[data-format=${attr}]`);
+                if (btn) {
+                  btn.classList.add('selected');
+                }
+              });
             }
           }
         };
@@ -175,6 +199,12 @@ export class ToolbarPlugin extends Plugin {
           const isU = e.which === 85;
           if (isU && hasCtrl) {
             this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+            return true;
+          }
+
+          const isO = e.which === 79;
+          if (isO && hasCtrl) {
+            this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
             return true;
           }
 
@@ -205,61 +235,127 @@ export class ToolbarPlugin extends Plugin {
             return redo(this.view.state, this.view.dispatch);
           }
 
+          const isI = e.which === 73;
+          if (hasMod && isI) {
+            this.toggleMark(schema.marks.em);
+            return true;
+          }
+
+          const isB = e.which === 66;
+          if (hasMod && isB) {
+            this.toggleMark(schema.marks.strong);
+            return true;
+          }
+
+          const isPrime = e.which === 222;
+          if (hasMod && isPrime) {
+            this.toggleMark(schema.marks.code);
+            return true;
+          }
+
+          const isK = e.which === 75;
+          if (hasMod && isK) {
+            this.activateLinkModal();
+            return true;
+          }
+
           return false;
         }
       },
     });
   }
 
-  getSelectedFormat = (state: EditorState) => {
+  getSelectedFormatAndMarks = (state: EditorState) => {
     if (!state.selection) {
       return;
     }
 
-    const zeroDepthBlockRange = new NodeRange(state.selection.$from, state.selection.$to, 0);
+    const result = []
+
+    const { $from, $to, content } = state.selection;
+    const blockRange = $from.blockRange($to, node => node.type !== schema.nodes.list_item);
 
     let selected = null;
-    for (let index = zeroDepthBlockRange.startIndex; index < zeroDepthBlockRange.endIndex; index += 1) {
-      const currentType = zeroDepthBlockRange.parent.child(index).type;
+    for (
+      let index = blockRange.startIndex; index < blockRange.endIndex; index += 1
+    ) {
+      const child = blockRange.parent.child(index);
+      const currentType = child.type === schema.nodes.list_item
+        ? blockRange.parent.type
+        : child.type;
+
       if (selected === null) {
         selected = currentType;
         continue;
       }
       if (selected !== currentType) {
-        return null;
+        selected = null;
+        break;
       }
     }
-    return selected;
+    result.push(selected);
+
+    const marks = $from.marksAcross($to);
+    if (marks) {
+      result.push(...marks.map(mark => mark.type));
+    }
+
+    return result;
   }
 
-  getSelectedFormatAttr = (state: EditorState) => {
-    const nodeType = this.getSelectedFormat(state);
+  getSelectedFormatAttrs = (state: EditorState) => {
+    const [nodeType, ...markTypes] = this.getSelectedFormatAndMarks(state);
+    const result = [];
 
     let activeBtnAttr = null;;
     switch (nodeType) {
       case schema.nodes.heading1:
       case schema.nodes.heading2: {
-        activeBtnAttr = 'heading';
+        result.push('heading');
         break;
       }
       case schema.nodes.paragraph: {
-        activeBtnAttr = 'paragraph';
+        result.push('paragraph');
         break;
       }
-      case schema.nodes.unordered_list:
-      case schema.nodes.list_item: {
-        activeBtnAttr = 'unordered_list';
+      case schema.nodes.unordered_list: {
+        result.push('unordered_list');
+        break;
+      }
+      case schema.nodes.ordered_list: {
+        result.push('ordered_list');
         break;
       }
       case schema.nodes.checklist_item: {
-        activeBtnAttr = 'checklist_item';
+        result.push('checklist_item');
         break;
       }
       default: {
-        // do nothing
+        result.push(null);
       }
     }
-    return activeBtnAttr;
+    markTypes.forEach(markType => {
+      switch (markType) {
+        case schema.marks.link: {
+          result.push('link');
+          break;
+        }
+        case schema.marks.em: {
+          result.push('em');
+          break;
+        }
+        case schema.marks.strong: {
+          result.push('strong');
+          break;
+        }
+        case schema.marks.code: {
+          result.push('code');
+          break;
+        }
+      }
+    });
+
+    return result;
   }
 
   handleToolbarClick = (e: MouseEvent) => {
@@ -284,8 +380,18 @@ export class ToolbarPlugin extends Plugin {
         this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
         break;
       }
+      case 'ordered_list': {
+        this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
+        break;
+      }
       case 'checklist_item': {
         this.toggleChecklistItem();
+        break;
+      }
+      case 'strong':
+      case 'em':
+      case 'code': {
+        this.toggleMark(schema.marks[dataFormatStr]);
         break;
       }
       default: {

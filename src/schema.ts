@@ -1,4 +1,5 @@
-import { bulletList, listItem } from 'prosemirror-schema-list';
+import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
+import { marks } from 'prosemirror-schema-basic';
 import OrderedMap from 'orderedmap';
 
 import {
@@ -60,6 +61,7 @@ const heading2Spec: NodeSpec = {
 const paragraphSpec: NodeSpec = {
   content: 'inline*',
   group: 'block',
+  marks: '_',
   toDOM(node) {
     return [
       'p',
@@ -79,6 +81,7 @@ const checklistItemSpec: NodeSpec = {
   content: 'inline*',
   defining: true,
   group: 'block',
+  marks: '_',
   toDOM(node) {
     return [
       'div',
@@ -124,6 +127,11 @@ const spec = {
       content: 'list_item+',
       group: 'block',
     },
+    ordered_list: {
+      ...orderedList,
+      content: 'list_item+',
+      group: 'block',
+    },
     list_item: {
       ...listItem,
       content: 'paragraph+',
@@ -132,7 +140,12 @@ const spec = {
     heading2: heading2Spec,
     text: textSpec,
   },
-  marks: {},
+  marks: {
+    link: marks.link,
+    em: marks.em,
+    strong: marks.strong,
+    code: marks.code,
+  },
 };
 
 export const schema = new Schema(spec);
