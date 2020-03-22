@@ -5,6 +5,7 @@ import { ResolvedPos } from 'prosemirror-model';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
 import { Schema, NodeType, NodeRange } from 'prosemirror-model';
 import { findWrapping } from 'prosemirror-transform';
+import { undo, redo } from 'prosemirror-history';
 import { schema } from './schema';
 import {
   chainCommands,
@@ -192,6 +193,16 @@ export class ToolbarPlugin extends Plugin {
           const isSpace = e.which === 32;
           if (hasCtrl && isSpace) {
             return toggleChecklistItemState(this.view.state, this.view.dispatch);
+          }
+
+          const isZ = e.which === 90;
+          if (hasMod && isZ) {
+            return undo(this.view.state, this.view.dispatch);
+          }
+
+          const isY = e.which === 89;
+          if (hasMod && isY) {
+            return redo(this.view.state, this.view.dispatch);
           }
 
           return false;
