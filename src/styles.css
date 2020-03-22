@@ -86,7 +86,7 @@ li {
   background-color: var(--sn-stylekit-background-color, white);
   border-bottom: 1px solid #ccc;
   display: flex;
-  justify-content: center;
+  justify-content: right;
   min-width: 365px;
 }
 
@@ -107,11 +107,7 @@ button[data-format] {
 }
 
 button[data-format] {
-  margin-right: 10px;
-}
-
-button[data-format]:last-child {
-  margin-right: 0;
+  margin-left: 10px;
 }
 
 button[data-format] i {
