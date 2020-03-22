@@ -8,8 +8,6 @@ import { schema } from './schema';
 export const keymapPlugins: Plugin[] = [
   keymap({
     Enter: splitListItem(schema.nodes.list_item),
-    'Shift-Tab': liftListItem(schema.nodes.list_item),
-    Tab: sinkListItem(schema.nodes.list_item),
   }),
   keymap({
     Enter(state, dispatch) {
