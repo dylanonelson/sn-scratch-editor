@@ -1,6 +1,7 @@
 /** global */
 body {
   --base-font-size: 16px;
+  --border-color: 1px solid #ccc;
   --h2-font-size: 18px;
   --h1-font-size: 24px;
   --ff-sans: 'Source Sans Pro', serif;
@@ -9,13 +10,16 @@ body {
   --color-primary: rgb(8, 109, 214);
   --default-gap: 14px;
   --default-item-gap: 5px;
+  --text-color: rgba(0, 0, 0, 0.9);
+  color: var(--sn-stylekit-foreground-color, var(--text-color));
   font-size: var(--base-font-size);
   font-family: var(--ff-serif), serif;
 }
 
 * {
   border: 0;
-  font-size: inherit;
+  color: inherit;
+  font: inherit;
   margin: 0;
   outline: 0;
   padding: 0;
@@ -77,7 +81,7 @@ li {
 
 code {
   font-family: var(--ff-mono), monospace;
-  background: #efefef;
+  background: var(--sn-stylekit-contrast-background-color, #efefef);
 }
 
 .checklist-item {
@@ -102,6 +106,7 @@ code {
 }
 
 #toolbar-wrapper {
+  border-bottom: var(--sn-stylekit-border-color, 1px solid #ccc);
   left: 0;
   overflow-x: scroll;
   position: fixed;
@@ -111,12 +116,11 @@ code {
 
 #toolbar {
   background-color: var(--sn-stylekit-background-color, white);
-  border-bottom: 1px solid #ccc;
   white-space: nowrap;
 }
 
 button[data-format]:hover {
-  background-color: #eee;
+  background-color: var(--sn-stylekit-secondary-contrast-background-color, #eee);
 }
 
 button.selected:after {
