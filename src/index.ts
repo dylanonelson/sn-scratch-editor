@@ -3,16 +3,7 @@ import './index.html';
 import './styles.css';
 import './ext.json';
 import './dev-ext.json';
-import './assets/check_box-24px.svg';
-import './assets/format_list_bulleted-24px.svg';
-import './assets/format_size-24px.svg';
-import './assets/notes-24px.svg';
-import './assets/format_bold-24px.svg';
-import './assets/format_italic-24px.svg';
-import './assets/code-24px.svg';
-import './assets/link-24px.svg';
-import './assets/format_list_numbered-24px.svg';
-import './assets/open_in_new-24px.svg';
+import './svgs.ts';
 
 import { v4 as uuidv4 } from 'uuid';
 import ComponentManager from 'sn-components-api';

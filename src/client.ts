@@ -65,7 +65,6 @@ class Client {
           console.debug('streamContextItem update:', item);
 
           const callListeners = this.shouldCallListeners(item, this._item);
-          console.log('callListeners', callListeners);
 
           this._item = item;
 

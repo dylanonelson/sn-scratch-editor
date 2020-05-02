@@ -20,15 +20,7 @@ module.exports = {
       },
       {
         test: /\.svg$/i,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: 'assets',
-            },
-          },
-        ],
+        loader: 'svg-inline-loader',
       },
       {
         test: /\.(css|html)$/i,
