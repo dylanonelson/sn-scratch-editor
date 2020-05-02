@@ -74,94 +74,95 @@ const toggleChecklistItemState: Command = function (
 
 type modalConfirmHandler = (params: { text: string; url: string }) => void;
 
-export class ToolbarPlugin extends Plugin {
-  static LinkModal = class {
-    private el: Element;
-    private text: string;
-    private url: string;
-    private onConfirm: modalConfirmHandler;
-    private showCls = 'active';
+class LinkModal {
+  private el: Element;
+  private text: string;
+  private url: string;
+  private onConfirm: modalConfirmHandler;
+  private showCls = 'active';
 
-    constructor(
-      el: Element,
-      {
-        onConfirm,
-        text,
-        url,
-      }: {
-        onConfirm: modalConfirmHandler;
-        text: string;
-        url: string;
-      },
-    ) {
-      this.el = el;
-      this.textInput.value = this.text = text;
-      this.urlInput.value = this.url = url;
-      this.urlOpenLink.href = url;
-      this.onConfirm = onConfirm;
+  constructor(
+    el: Element,
+    {
+      onConfirm,
+      text,
+      url,
+    }: {
+      onConfirm: modalConfirmHandler;
+      text: string;
+      url: string;
+    },
+  ) {
+    this.el = el;
+    this.textInput.value = this.text = text;
+    this.urlInput.value = this.url = url;
+    this.urlOpenLink.href = url;
+    this.onConfirm = onConfirm;
 
-      this.el.classList.add(this.showCls);
-      this.confirmBtn.addEventListener('click', this.handleConfirm);
-      this.cancelBtn.addEventListener('click', this.handleCancel);
-      document.addEventListener('keydown', this.handleGlobalKeydown);
-      this.urlInput.focus();
-    }
+    this.el.classList.add(this.showCls);
+    this.confirmBtn.addEventListener('click', this.handleConfirm);
+    this.cancelBtn.addEventListener('click', this.handleCancel);
+    document.addEventListener('keydown', this.handleGlobalKeydown);
+    this.urlInput.focus();
+  }
 
-    private handleConfirm = () => {
-      this.onConfirm({
-        text: this.textInput.value,
-        url: this.urlInput.value,
-      });
+  private handleConfirm = () => {
+    this.onConfirm({
+      text: this.textInput.value,
+      url: this.urlInput.value,
+    });
 
-      this.destroy();
-    };
-
-    private handleCancel = () => {
-      this.destroy();
-    };
-
-    private handleGlobalKeydown = (e: KeyboardEvent) => {
-      const isEnter = e.which === 13;
-      if (document.activeElement === this.textInput || document.activeElement === this.urlInput && isEnter) {
-        this.handleConfirm();
-        return;
-      }
-      const isEsc = e.which === 27;
-      if (e.which === 27) {
-        this.handleCancel();
-      }
-    }
-
-    private destroy = () => {
-      this.confirmBtn.removeEventListener('click', this.handleConfirm);
-      this.cancelBtn.removeEventListener('click', this.handleCancel);
-      document.removeEventListener('keydown', this.handleGlobalKeydown);
-      this.el.classList.remove(this.showCls);
-    };
-
-    get textInput() {
-      return this.el.querySelector('input#text') as HTMLInputElement;
-    }
-
-    get urlInput() {
-      return this.el.querySelector('input#url') as HTMLInputElement;
-    }
-
-    get urlOpenLink() {
-      return this.el.querySelector('label[for=url] a') as HTMLAnchorElement;
-    }
-
-    get confirmBtn() {
-      return this.el.querySelector('button#confirm');
-    }
-
-    get cancelBtn() {
-      return this.el.querySelector('button#cancel');
-    }
+    this.destroy();
   };
 
+  public destroy = () => {
+    this.confirmBtn.removeEventListener('click', this.handleConfirm);
+    this.cancelBtn.removeEventListener('click', this.handleCancel);
+    document.removeEventListener('keydown', this.handleGlobalKeydown);
+    this.el.classList.remove(this.showCls);
+  };
+
+  private handleCancel = () => {
+    this.destroy();
+  };
+
+  private handleGlobalKeydown = (e: KeyboardEvent) => {
+    const isEnter = e.which === 13;
+    if (document.activeElement === this.textInput || document.activeElement === this.urlInput && isEnter) {
+      this.handleConfirm();
+      return;
+    }
+    const isEsc = e.which === 27;
+    if (e.which === 27) {
+      this.handleCancel();
+    }
+  }
+
+  get textInput() {
+    return this.el.querySelector('input#text') as HTMLInputElement;
+  }
+
+  get urlInput() {
+    return this.el.querySelector('input#url') as HTMLInputElement;
+  }
+
+  get urlOpenLink() {
+    return this.el.querySelector('label[for=url] a') as HTMLAnchorElement;
+  }
+
+  get confirmBtn() {
+    return this.el.querySelector('button#confirm');
+  }
+
+  get cancelBtn() {
+    return this.el.querySelector('button#cancel');
+  }
+}
+
+export class ToolbarPlugin extends Plugin {
   private view: EditorView;
   private modalEl: Element;
+  private modal: LinkModal;
 
   private swapTextBlock = (nodeType: NodeType) => {
     let { dispatch, state } = this.view;
@@ -295,7 +296,7 @@ export class ToolbarPlugin extends Plugin {
       url = '';
     }
 
-    const modal = new ToolbarPlugin.LinkModal(this.modalEl, {
+    this.modal = new LinkModal(this.modalEl, {
       onConfirm: ({ text, url }) => {
         const mark = schema.marks.link.create({ href: url });
         const textNode = schema.text(text, [mark]);
@@ -322,8 +323,9 @@ export class ToolbarPlugin extends Plugin {
         toolbarEl.addEventListener('click', this.handleToolbarClick);
 
         return {
-          destroy() {
+          destroy: () => {
             toolbarEl.removeEventListener('click', this.handleToolbarClick);
+            this.modal?.destroy();
           },
           update: (view, previousState) => {
             const previouslySelectedAttrs = this.getSelectedFormatAttrs(
