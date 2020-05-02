@@ -4,7 +4,6 @@
 import { DOMParser } from 'prosemirror-model';
 import demoDocNode from './demo-doc.node';
 import { schema } from './schema';
-console.log('demo');
 
 class DemoClient {
   constructor() {}

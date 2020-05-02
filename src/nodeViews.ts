@@ -11,7 +11,6 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
 
     const inputSpan = document.createElement('span');
     inputSpan.classList.add('checkbox');
-    console.log(node.attrs);
     if (node.attrs.checked) {
       inputSpan.classList.add(CHECKBOX_CHECKED_CLASSNAME);
       inputSpan.innerHTML = CheckBox;
