@@ -1,0 +1,10 @@
+{
+  "identifier": "com.dylanonelson.sn-scratch-editor-dev",
+  "name": "Scratch Editor (dev)",
+  "content_type": "SN|Component",
+  "area": "editor-editor",
+  "version": "0.0.1",
+  "description": "Development environment for Scratch.",
+  "url": "http://localhost:1104"
+}
+
