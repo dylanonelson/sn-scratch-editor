@@ -141,10 +141,22 @@ const spec = {
     text: textSpec,
   },
   marks: {
-    link: marks.link,
-    em: marks.em,
-    strong: marks.strong,
-    code: marks.code,
+    link: {
+      ...marks.link,
+      inclusive: false,
+    },
+    em: {
+      ...marks.em,
+      inclusive: false,
+    },
+    strong: {
+      ...marks.strong,
+      inclusive: false,
+    },
+    code: {
+      ...marks.code,
+      inclusive: false,
+    },
   },
 };
 
