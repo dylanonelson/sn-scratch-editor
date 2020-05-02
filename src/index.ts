@@ -2,6 +2,7 @@ import 'prosemirror-view/style/prosemirror.css';
 import './index.html';
 import './styles.css';
 import './ext.json';
+import './dev-ext.json';
 import './assets/check_box-24px.svg';
 import './assets/format_list_bulleted-24px.svg';
 import './assets/format_size-24px.svg';

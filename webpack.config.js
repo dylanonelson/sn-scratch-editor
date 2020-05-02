@@ -7,6 +7,9 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     port: 1104,
+    proxy: {
+      '/ext.json': '/dev-ext.json',
+    },
   },
   module: {
     rules: [

@@ -106,7 +106,7 @@ code {
 }
 
 #toolbar-wrapper {
-  border-bottom: var(--sn-stylekit-border-color, 1px solid #ccc);
+  border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
   overflow-x: scroll;
   position: fixed;
