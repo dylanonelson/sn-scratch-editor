@@ -63,6 +63,7 @@ async function init() {
 
   client.onUpdate((doc) => {
     const plugins = view.state.plugins.filter(plugin => (plugin instanceof ToolbarPlugin) === false);
+
     view.setProps({
       state: EditorState.create({
         doc: getDocForNewEditorState(),
