@@ -1,4 +1,4 @@
-import 'prosemirror-view/style/prosemirror.css'
+import 'prosemirror-view/style/prosemirror.css';
 import './index.html';
 import './styles.css';
 import './ext.json';
@@ -11,6 +11,7 @@ import './assets/format_italic-24px.svg';
 import './assets/code-24px.svg';
 import './assets/link-24px.svg';
 import './assets/format_list_numbered-24px.svg';
+import './assets/open_in_new-24px.svg';
 
 import { v4 as uuidv4 } from 'uuid';
 import ComponentManager from 'sn-components-api';
@@ -40,17 +41,20 @@ function getDocForNewEditorState() {
 async function init() {
   await client.ready();
 
-  const view = window.view = new EditorView(
+  const view = (window.view = new EditorView(
     document.querySelector('#editor'),
     {
       state: EditorState.create({
         doc: getDocForNewEditorState(),
         plugins: [
           ...keymapPlugins,
-          new ToolbarPlugin(document.querySelector('#toolbar')),
+          new ToolbarPlugin(
+            document.querySelector('#toolbar'),
+            document.querySelector('#link-modal'),
+          ),
           new Plugin({
             props: {
-              nodeViews
+              nodeViews,
             },
           }),
           inputRulesPlugin,
@@ -63,9 +67,9 @@ async function init() {
         client.saveNote(next.doc.toJSON());
       },
     },
-  );
+  ));
 
-  client.onUpdate(doc => {
+  client.onUpdate((doc) => {
     view.setProps({
       state: EditorState.create({
         doc: getDocForNewEditorState(),

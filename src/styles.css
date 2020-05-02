@@ -1,6 +1,11 @@
+/** global */
 body {
-  font-family: 'Roboto Slab', serif;
   font-size: 15px;
+  --ff-sans: 'Roboto';
+  --ff-serif: 'Roboto Slab';
+  --ff-mono: 'Roboto Mono';
+  --color-primary: rgb(8, 109, 214);
+  font-family: var(--ff-serif), serif;
 }
 
 * {
@@ -10,6 +15,12 @@ body {
   outline: 0;
   padding: 0;
 }
+
+button {
+  cursor: pointer;
+}
+
+/** application */
 
 div.ProseMirror {
   position: relative;
@@ -68,7 +79,7 @@ li {
 }
 
 code {
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--ff-mono), monospace;
   background: #efefef;
 }
 
@@ -195,4 +206,91 @@ button[data-format=link] i {
 button[data-format=ordered_list] i {
   background: url('./assets/format_list_numbered-24px.svg');
   background-size: cover;
+}
+
+/* modal */
+div#link-modal {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.15);
+  bottom: 0;
+  display: none;
+  font-family: var(--ff-sans);
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+div#link-modal.active {
+  display: flex;
+}
+
+div#frame {
+  align-items: center;
+  background: var(--sn-stylekit-background-color, white);
+  border-radius: 2px;
+  box-shadow:
+    0 2px 2px 0 rgba(0,0,0,0.14),
+    0 3px 1px -2px rgba(0,0,0,0.12),
+    0 1px 5px 0 rgba(0,0,0,0.2);
+   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  justify-content: center;
+  padding: 25px 45px;
+  width: 350px;
+}
+
+div#link-modal input {
+  border: 1px solid #c8c8c8;
+  box-sizing: border-box;
+  padding: 5px 8px;
+  width: 100%;
+}
+
+div#link-modal button {
+  cursor: pointer;
+}
+
+div#link-modal label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+div#link-modal label a i {
+  background-image: url('./assets/open_in_new-24px.svg');
+  background-size: cover;
+  display: inline-block;
+  height: 14px;
+  position:  relative;
+  top: 2px;
+  width: 14px;
+}
+
+div#link-modal div.text-input {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+div#link-modal div.buttons {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  width: 100%;
+}
+
+div#link-modal button {
+  margin-left: 10px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+div#link-modal button#confirm {
+  color: var(--sn-stylekit-info-color, var(--color-primary));
 }
