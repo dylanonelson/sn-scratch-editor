@@ -1,13 +1,13 @@
 {
-  "identifier": "com.dylanonelson.sn-scratchpad-editor",
-  "name": "Scratchpad",
+  "identifier": "com.dylanonelson.sn-scratch-editor",
+  "name": "Scratch Editor",
   "content_type": "SN|Component",
   "area": "editor-editor",
   "version": "0.0.12",
   "description": "An editor for writing things down.",
   "url": "https://sn-scratchpad-editor.firebaseapp.com",
   "hosted_url": "https://sn-scratchpad-editor.firebaseapp.com",
-  "download_url": "https://github.com/dylanonelson/sn-prose-editor/archive/0.0.12.zip",
+  "download_url": "https://github.com/dylanonelson/sn-scratch-editor/archive/0.0.12.zip",
   "latest_url": "https://sn-scratchpad-editor.firebaseapp.com/ext.json",
-  "marketing_url": "https://dylanonelson.github.io/sn-scratchpad-editor"
+  "marketing_url": "https://dylanonelson.github.io/sn-scratch-editor"
 }

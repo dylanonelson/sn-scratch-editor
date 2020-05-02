@@ -1,24 +1,24 @@
 <main>
   <h1>
-    Scratchpad, a Standard Notes editor extension
+    Scratch, a Standard Notes editor extension
   </h1>
   <p>
-    Scratchpad is an editor extension for <a href="https://standardnotes.org/">Standard Notes</a>, a note-taking app that emphasizes privacy, security, and sustainability. If you don’t know what Standard Notes is, you are probably in the wrong place.
+    Scratch is an editor extension for <a href="https://standardnotes.org/">Standard Notes</a>, a note-taking app that emphasizes privacy, security, and sustainability. If you don’t know what Standard Notes is, you are probably in the wrong place.
   </p>
   <p>
-    Scratchpad includes most of the text editing features you would expect for taking notes, like lists, checkboxes, basic text formatting, smart copy/paste, hotkeys, and more. It uses the library <a href="https://prosemirror.net/">ProseMirror</a> to make those features possible. This page is an instance of the editor. Give it a try!
+    Scratch includes most of the text editing features you would expect for taking notes, like lists, checkboxes, basic text formatting, smart copy/paste, hotkeys, and more. It uses the library <a href="https://prosemirror.net/">ProseMirror</a> to make those features possible. This page is an instance of the editor. Give it a try!
   </p>
   <h2>
     Installation
   </h2>
   <p>
-  To use Scratchpad in Standard Notes, click Extensions in the lower left hand corner of the desktop app. Click “Import Extension” and paste in the following url: <a href="http://sn-scratchpad-editor.firebaseapp.com/ext.json">http://sn-scratchpad-editor.firebaseapp.com/ext.json</a>. You will then have access to the editor on all the Standard Notes apps and will receive updates to the extension automatically.
+  To use the Scratch editor in Standard Notes, click Extensions in the lower left hand corner of the desktop app. Click “Import Extension” and paste in the following url: <a href="http://sn-scratchpad-editor.firebaseapp.com/ext.json">http://sn-scratchpad-editor.firebaseapp.com/ext.json</a>. You will then have access to the editor on all the Standard Notes apps and will receive updates to the extension automatically.
   </p>
   <h2>
     Formatting your notes
   </h2>
   <p>
-  Scratchpad includes a number of ways to format your notes. It has <strong>bold</strong>, <em>italic</em>, and <code>monospace</code> text, and it lets you add <a href=".">links</a>. It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratchpad tries to be smart about spacing so that you don’t have to insert empty lines. In the section below, I’ve combined these formats in different ways so that you (and I) can preview what they look like.
+  Scratch includes a number of ways to format your notes. It has <strong>bold</strong>, <em>italic</em>, and <code>monospace</code> text, and it lets you add <a href=".">links</a>. It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines. In the section below, I’ve combined these formats in different ways so that you (and I) can preview what they look like.
   </p>
   <h2>
     How to use this editor
@@ -33,7 +33,7 @@
   </div>
   <div class="checklist-item">
     <input type="checkbox" />
-    <p>Install the Scratchpad extension by clicking “Import Extension” and pasting the download link: <code>https://sn-scratchpad-editor.firebaseapp.com/ext.json</code></p>
+    <p>Install the Scratch extension by clicking “Import Extension” and pasting the download link: <code>https://sn-scratchpad-editor.firebaseapp.com/ext.json</code></p>
   </div>
   <h2>
     Hotkeys
