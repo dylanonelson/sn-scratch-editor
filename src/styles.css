@@ -144,10 +144,10 @@ button[data-format]:hover {
 
 button.selected:after {
   background: #aaa;
-  bottom: 0;
+  bottom: -1px;
   content: '';
   display: block;
-  height: 2px;
+  height: 3px;
   left: 0;
   position: absolute;
   right: 0;
