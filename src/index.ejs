@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Standard Notes Scratch Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Source+Serif+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body>
+    <div id="root">
+      <div id="editor" spellcheck="false"></div>
+      <div id="toolbar-wrapper">
+        <div id="toolbar">
+          <button title="promote heading (ctrl + =)" data-format="heading">
+            <i>
+              <%= require('./assets/format_size-24px.svg') %>
+            </i>
+          </button>
+          <button title="make paragraph (ctrl + j)" data-format="paragraph">
+            <i>
+              <%= require('./assets/notes-24px.svg') %>
+            </i>
+          </button>
+          <button title="make unordered list (ctrl + u)" data-format="unordered_list">
+            <i>
+              <%= require('./assets/format_list_bulleted-24px.svg') %>
+            </i>
+          </button>
+          <button title="make ordered list (ctrl + o)" data-format="ordered_list">
+            <i>
+              <%= require('./assets/format_list_numbered-24px.svg') %>
+            </i>
+          </button>
+          <button title="make checklist item (ctrl + t)" data-format="checklist_item">
+            <i>
+              <%= require('./assets/check_box-24px.svg') %>
+            </i>
+          </button>
+          <button title="link (cmd + k)" data-format="link">
+            <i>
+              <%= require('./assets/link-24px.svg') %>
+            </i>
+          </button>
+          <button title="bold (cmd + b)" data-format="strong">
+            <i>
+              <%= require('./assets/format_bold-24px.svg') %>
+            </i>
+          </button>
+          <button title="italic (cmd + i)" data-format="em">
+            <i>
+              <%= require('./assets/format_italic-24px.svg') %>
+            </i>
+          </button>
+          <button title="monospace (cmd + ')" data-format="code">
+            <i>
+              <%= require('./assets/code-24px.svg') %>
+            </i>
+          </button>
+        </div>
+      </div>
+      <div id="link-modal">
+        <div id="frame">
+          <div class="text-input">
+            <label for="text">
+              Text
+            </label>
+            <input id="text" />
+          </div>
+          <div class="text-input">
+            <label for="url">
+              URL <a><i><%= require('./assets/open_in_new-24px.svg') %></i></a>
+            </label>
+            <input id="url" />
+          </div>
+          <div class="buttons">
+            <button id="cancel">Cancel</button>
+            <button id="confirm">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

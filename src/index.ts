@@ -1,10 +1,3 @@
-import 'prosemirror-view/style/prosemirror.css';
-import './index.html';
-import './styles.css';
-import './ext.json';
-import './dev-ext.json';
-import './svgs.ts';
-
 import { v4 as uuidv4 } from 'uuid';
 import ComponentManager from 'sn-components-api';
 import { baseKeymap } from 'prosemirror-commands';

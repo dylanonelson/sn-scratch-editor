@@ -1,4 +1,6 @@
 /** global */
+@import url("~prosemirror-view/style/prosemirror.css");
+
 body {
   --base-font-size: 16px;
   --border-color: 1px solid #ccc;
