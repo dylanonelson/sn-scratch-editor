@@ -76,6 +76,7 @@ type modalConfirmHandler = (params: { text: string; url: string }) => void;
 
 class LinkModal {
   private el: Element;
+  private frameEl: Element;
   private text: string;
   private url: string;
   private onConfirm: modalConfirmHandler;
@@ -98,11 +99,13 @@ class LinkModal {
     this.urlInput.value = this.url = url;
     this.urlOpenLink.href = url;
     this.onConfirm = onConfirm;
+    this.frameEl = el.querySelector('#frame');
 
     this.el.classList.add(this.showCls);
     this.confirmBtn.addEventListener('click', this.handleConfirm);
     this.cancelBtn.addEventListener('click', this.handleCancel);
     document.addEventListener('keydown', this.handleGlobalKeydown);
+    document.addEventListener('click', this.handleGlobalClick);
     this.urlInput.focus();
   }
 
@@ -135,6 +138,12 @@ class LinkModal {
     const isEsc = e.which === 27;
     if (e.which === 27) {
       this.handleCancel();
+    }
+  }
+
+  private handleGlobalClick = (e: MouseEvent) => {
+    if (this.frameEl.contains(e.target as HTMLElement) === false) {
+      this.destroy();
     }
   }
 
