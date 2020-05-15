@@ -332,10 +332,12 @@ export class ToolbarPlugin extends Plugin {
       url = '';
     }
 
-    const onClear = mark && (() => 
-      this.view.dispatch(
-        this.view.state.tr.step(new RemoveMarkStep(start, end, mark)),
-      ));
+    const onClear =
+      mark &&
+      (() =>
+        this.view.dispatch(
+          this.view.state.tr.step(new RemoveMarkStep(start, end, mark)),
+        ));
 
     this.modal = new LinkModal(this.modalEl, {
       onClear,

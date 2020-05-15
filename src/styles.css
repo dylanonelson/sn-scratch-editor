@@ -103,6 +103,10 @@ code {
   background: var(--sn-stylekit-contrast-background-color, #efefef);
 }
 
+a {
+  color: var(--sn-stylekit-info-color, blue);
+}
+
 .checklist-item {
   display: flex;
   align-items: baseline;
