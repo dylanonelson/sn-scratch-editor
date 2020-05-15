@@ -10,6 +10,16 @@
       <div id="editor" spellcheck="false"></div>
       <div id="toolbar-wrapper">
         <div id="toolbar">
+          <button title="undo (cmd + z)" data-format="undo">
+            <i>
+              <%= require('./assets/undo-24px.svg') %>
+            </i>
+          </button>
+          <button title="redo (ctrl + y)" data-format="redo">
+            <i>
+              <%= require('./assets/redo-24px.svg') %>
+            </i>
+          </button>
           <button title="promote heading (ctrl + =)" data-format="heading">
             <i>
               <%= require('./assets/format_size-24px.svg') %>
@@ -73,6 +83,7 @@
           </div>
           <div class="buttons">
             <button id="cancel">Cancel</button>
+            <button id="clear">Clear link</button>
             <button id="confirm">Confirm</button>
           </div>
         </div>

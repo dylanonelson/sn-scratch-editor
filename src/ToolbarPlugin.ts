@@ -14,7 +14,7 @@ import {
   ResolvedPos,
   Schema,
 } from 'prosemirror-model';
-import { findWrapping } from 'prosemirror-transform';
+import { RemoveMarkStep, findWrapping } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
 import { toggleMark } from 'prosemirror-commands';
 import { schema } from './schema';
@@ -80,15 +80,18 @@ class LinkModal {
   private text: string;
   private url: string;
   private onConfirm: modalConfirmHandler;
+  private onClear?: () => void;
   private showCls = 'active';
 
   constructor(
     el: Element,
     {
       onConfirm,
+      onClear,
       text,
       url,
     }: {
+      onClear?: () => void;
       onConfirm: modalConfirmHandler;
       text: string;
       url: string;
@@ -99,15 +102,31 @@ class LinkModal {
     this.urlInput.value = this.url = url;
     this.urlOpenLink.href = url;
     this.onConfirm = onConfirm;
+    this.onClear = onClear;
     this.frameEl = el.querySelector('#frame');
+
+    if (onClear) {
+      this.clearBtn.classList.add(this.showCls);
+    } else {
+      this.clearBtn.classList.remove(this.showCls);
+    }
 
     this.el.classList.add(this.showCls);
     this.confirmBtn.addEventListener('click', this.handleConfirm);
     this.cancelBtn.addEventListener('click', this.handleCancel);
+    this.clearBtn.addEventListener('click', this.handleClear);
     document.addEventListener('keydown', this.handleGlobalKeydown);
     document.addEventListener('click', this.handleGlobalClick);
     this.urlInput.focus();
   }
+
+  public destroy = () => {
+    this.confirmBtn.removeEventListener('click', this.handleConfirm);
+    this.cancelBtn.removeEventListener('click', this.handleCancel);
+    this.clearBtn.removeEventListener('click', this.handleClear);
+    document.removeEventListener('keydown', this.handleGlobalKeydown);
+    this.el.classList.remove(this.showCls);
+  };
 
   private handleConfirm = () => {
     this.onConfirm({
@@ -118,11 +137,9 @@ class LinkModal {
     this.destroy();
   };
 
-  public destroy = () => {
-    this.confirmBtn.removeEventListener('click', this.handleConfirm);
-    this.cancelBtn.removeEventListener('click', this.handleCancel);
-    document.removeEventListener('keydown', this.handleGlobalKeydown);
-    this.el.classList.remove(this.showCls);
+  private handleClear = () => {
+    this.onClear();
+    this.destroy();
   };
 
   private handleCancel = () => {
@@ -131,7 +148,10 @@ class LinkModal {
 
   private handleGlobalKeydown = (e: KeyboardEvent) => {
     const isEnter = e.which === 13;
-    if (document.activeElement === this.textInput || document.activeElement === this.urlInput && isEnter) {
+    if (
+      document.activeElement === this.textInput ||
+      (document.activeElement === this.urlInput && isEnter)
+    ) {
       this.handleConfirm();
       return;
     }
@@ -139,13 +159,13 @@ class LinkModal {
     if (e.which === 27) {
       this.handleCancel();
     }
-  }
+  };
 
   private handleGlobalClick = (e: MouseEvent) => {
     if (this.frameEl.contains(e.target as HTMLElement) === false) {
       this.destroy();
     }
-  }
+  };
 
   get textInput() {
     return this.el.querySelector('input#text') as HTMLInputElement;
@@ -166,11 +186,16 @@ class LinkModal {
   get cancelBtn() {
     return this.el.querySelector('button#cancel');
   }
+
+  get clearBtn() {
+    return this.el.querySelector('button#clear');
+  }
 }
 
 export class ToolbarPlugin extends Plugin {
   private view: EditorView;
   private modalEl: Element;
+  private toolbarEl: Element;
   private modal: LinkModal;
 
   private swapTextBlock = (nodeType: NodeType) => {
@@ -288,7 +313,9 @@ export class ToolbarPlugin extends Plugin {
     const mark = linkMarkAtStart;
     let end, start, text, url;
     if (mark) {
-      const textNode = $from.parent.nodeAt($from.parentOffset - $from.textOffset);
+      const textNode = $from.parent.nodeAt(
+        $from.parentOffset - $from.textOffset,
+      );
       start = $from.pos - $from.textOffset;
       end = start + textNode.nodeSize;
       text = textNode.text;
@@ -305,11 +332,19 @@ export class ToolbarPlugin extends Plugin {
       url = '';
     }
 
+    const onClear = mark && (() => 
+      this.view.dispatch(
+        this.view.state.tr.step(new RemoveMarkStep(start, end, mark)),
+      ));
+
     this.modal = new LinkModal(this.modalEl, {
+      onClear,
       onConfirm: ({ text, url }) => {
         const mark = schema.marks.link.create({ href: url });
         const textNode = schema.text(text, [mark]);
-        this.view.dispatch(this.view.state.tr.replaceSelectionWith(textNode, false));
+        this.view.dispatch(
+          this.view.state.tr.replaceSelectionWith(textNode, false),
+        );
       },
       text,
       url,
@@ -328,36 +363,19 @@ export class ToolbarPlugin extends Plugin {
       view: (viewInstance) => {
         this.view = viewInstance;
         this.modalEl = modalEl;
+        this.toolbarEl = toolbarEl;
 
         toolbarEl.addEventListener('click', this.handleToolbarClick);
 
         return {
           destroy: () => {
             toolbarEl.removeEventListener('click', this.handleToolbarClick);
+            this.unhighlightSelectedAttrs();
             this.modal?.destroy();
           },
           update: (view, previousState) => {
-            const previouslySelectedAttrs = this.getSelectedFormatAttrs(
-              previousState,
-            );
-            if (previouslySelectedAttrs) {
-              previouslySelectedAttrs.forEach((attr) => {
-                const btn = toolbarEl.querySelector(`[data-format=${attr}]`);
-                if (btn) {
-                  btn.classList.remove('selected');
-                }
-              });
-            }
-
-            const selectedAttrs = this.getSelectedFormatAttrs(view.state);
-            if (selectedAttrs) {
-              selectedAttrs.forEach((attr) => {
-                const btn = toolbarEl.querySelector(`[data-format=${attr}]`);
-                if (btn) {
-                  btn.classList.add('selected');
-                }
-              });
-            }
+            this.unhighlightSelectedAttrs();
+            this.highlightSelectedAttrs(view.state);
           },
         };
       },
@@ -454,6 +472,25 @@ export class ToolbarPlugin extends Plugin {
       },
     });
   }
+
+  unhighlightSelectedAttrs = () => {
+    const selectedBtns = this.toolbarEl.querySelectorAll('.selected');
+    selectedBtns.forEach((btn) => {
+      btn.classList.remove('selected');
+    });
+  };
+
+  highlightSelectedAttrs = (state: EditorState) => {
+    const selectedAttrs = this.getSelectedFormatAttrs(state);
+    if (selectedAttrs) {
+      selectedAttrs.forEach((attr) => {
+        const btn = this.toolbarEl.querySelector(`[data-format=${attr}]`);
+        if (btn) {
+          btn.classList.add('selected');
+        }
+      });
+    }
+  };
 
   getSelectedFormatAndMarks = (state: EditorState) => {
     if (!state.selection) {
@@ -564,6 +601,14 @@ export class ToolbarPlugin extends Plugin {
 
   applyFormat = (dataFormatStr: string) => {
     switch (dataFormatStr) {
+      case 'undo': {
+        undo(this.view.state, this.view.dispatch);
+        break;
+      }
+      case 'redo': {
+        redo(this.view.state, this.view.dispatch);
+        break;
+      }
       case 'paragraph': {
         this.swapTextBlock(schema.nodes.paragraph);
         break;
