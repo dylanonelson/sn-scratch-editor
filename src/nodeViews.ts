@@ -9,24 +9,24 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     const div = document.createElement('div');
     div.classList.add('checklist-item');
 
-    const inputSpan = document.createElement('span');
-    inputSpan.classList.add('checkbox');
+    const inputDiv = document.createElement('div');
+    inputDiv.classList.add('checkbox');
     if (node.attrs.checked) {
-      inputSpan.classList.add(CHECKBOX_CHECKED_CLASSNAME);
-      inputSpan.innerHTML = CheckBox;
+      inputDiv.classList.add(CHECKBOX_CHECKED_CLASSNAME);
+      inputDiv.innerHTML = CheckBox;
     } else {
-      inputSpan.innerHTML = CheckBoxOutline;
+      inputDiv.innerHTML = CheckBoxOutline;
     }
-    inputSpan.contentEditable = 'false';
+    inputDiv.contentEditable = 'false';
 
     const p = document.createElement('p');
 
-    div.appendChild(inputSpan);
+    div.appendChild(inputDiv);
     div.appendChild(p);
 
     const focusHandler = (event: MouseEvent) => {
       const { relatedTarget, target } = event;
-      if (relatedTarget !== inputSpan) {
+      if (relatedTarget !== inputDiv) {
         // Input is taking focus
         return;
       }
@@ -39,10 +39,10 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     };
 
     const clickHandler = (event: MouseEvent) => {
-      if (inputSpan.contains(event.target as Node) === false) {
+      if (inputDiv.contains(event.target as Node) === false) {
         return;
       }
-      const checked = inputSpan.classList.contains(CHECKBOX_CHECKED_CLASSNAME);
+      const checked = inputDiv.classList.contains(CHECKBOX_CHECKED_CLASSNAME);
       const { tr } = view.state;
       const pos = (getPos as () => number)();
       tr.setNodeMarkup(pos, undefined, { checked: !checked })
