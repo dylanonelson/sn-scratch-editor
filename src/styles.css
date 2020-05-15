@@ -110,6 +110,7 @@ a {
 
 .checklist-item {
   margin-bottom: var(--default-checkbox-gap);
+  padding-left: 32px;
   position: relative;
 }
 
@@ -130,7 +131,6 @@ a {
 
 .checklist-item p {
   position: relative;
-  left: 32px;
   top: 2px;
 }
 

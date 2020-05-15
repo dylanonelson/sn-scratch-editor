@@ -12,7 +12,7 @@
     Installation
   </h2>
   <p>
-    To use the Scratch editor in Standard Notes, click Extensions in the lower left hand corner of the desktop app. Click “Import Extension” and paste in the following url: <a href="http://sn-scratchpad-editor.firebaseapp.com/ext.json">http://sn-scratchpad-editor.firebaseapp.com/ext.json</a>. You will then have access to the editor on all the Standard Notes apps and will receive updates to the extension automatically.
+    To use the Scratch editor in Standard Notes, click Extensions in the lower left hand corner of the desktop app. Click “Import Extension” and paste in the following url: <a href="https://scratch-editor.com/ext.json">https://scratch-editor.com/ext.json</a>. You will then have access to the editor on all the Standard Notes apps and will receive updates to the extension automatically.
   </p>
   <h2>
     Formatting your notes
@@ -33,11 +33,7 @@
   </div>
   <div class="checklist-item">
     <input type="checkbox" />
-    <p>Install the Scratch extension by clicking “Import Extension” and pasting the download link: <code>https://sn-scratchpad-editor.firebaseapp.com/ext.json</code></p>
-  </div>
-  <div class="checklist-item">
-    <input type="checkbox" />
-    <p>Install the Scratch extension by clicking “Import Extension” and pasting the download link: <code>https://sn-scratchpad-editor.firebaseapp.com/ext.json</code></p>
+    <p>Install the Scratch extension by clicking “Import Extension” and pasting the download link: <code>https://scratch-editor.com/ext.json</code></p>
   </div>
   <h2>
     Hotkeys
