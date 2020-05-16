@@ -49,7 +49,10 @@ async function init() {
       dispatchTransaction(tr) {
         const next = view.state.apply(tr);
         view.updateState(next);
-        client.saveNote(next.doc.toJSON());
+        client.saveNote(
+          next.doc.toJSON(),
+          next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
+        );
       },
     },
   ));
