@@ -600,6 +600,7 @@ export class ToolbarPlugin extends Plugin {
     const target = e.target as HTMLElement;
     const button = target.closest(`[${APPLY_FORMAT_ATTR}]`);
     if (button) {
+      e.stopPropagation();
       this.applyFormat(button.getAttribute(APPLY_FORMAT_ATTR));
     }
   };

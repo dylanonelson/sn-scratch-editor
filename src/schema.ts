@@ -148,7 +148,6 @@ const spec = {
   marks: {
     link: {
       ...marks.link,
-      inclusive: false,
     },
     em: {
       ...marks.em,
