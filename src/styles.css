@@ -146,6 +146,7 @@ a {
 }
 
 #toolbar-wrapper {
+  background-color: var(--sn-stylekit-background-color, white);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
   overflow-x: scroll;
@@ -155,7 +156,6 @@ a {
 }
 
 #toolbar {
-  background-color: var(--sn-stylekit-background-color, white);
   white-space: nowrap;
 }
 
