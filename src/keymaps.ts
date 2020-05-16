@@ -26,7 +26,6 @@ export const keymapPlugins: Plugin[] = [
       }
       tr.split(from, undefined, [{
         type: schema.nodes.checklist_item,
-        attrs: { checked: false }
       }]);
       dispatch(tr);
       return true;

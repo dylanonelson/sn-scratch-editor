@@ -1,6 +1,6 @@
-import { schema } from './schema';
+import { CheckboxStatus, schema } from './schema';
 import { EditorProps } from 'prosemirror-view';
-import { CheckBoxOutline, CheckBox } from './assets';
+import { CheckboxOutline, Checkbox } from './assets';
 
 const CHECKBOX_CHECKED_CLASSNAME = 'is-checked';
 const CLICK_TARGET_CLASSNAME = 'click-target';
@@ -12,11 +12,11 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
 
     const inputDiv = document.createElement('div');
     inputDiv.classList.add('checkbox');
-    if (node.attrs.checked) {
+    if (node.attrs.status === CheckboxStatus.DONE) {
       inputDiv.classList.add(CHECKBOX_CHECKED_CLASSNAME);
-      inputDiv.innerHTML = CheckBox;
+      inputDiv.innerHTML = Checkbox;
     } else {
-      inputDiv.innerHTML = CheckBoxOutline;
+      inputDiv.innerHTML = CheckboxOutline;
     }
     inputDiv.contentEditable = 'false';
 
@@ -50,7 +50,9 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
       const checked = inputDiv.classList.contains(CHECKBOX_CHECKED_CLASSNAME);
       const { tr } = view.state;
       const pos = (getPos as () => number)();
-      tr.setNodeMarkup(pos, undefined, { checked: !checked })
+      tr.setNodeMarkup(pos, undefined, {
+        status: checked ? CheckboxStatus.EMPTY : CheckboxStatus.DONE,
+      });
       view.dispatch(tr);
     };
 

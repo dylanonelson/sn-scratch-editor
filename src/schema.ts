@@ -72,10 +72,15 @@ const paragraphSpec: NodeSpec = {
   parseDOM: [{ tag: 'p' }],
 };
 
+export enum CheckboxStatus {
+  DONE,
+  EMPTY,
+};
+
 const checklistItemSpec: NodeSpec = {
   attrs: {
-    checked: {
-      default: false,
+    status: {
+      default: CheckboxStatus.EMPTY,
     },
   },
   content: 'inline*',
@@ -90,7 +95,7 @@ const checklistItemSpec: NodeSpec = {
         'input',
         {
           type: 'checkbox',
-          ...(node.attrs.checked && { checked: 'true' }),
+          ...(node.attrs.status === CheckboxStatus.DONE && { checked: 'true' }),
         },
       ],
       [
@@ -106,7 +111,7 @@ const checklistItemSpec: NodeSpec = {
       // Will be type Node when parseDOM supplies a 'tag' rule
       const input = (node as HTMLElement).querySelector('input');
       return {
-        checked: !!(input as HTMLInputElement).checked,
+        status: !!(input as HTMLInputElement).checked ? CheckboxStatus.DONE : CheckboxStatus.EMPTY,
       };
     },
   }],

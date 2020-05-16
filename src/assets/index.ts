@@ -1,11 +1,2 @@
-export { default as CheckBox } from './check_box-24px.svg';
-export { default as CheckBoxOutline } from './check_box_outline_blank-24px.svg';
-export { default as Code } from'./code-24px.svg';
-export { default as FormatBold } from './format_bold-24px.svg';
-export { default as FormatItalic } from './format_italic-24px.svg';
-export { default as FormatListBulleted } from './format_list_bulleted-24px.svg';
-export { default as FormatListNumbered } from './format_list_numbered-24px.svg';
-export { default as FormatSize } from './format_size-24px.svg';
-export { default as Link } from './link-24px.svg';
-export { default as Notes } from './notes-24px.svg';
-export { default as OpenInNew } from './open_in_new-24px.svg';
+export { default as Checkbox } from './check_box-24px.svg';
+export { default as CheckboxOutline } from './check_box_outline_blank-24px.svg';

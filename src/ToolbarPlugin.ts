@@ -24,6 +24,7 @@ import {
   setBlockType,
   wrapIn,
 } from 'prosemirror-commands';
+import { CheckboxStatus } from './schema';
 
 const APPLY_FORMAT_ATTR = 'data-format';
 
@@ -46,7 +47,7 @@ const toggleChecklistItemState: Command = function (
     if (child.type !== schema.nodes.checklist_item) {
       return false;
     }
-    if (child.attrs.checked) {
+    if (child.attrs.status === CheckboxStatus.DONE) {
       hasChecked = true;
       break;
     }
@@ -64,7 +65,9 @@ const toggleChecklistItemState: Command = function (
     index < blockRange.endIndex;
     index += 1
   ) {
-    tr.setNodeMarkup(pos, undefined, { checked: hasChecked ? false : true });
+    tr.setNodeMarkup(pos, undefined, {
+      status: hasChecked ? CheckboxStatus.EMPTY : CheckboxStatus.DONE,
+    });
     pos += child.nodeSize;
   }
 
