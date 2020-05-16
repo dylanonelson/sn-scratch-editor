@@ -95,7 +95,7 @@ class Client {
     return this._ready;
   }
 
-  saveNote(jsonDoc: {}, textPreview: string) {
+  saveNote(jsonDoc: {}, text: string, textPreview: string) {
     const toSave = {
       ...this._item,
       content: {
@@ -104,6 +104,7 @@ class Client {
           doc: jsonDoc,
           lastSavedBy: this._id,
         },
+        text,
         preview_plain: textPreview,
       },
     };

@@ -10,6 +10,8 @@ import { schema } from './schema';
 import { client } from './client';
 import { nodeViews } from './nodeViews';
 import { keymapPlugins } from './keymaps';
+import { markdownSerializer } from './markdown';
+
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -51,6 +53,7 @@ async function init() {
         view.updateState(next);
         client.saveNote(
           next.doc.toJSON(),
+          markdownSerializer.serialize(next.doc),
           next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
         );
       },

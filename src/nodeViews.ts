@@ -18,15 +18,15 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     } else {
       inputDiv.innerHTML = CheckboxOutline;
     }
-    inputDiv.contentEditable = 'false';
 
     const clickTargetDiv = document.createElement('div');
     clickTargetDiv.classList.add(CLICK_TARGET_CLASSNAME);
+    clickTargetDiv.contentEditable = 'false';
 
     const p = document.createElement('p');
 
+    clickTargetDiv.appendChild(inputDiv);
     div.appendChild(clickTargetDiv);
-    div.appendChild(inputDiv);
     div.appendChild(p);
 
     const focusHandler = (event: MouseEvent) => {

@@ -112,6 +112,7 @@ a {
   align-items: flex-start;
   display: flex;
   margin-bottom: var(--default-checkbox-gap);
+  padding-left: 30px;
   position: relative;
 }
 
@@ -123,6 +124,7 @@ a {
   cursor: pointer;
   display: block;
   height: 32px;
+  left: 0;
   position: absolute;
   top: -4px;
   width: 32px;
@@ -135,6 +137,8 @@ a {
   margin-right: 6px;
   min-width: 24px;
   padding: 2px;
+  position: absolute;
+  top: 4px;
 }
 
 .checklist-item p {
