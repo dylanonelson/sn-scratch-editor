@@ -109,8 +109,9 @@ a {
 }
 
 .checklist-item {
+  align-items: flex-start;
+  display: flex;
   margin-bottom: var(--default-checkbox-gap);
-  padding-left: 32px;
   position: relative;
 }
 
@@ -118,20 +119,26 @@ a {
   margin-top: var(--default-gap);
 }
 
+.checklist-item .click-target {
+  cursor: pointer;
+  display: block;
+  height: 32px;
+  position: absolute;
+  top: -4px;
+  width: 32px;
+}
+
 .checklist-item div.checkbox {
   box-sizing: border-box;
-  cursor: pointer;
   height: 24px;
   left: 0;
-  min-width: 32px;
-  padding: 2px 10px 2px 0px;
-  position: absolute;
-  top: 0px;
+  margin-right: 6px;
+  min-width: 24px;
+  padding: 2px;
 }
 
 .checklist-item p {
-  position: relative;
-  top: 2px;
+  line-height: 24px;
 }
 
 #toolbar-wrapper {

@@ -3,6 +3,7 @@ import { EditorProps } from 'prosemirror-view';
 import { CheckBoxOutline, CheckBox } from './assets';
 
 const CHECKBOX_CHECKED_CLASSNAME = 'is-checked';
+const CLICK_TARGET_CLASSNAME = 'click-target';
 
 export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
   checklist_item(node, view, getPos) {
@@ -19,8 +20,12 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     }
     inputDiv.contentEditable = 'false';
 
+    const clickTargetDiv = document.createElement('div');
+    clickTargetDiv.classList.add(CLICK_TARGET_CLASSNAME);
+
     const p = document.createElement('p');
 
+    div.appendChild(clickTargetDiv);
     div.appendChild(inputDiv);
     div.appendChild(p);
 
@@ -39,7 +44,7 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     };
 
     const clickHandler = (event: MouseEvent) => {
-      if (inputDiv.contains(event.target as Node) === false) {
+      if (clickTargetDiv.contains(event.target as Node) === false) {
         return;
       }
       const checked = inputDiv.classList.contains(CHECKBOX_CHECKED_CLASSNAME);
