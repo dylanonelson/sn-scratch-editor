@@ -8,14 +8,16 @@ const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-module.exports = ({ production } = {}) => {
+module.exports = ({ analyzer, production } = {}) => {
+  console.log('analyzer', analyzer);
   return {
     entry: [
       './src/index.ts',
       './src/styles.css',
     ],
-    devtool: 'inline-source-map',
     devServer: { port: 1104 },
+    devtool: 'inline-source-map',
+    mode: production ? 'production' : 'development',
     module: {
       rules: [
         {
@@ -53,15 +55,15 @@ module.exports = ({ production } = {}) => {
       ],
     },
     plugins: [
-      // Clean out dist before each build
-      new CleanWebpackPlugin(),
-      // Automatically import and compile src/index.ejs into dist and inject
+      // Clean out dist before each release build
+      ...(production ? [new CleanWebpackPlugin()] : []),
+      // Import and compile src/index.ejs into dist and inject
       // links to css & js build output
       new HtmlWebpackPlugin({
         minify: true,
         scriptLoading: 'defer',
       }),
-      // Automatically copy json files into dist
+      // Copy json files into dist
       new CopyWebpackPlugin([{
         flatten: true,
         from: 'src/*.json',
@@ -70,7 +72,7 @@ module.exports = ({ production } = {}) => {
       new MiniCssExtractPlugin({
         filename: '[name].css',
       }),
-      ...(process.env.ANALYZE === 'true' ? [new BundleAnalyzerPlugin()] : []),
+      ...(analyzer ? [new BundleAnalyzerPlugin()] : []),
     ],
     resolve: {
       extensions: ['.ts', '.js'],
