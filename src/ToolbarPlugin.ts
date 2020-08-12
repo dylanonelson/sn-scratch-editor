@@ -619,6 +619,10 @@ export class ToolbarPlugin extends Plugin {
         this.swapTextBlock(schema.nodes.paragraph);
         break;
       }
+      case 'code_block': {
+        this.swapTextBlock(schema.nodes.code_block);
+        break;
+      }
       case 'heading': {
         this.promoteHeading(this.view.state, this.view.dispatch);
         break;

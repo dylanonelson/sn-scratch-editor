@@ -1,5 +1,5 @@
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
-import { marks } from 'prosemirror-schema-basic';
+import { marks, nodes } from 'prosemirror-schema-basic';
 import OrderedMap from 'orderedmap';
 
 import {
@@ -121,6 +121,10 @@ const textSpec: NodeSpec = {
   group: 'inline',
 };
 
+const codeBlockSpec: NodeSpec = {
+  ...nodes.code_block,
+};
+
 const spec = {
   nodes: {
     doc: docSpec,
@@ -144,6 +148,7 @@ const spec = {
     heading1: heading1Spec,
     heading2: heading2Spec,
     text: textSpec,
+    code_block: codeBlockSpec,
   },
   marks: {
     link: {

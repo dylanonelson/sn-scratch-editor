@@ -45,10 +45,6 @@ em {
   font-style: italic;
 }
 
-code {
-  font-style: monospace;
-}
-
 /** application */
 
 div.ProseMirror {
@@ -106,6 +102,13 @@ code {
 
 a {
   color: var(--sn-stylekit-info-color, blue);
+}
+
+pre {
+  background: var(--sn-stylekit-contrast-background-color, #efefef);
+  font-family: var(--ff-mono), monospace;
+  margin-bottom: var(--default-gap);
+  padding: 4px;
 }
 
 .checklist-item {
@@ -178,6 +181,7 @@ button[data-format] {
   background-color: var(--sn-stylekit-background-color, white);
   cursor: pointer;
   height: 40px;
+  margin-left: 10px;
   padding: 10px 20px;
   position: relative;
   width: 65px;
@@ -196,8 +200,16 @@ button[data-format=heading]:before {
   width: 1px;
 }
 
-button[data-format] {
-  margin-left: 10px;
+button[data-format=code_block]:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 10px;
+  bottom: 5px;
+  left: 20px;
+  right: 20px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
 }
 
 button[data-format] i {

@@ -34,6 +34,9 @@ export const markdownSerializer = new MarkdownSerializer(
     text(state, node) {
       defaultMarkdownSerializer.nodes.text(state, node);
     },
+    code_block(state, node) {
+      defaultMarkdownSerializer.nodes.code_block(state, node);
+    },
   },
   {
     ...defaultMarkdownSerializer.marks,
