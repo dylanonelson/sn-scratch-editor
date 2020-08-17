@@ -58,100 +58,108 @@ export const markdownSerializer = new MarkdownSerializer(
 const markdownItParser = markdownit();
 markdownItParser.use(markdownItTaskLists);
 
-class ContainerStack {
+class ScratchTokenParser {
   private fullTokenList: Token[];
   private tokenStack: Token[];
   private parseable: boolean;
   private src: string;
 
-  static CONTAINER_TYPES = [
-    'bullet_list',
-    'ordered_list',
-    'blockquote',
-    'table',
-  ];
+  static DOCUMENT_MAP = new Map([
+    ['heading1', ['inline']],
+    ['heading2', ['inline']],
+    ['paragraph', ['inline']],
+    ['fence', ['inline']],
+    ['bullet_list', ['list_item', 'inline']],
+    ['ordered_list', ['list_item', 'inline']],
+    ['list_item', ['paragraph', 'inline']],
+    ['inline', []],
+  ]);
+
+  static getTypeName(tokenType: string) {
+    return tokenType.replace('_open', '').replace('_close', '');
+  }
 
   constructor(src: string) {
-    this.fullTokenList = [];
-    this.tokenStack = [];
-    this.parseable = true;
+    this.resetInternalState();
     this.src = src;
   }
 
   take(token: Token): null | Token[] {
-    const { nesting, type } = token;
+    const { nesting } = token;
+    let { type } = token;
+    type = ScratchTokenParser.getTypeName(type);
 
-    // Either we are inside a container node already or we are entering one
-    const shouldProcessToken = Boolean(
-      ContainerStack.CONTAINER_TYPES.some((typeName) =>
-        type.startsWith(typeName),
-      ) || this.tokenStack.length,
-    );
+    this.fullTokenList.push(token);
 
-    if (shouldProcessToken) {
-      this.fullTokenList.push(token);
+    if (
+      ScratchTokenParser.DOCUMENT_MAP.has(type) === false &&
+      type !== 'inline'
+    ) {
+      this.parseable = false;
     }
 
-    if (shouldProcessToken && nesting > 0) {
-      const currentStackHeight = this.tokenStack.length;
+    if (this.parseable && this.tokenStack.length && nesting >= 0) {
+      const parentType = ScratchTokenParser.getTypeName(
+        this.tokenStack[this.tokenStack.length - 1].type,
+      );
 
       if (
-        currentStackHeight > 2 ||
-        (currentStackHeight === 1 && type.startsWith('list_item') === false) ||
-        (currentStackHeight === 2 && type.startsWith('paragraph') === false)
+        ScratchTokenParser.DOCUMENT_MAP.get(parentType).includes(type) === false
       ) {
         this.parseable = false;
       }
+    }
 
+    if (nesting > 0) {
       this.tokenStack.push(token);
-      return;
     }
 
-    if (shouldProcessToken && nesting < 0) {
+    if (nesting < 0) {
       this.tokenStack.pop();
-
-      if (this.tokenStack.length === 0) {
-        const { fullTokenList, parseable } = this;
-
-        this.fullTokenList = [];
-        this.tokenStack = [];
-        this.parseable = true;
-
-        if (parseable === false) {
-          const {
-            map: [endLine, startLine],
-          } = fullTokenList[0];
-          const codeToken = new Token('fence', 'code', 0);
-          codeToken.content = this.src
-            .split('\n')
-            .slice(endLine, startLine)
-            .join('\n');
-          codeToken.attrPush(['markdown_escape', 'true']);
-          return [codeToken];
-        }
-
-        return fullTokenList;
-      }
     }
 
-    if (shouldProcessToken === false) {
-      return [token];
+    if (this.tokenStack.length === 0) {
+      const out = this.getTokens();
+      this.resetInternalState();
+      return out;
     }
 
     return null;
   }
+
+  private getTokens = () => {
+    const { fullTokenList, parseable } = this;
+
+    if (parseable === false) {
+      const {
+        map: [endLine, startLine],
+      } = fullTokenList[0];
+      const codeToken = new Token('fence', 'code', 0);
+      codeToken.content = this.src
+        .split('\n')
+        .slice(endLine, startLine)
+        .join('\n');
+      codeToken.attrPush(['markdown_escape', 'true']);
+      return [codeToken];
+    }
+
+    return fullTokenList;
+  };
+
+  private resetInternalState = () => {
+    this.fullTokenList = [];
+    this.tokenStack = [];
+    this.parseable = true;
+  };
 }
 
 const parserShim = () => ({
   parse(...args) {
-    console.log(markdownItParser);
     (window as any).mip = markdownItParser;
     // @ts-ignore
     const initial = markdownItParser.parse(...args);
     const out = [];
-    const containerStack = new ContainerStack(args[0]);
-
-    console.log('initial', initial);
+    const tokenParser = new ScratchTokenParser(args[0]);
 
     for (let i = 0; i < initial.length; i++) {
       const token = initial[i];
@@ -164,10 +172,10 @@ const parserShim = () => ({
         token.type = type.replace('heading', 'heading2');
       }
 
-      const stackOutput = containerStack.take(token);
+      const output = tokenParser.take(token);
 
-      if (stackOutput) {
-        out.push(...stackOutput);
+      if (output) {
+        out.push(...output);
       }
     }
 

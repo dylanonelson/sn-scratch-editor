@@ -1,10 +1,11 @@
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { marks, nodes } from 'prosemirror-schema-basic';
 import OrderedMap from 'orderedmap';
-
 import {
   DOMOutputSpecArray,
+  Node,
   NodeSpec,
+  NodeType,
   Schema,
 } from 'prosemirror-model';
 
