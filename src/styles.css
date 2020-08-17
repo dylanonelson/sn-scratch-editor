@@ -109,6 +109,39 @@ pre {
   font-family: var(--ff-mono), monospace;
   margin-bottom: var(--default-gap);
   padding: 4px;
+  position: relative;
+}
+
+pre[data-markdown_escaped="true"] div.info {
+  border-radius: 50%;
+  border: 1px solid var(--sn-stylekit-info-color, white);
+  color: var(--sn-stylekit-info-color, white);
+  cursor: pointer;
+  display: block;
+  height: 20px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 20px;
+  text-align: center;
+  line-height: 20px;
+}
+
+pre[data-markdown_escaped="true"] div.info:hover:after {
+  border-radius: 2px;
+  border: 1px solid var(--sn-stylekit-info-color, #efefef);
+  content: 'This block of code was edited in another editor and contains markdown formatting that Scratch doesn\'t support yet. It will be serialized into markdown not as a code block but as a normal piece of markdown text.';
+  font-size: 12px;
+  padding: 5px;
+  position: absolute;
+  right: 0;
+  text-align: left;
+  top: 24px;
+  width: 250px;
+}
+
+pre code {
+  background: transparent;
 }
 
 .checklist-item {

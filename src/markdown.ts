@@ -41,7 +41,7 @@ export const markdownSerializer = new MarkdownSerializer(
       defaultMarkdownSerializer.nodes.text(state, node);
     },
     code_block(state, node) {
-      if (node.attrs.markdown_escape) {
+      if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
         state.write(node.textContent);
         state.ensureNewLine();
       } else {
@@ -61,6 +61,8 @@ const CHECKLIST_ITEM_OPEN_MARKERS = [
   '[X]',
   '[ ]',
 ];
+
+export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
 
 markdownItParser.use((md) => {
   md.core.ruler.after('block', 'checklist_item', (coreState) => {
@@ -175,7 +177,7 @@ class ScratchTokenParser {
         .split('\n')
         .slice(endLine, startLine)
         .join('\n');
-      codeToken.attrPush(['markdown_escape', 'true']);
+      codeToken.attrPush([MARKDOWN_ESCAPED_ATTR, 'true']);
       return [codeToken];
     }
 
@@ -229,8 +231,8 @@ export const markdownParser = new MarkdownParser(
     fence: {
       block: 'code_block',
       getAttrs(token) {
-        return token.attrGet('markdown_escape') === 'true'
-          ? { markdown_escape: true }
+        return token.attrGet(MARKDOWN_ESCAPED_ATTR) === 'true'
+          ? { [MARKDOWN_ESCAPED_ATTR]: true }
           : {};
       },
     },
