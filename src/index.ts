@@ -21,7 +21,7 @@ declare const window: AppWindow;
 
 function getDocForNewEditorState() {
   try {
-    console.log(markdownParser.parse(client.latestText))
+    console.log('parsed md:', markdownParser.parse(client.latestText))
   } catch (e) {
     console.error(e);
   }

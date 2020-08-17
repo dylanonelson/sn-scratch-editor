@@ -1,6 +1,5 @@
 import markdownit from 'markdown-it';
 import Token from 'markdown-it/lib/token';
-import markdownItTaskLists from 'markdown-it-task-lists';
 import {
   MarkdownParser,
   MarkdownSerializer,
@@ -21,8 +20,8 @@ export const markdownSerializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
     checklist_item(state, node) {
-      const boxText = node.attrs.status === CheckboxStatus.DONE ? '[x]' : '[ ]';
-      state.write(`- ${boxText} `);
+      const boxText = node.attrs.status === CheckboxStatus.DONE ? '[x] ' : '[ ] ';
+      state.write(boxText);
       state.renderInline(node);
       state.closeBlock(node);
     },
@@ -56,7 +55,43 @@ export const markdownSerializer = new MarkdownSerializer(
 );
 
 const markdownItParser = markdownit();
-markdownItParser.use(markdownItTaskLists);
+
+const CHECKLIST_ITEM_OPEN_MARKERS = [
+  '[x]',
+  '[X]',
+  '[ ]',
+];
+
+markdownItParser.use((md) => {
+  md.core.ruler.after('block', 'checklist_item', (coreState) => {
+    const srcLines = coreState.src.split('\n');
+    let isChecklistOpen = false;
+    let hasChecklist = false;
+
+    coreState.tokens = coreState.tokens.map((token) => {
+      if (isChecklistOpen && token.type === 'inline') {
+        token.content = token.content.slice(3).trimLeft();
+      }
+      if (token.type === 'paragraph_open') {
+        const [startLine, endLine] = token.map;
+        const content = srcLines[startLine];
+        if (CHECKLIST_ITEM_OPEN_MARKERS.includes(content.slice(0, 3))) {
+          hasChecklist = true;
+          isChecklistOpen = true;
+          const {Token} = coreState;
+          return new Token('checklist_item_open', 'div', 1);
+        }
+      } else if (token.type === 'paragraph_close') {
+        isChecklistOpen = false;
+        return new Token('checklist_item_close', 'div', -1);
+      }
+
+      return token;
+    });
+
+    return hasChecklist;
+  });
+});
 
 class ScratchTokenParser {
   private fullTokenList: Token[];
@@ -72,6 +107,7 @@ class ScratchTokenParser {
     ['bullet_list', ['list_item', 'inline']],
     ['ordered_list', ['list_item', 'inline']],
     ['list_item', ['paragraph', 'inline']],
+    ['checklist_item', ['inline']],
     ['inline', []],
   ]);
 
@@ -203,5 +239,6 @@ export const markdownParser = new MarkdownParser(
     list_item: { block: 'list_item' },
     ordered_list: { block: 'ordered_list' },
     paragraph: { block: 'paragraph' },
+    checklist_item: { block: 'checklist_item' },
   },
 );
