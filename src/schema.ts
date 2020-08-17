@@ -123,6 +123,12 @@ const textSpec: NodeSpec = {
 
 const codeBlockSpec: NodeSpec = {
   ...nodes.code_block,
+  attrs: {
+    ...nodes.code_block.attrs,
+    markdown_escape: {
+      default: false,
+    }
+  },
 };
 
 const spec = {

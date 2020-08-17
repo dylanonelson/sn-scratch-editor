@@ -4,9 +4,10 @@ type ExtensionPermission = {
 
 interface Item {
   content: {
-    preview_plain: string,
-    preview_html: string,
-    title: string,
+    preview_plain: string;
+    preview_html: string;
+    title: string;
+    text: string;
   },
   uuid: string,
 }
