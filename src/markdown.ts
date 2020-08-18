@@ -20,7 +20,8 @@ export const markdownSerializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
     checklist_item(state, node) {
-      const boxText = node.attrs.status === CheckboxStatus.DONE ? '[x] ' : '[ ] ';
+      const boxText =
+        node.attrs.status === CheckboxStatus.DONE ? '[x] ' : '[ ] ';
       state.write(boxText);
       state.renderInline(node);
       state.closeBlock(node);
@@ -56,11 +57,7 @@ export const markdownSerializer = new MarkdownSerializer(
 
 const markdownItParser = markdownit();
 
-const CHECKLIST_ITEM_OPEN_MARKERS = [
-  '[x]',
-  '[X]',
-  '[ ]',
-];
+const CHECKLIST_ITEM_OPEN_MARKERS = ['[x]', '[X]', '[ ]'];
 
 export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
 
@@ -80,7 +77,7 @@ markdownItParser.use((md) => {
         if (CHECKLIST_ITEM_OPEN_MARKERS.includes(content.slice(0, 3))) {
           hasChecklist = true;
           isChecklistOpen = true;
-          const {Token} = coreState;
+          const { Token } = coreState;
           return new Token('checklist_item_open', 'div', 1);
         }
       } else if (token.type === 'paragraph_close') {
@@ -242,5 +239,15 @@ export const markdownParser = new MarkdownParser(
     ordered_list: { block: 'ordered_list' },
     paragraph: { block: 'paragraph' },
     checklist_item: { block: 'checklist_item' },
+    em: { mark: 'em' },
+    strong: { mark: 'strong' },
+    code_inline: { mark: 'code', noCloseToken: true },
+    link: {
+      mark: 'link',
+      getAttrs: (tok) => ({
+        href: tok.attrGet('href'),
+        title: tok.attrGet('title') || null,
+      }),
+    },
   },
 );

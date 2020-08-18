@@ -9,7 +9,8 @@
     "build:docs": "webpack --config=docs-webpack.config.js",
     "deploy": "npm run build && firebase deploy",
     "dev:dist": "webpack-dev-server",
-    "dev:docs": "webpack-dev-server --config=docs-webpack.config.js -d"
+    "dev:docs": "webpack-dev-server --config=docs-webpack.config.js -d",
+    "test": "jest"
   },
   "keywords": [
     "Standard Notes",
@@ -18,6 +19,10 @@
   "author": "Dylan Nelson",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/jest": "^26.0.10",
     "@types/orderedmap": "^1.0.0",
     "@types/prosemirror-commands": "^1.0.1",
     "@types/prosemirror-history": "^1.0.1",
@@ -29,12 +34,14 @@
     "@types/prosemirror-schema-list": "^1.0.1",
     "@types/prosemirror-state": "^1.2.3",
     "@types/uuid": "^7.0.0",
+    "babel-jest": "^26.3.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.5.3",
     "extract-loader": "^5.0.1",
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
+    "jest": "^26.4.0",
     "mini-css-extract-plugin": "^0.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "prettier": "^2.0.2",
