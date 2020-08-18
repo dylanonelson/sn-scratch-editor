@@ -140,23 +140,11 @@ const spec = {
       ...bulletList,
       content: 'list_item+',
       group: 'block',
-      attrs: {
-        ...bulletList.attrs,
-        tight: {
-          default: true,
-        },
-      }
     },
     ordered_list: {
       ...orderedList,
       content: 'list_item+',
       group: 'block',
-      attrs: {
-        ...orderedList.attrs,
-        tight: {
-          default: true,
-        }
-      },
     },
     list_item: {
       ...listItem,
