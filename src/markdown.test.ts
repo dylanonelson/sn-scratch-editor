@@ -112,6 +112,20 @@ describe('parser', () => {
         ],
       );
     });
+
+    it.only('parses checklist items', () => {
+      parseTestBlockHelper(
+        fl(`
+        [ ] not done
+
+        [x] done
+      `),
+        [
+          [schema.nodes.checklist_item, 'not done', { status: 1 }],
+          [schema.nodes.checklist_item, 'done', { status: 0 }],
+        ],
+      );
+    });
   });
 
   describe('inline node parsing', () => {
@@ -213,6 +227,21 @@ describe('parser', () => {
           [
             schema.nodes.code_block,
             '> Winged words',
+            { markdown_escaped: true },
+          ],
+        ],
+      );
+    });
+
+    it("doesn't parse images", () => {
+      parseTestBlockHelper(
+        fl(`
+        ![alt](cat.png)
+      `),
+        [
+          [
+            schema.nodes.code_block,
+            '![alt](cat.png)',
             { markdown_escaped: true },
           ],
         ],

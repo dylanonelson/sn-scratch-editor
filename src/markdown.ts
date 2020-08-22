@@ -78,9 +78,16 @@ markdownItParser.use((md) => {
           hasChecklist = true;
           isChecklistOpen = true;
           const { Token } = coreState;
-          return new Token('checklist_item_open', 'div', 1);
+          const token = new Token('checklist_item_open', 'div', 1);
+          token.attrPush([
+            'status',
+            content[1].toLowerCase() === 'x'
+              ? CheckboxStatus.DONE.toString()
+              : CheckboxStatus.EMPTY.toString(),
+          ]);
+          return token;
         }
-      } else if (token.type === 'paragraph_close') {
+      } else if (isChecklistOpen && token.type === 'paragraph_close') {
         isChecklistOpen = false;
         return new Token('checklist_item_close', 'div', -1);
       }
@@ -238,7 +245,12 @@ export const markdownParser = new MarkdownParser(
     list_item: { block: 'list_item' },
     ordered_list: { block: 'ordered_list' },
     paragraph: { block: 'paragraph' },
-    checklist_item: { block: 'checklist_item' },
+    checklist_item: {
+      block: 'checklist_item',
+      getAttrs: (tok) => ({
+        status: tok.attrGet('status') === CheckboxStatus.DONE.toString() ? CheckboxStatus.DONE : CheckboxStatus.EMPTY,
+      }),
+    },
     em: { mark: 'em' },
     strong: { mark: 'strong' },
     code_inline: { mark: 'code', noCloseToken: true },
