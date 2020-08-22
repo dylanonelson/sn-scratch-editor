@@ -1,4 +1,4 @@
-import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorState, Plugin, Selection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { baseKeymap } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
@@ -11,7 +11,8 @@ export const keymapPlugins: Plugin[] = [
   }),
   keymap({
     Enter(state, dispatch) {
-      const { selection: { $from, from }, tr } = state;
+      const {selection, tr} = state;
+      const {  $from, from } = selection;
       if ($from.parent.type !== schema.nodes.checklist_item) {
         return false;
       }
@@ -21,6 +22,7 @@ export const keymapPlugins: Plugin[] = [
         const nextFrom = next$From.pos;
         // The node is empty
         tr.replaceWith(nextFrom - 1, nextFrom + 1, schema.nodes.paragraph.createAndFill());
+        tr.setSelection(Selection.near(tr.doc.resolve(nextFrom - 1)));
         dispatch(tr);
         return true;
       }
