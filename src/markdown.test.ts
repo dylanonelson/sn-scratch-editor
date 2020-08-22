@@ -113,7 +113,7 @@ describe('parser', () => {
       );
     });
 
-    it.only('parses checklist items', () => {
+    it('parses checklist items', () => {
       parseTestBlockHelper(
         fl(`
         [ ] not done
@@ -123,6 +123,49 @@ describe('parser', () => {
         [
           [schema.nodes.checklist_item, 'not done', { status: 1 }],
           [schema.nodes.checklist_item, 'done', { status: 0 }],
+        ],
+      );
+    });
+
+    it("doesn't parse nested lists", () => {
+      parseTestBlockHelper(
+        fl(
+          `
+        ## Nested
+
+        - top level
+          - next level
+      `,
+          8,
+        ),
+        [
+          [schema.nodes.heading2, 'Nested', {}],
+          [
+            schema.nodes.code_block,
+            '- top level\n  - next level',
+            { markdown_escaped: true },
+          ],
+        ],
+      );
+    });
+
+    it("doesn't parse blockquotes", () => {
+      parseTestBlockHelper(
+        fl(
+          `
+        Opening paragraph.
+
+        > Winged words
+      `,
+          8,
+        ),
+        [
+          [schema.nodes.paragraph, 'Opening paragraph.', {}],
+          [
+            schema.nodes.code_block,
+            '> Winged words',
+            { markdown_escaped: true },
+          ],
         ],
       );
     });
@@ -187,62 +230,16 @@ describe('parser', () => {
         ],
       );
     });
-  });
-
-  describe('unsupported formatting', () => {
-    it("doesn't parse nested lists", () => {
-      parseTestBlockHelper(
-        fl(
-          `
-        ## Nested
-
-        - top level
-          - next level
-      `,
-          8,
-        ),
-        [
-          [schema.nodes.heading2, 'Nested', {}],
-          [
-            schema.nodes.code_block,
-            '- top level\n  - next level',
-            { markdown_escaped: true },
-          ],
-        ],
-      );
-    });
-
-    it("doesn't parse blockquotes", () => {
-      parseTestBlockHelper(
-        fl(
-          `
-        Opening paragraph.
-
-        > Winged words
-      `,
-          8,
-        ),
-        [
-          [schema.nodes.paragraph, 'Opening paragraph.', {}],
-          [
-            schema.nodes.code_block,
-            '> Winged words',
-            { markdown_escaped: true },
-          ],
-        ],
-      );
-    });
 
     it("doesn't parse images", () => {
-      parseTestBlockHelper(
+      parseTestInlineHelper(
         fl(`
-        ![alt](cat.png)
+        ![adorbs](cat.png)
       `),
         [
           [
-            schema.nodes.code_block,
-            '![alt](cat.png)',
-            { markdown_escaped: true },
+            '![adorbs](cat.png)',
+            new Map([[schema.marks.code, { markdown_escaped: true }]]),
           ],
         ],
       );

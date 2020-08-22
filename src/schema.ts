@@ -9,6 +9,8 @@ import {
   Schema,
 } from 'prosemirror-model';
 
+export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
+
 const EDITOR_CLS = 'sn-editor';
 
 const docSpec: NodeSpec = {
@@ -111,17 +113,17 @@ const codeBlockSpec: NodeSpec = {
   ...nodes.code_block,
   attrs: {
     ...nodes.code_block.attrs,
-    markdown_escaped: {
+    [MARKDOWN_ESCAPED_ATTR]: {
       default: false,
     },
   },
   toDOM(node) {
     const spec = [
       'pre',
-      { 'data-markdown_escaped': node.attrs.markdown_escaped },
+      { [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs.markdown_escaped },
       ['code', 0],
     ] as DOMOutputSpecArray;
-    if (node.attrs.markdown_escaped) {
+    if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
       // DOMOutputSpec types are messed up :(
       // @ts-ignore
       spec.push(['div', {class: 'info'}, 'i'])
@@ -170,6 +172,12 @@ const spec = {
     code: {
       ...marks.code,
       inclusive: false,
+      attrs: {
+        ...marks.code.attrs,
+        [MARKDOWN_ESCAPED_ATTR]: {
+          default: false,
+        }
+      },
     },
   },
 };

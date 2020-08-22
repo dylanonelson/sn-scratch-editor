@@ -5,7 +5,8 @@ import {
   MarkdownSerializer,
   defaultMarkdownSerializer,
 } from 'prosemirror-markdown';
-import { CheckboxStatus, schema } from './schema';
+import imageRule from 'markdown-it/lib/rules_inline/image';
+import { MARKDOWN_ESCAPED_ATTR, CheckboxStatus, schema } from './schema';
 
 export const markdownSerializer = new MarkdownSerializer(
   {
@@ -52,14 +53,21 @@ export const markdownSerializer = new MarkdownSerializer(
   },
   {
     ...defaultMarkdownSerializer.marks,
+    code: {
+      close(state, mark) {
+        return mark.attrs[MARKDOWN_ESCAPED_ATTR] ? '' : '`';
+      },
+      escape: false,
+      open(state, mark) {
+        return mark.attrs[MARKDOWN_ESCAPED_ATTR] ? '' : '`';
+      },
+    },
   },
 );
 
 const markdownItParser = markdownit();
 
 const CHECKLIST_ITEM_OPEN_MARKERS = ['[x]', '[X]', '[ ]'];
-
-export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
 
 markdownItParser.use((md) => {
   md.core.ruler.after('block', 'checklist_item', (coreState) => {
@@ -96,6 +104,19 @@ markdownItParser.use((md) => {
     });
 
     return hasChecklist;
+  });
+
+  md.inline.ruler.at('image', (inlineState) => {
+    const { pos: originalPos } = inlineState;
+    const result = imageRule(inlineState);
+    if (result) {
+      const codeToken = new Token('code_inline', 'code', 0);
+      codeToken.markup = '`';
+      codeToken.content = inlineState.src.slice(originalPos, inlineState.pos);
+      codeToken.attrSet(MARKDOWN_ESCAPED_ATTR, 'true');
+      inlineState.tokens[inlineState.tokens.length - 1] = codeToken;
+    }
+    return result;
   });
 });
 
@@ -247,13 +268,26 @@ export const markdownParser = new MarkdownParser(
     paragraph: { block: 'paragraph' },
     checklist_item: {
       block: 'checklist_item',
-      getAttrs: (tok) => ({
-        status: tok.attrGet('status') === CheckboxStatus.DONE.toString() ? CheckboxStatus.DONE : CheckboxStatus.EMPTY,
-      }),
+      getAttrs(tok) {
+        return {
+          status:
+            tok.attrGet('status') === CheckboxStatus.DONE.toString()
+              ? CheckboxStatus.DONE
+              : CheckboxStatus.EMPTY,
+        };
+      },
     },
     em: { mark: 'em' },
     strong: { mark: 'strong' },
-    code_inline: { mark: 'code', noCloseToken: true },
+    code_inline: {
+      getAttrs(token) {
+        return token.attrGet(MARKDOWN_ESCAPED_ATTR) === 'true'
+          ? { [MARKDOWN_ESCAPED_ATTR]: true }
+          : {};
+      },
+      mark: 'code',
+      noCloseToken: true,
+    },
     link: {
       mark: 'link',
       getAttrs: (tok) => ({
