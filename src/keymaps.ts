@@ -7,7 +7,7 @@ import {
 } from 'prosemirror-state';
 import { ResolvedPos } from 'prosemirror-model';
 import { EditorView } from 'prosemirror-view';
-import { baseKeymap, joinBackward } from 'prosemirror-commands';
+import { baseKeymap, joinBackward, setBlockType } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
 import {
   liftListItem,
@@ -28,11 +28,35 @@ function recursiveDeleteEmpty(tr: Transaction, $pos: ResolvedPos): Transaction {
   return tr;
 }
 
+function ensureTextSelectionInEmptyNode(state: EditorState): boolean {
+  const { $cursor } = state.selection as TextSelection;
+  return Boolean(
+    $cursor && $cursor.parent.nodeSize === 2
+  );
+}
+
+function ensureChecklistItemTextSelection(state: EditorState) {
+  const { $cursor } = state.selection as TextSelection;
+  return Boolean(
+    $cursor && $cursor.parent.type === schema.nodes.checklist_item
+  );
+}
+
 export const keymapPlugins: Plugin[] = [
+  // checklist item handlers
   keymap({
-    Enter: splitListItem(schema.nodes.list_item),
-  }),
-  keymap({
+    Backspace(state, dispatch, view) {
+      if (ensureChecklistItemTextSelection(state) === false) {
+        return false;
+      }
+      if (view.endOfTextblock('left') === false) {
+        return false;
+      }
+
+      if ((state.selection as TextSelection).$cursor.index(0) === 0) {
+        setBlockType(schema.nodes.paragraph)(state, dispatch);
+      }
+    },
     Enter(state, dispatch) {
       const { selection, tr } = state;
       const { $from, from } = selection;
@@ -61,14 +85,15 @@ export const keymapPlugins: Plugin[] = [
       dispatch(tr);
       return true;
     },
+  }),
+  // list item handlers
+  keymap({
     Backspace(state, dispatch) {
+      if (ensureTextSelectionInEmptyNode(state) === false) {
+        return false;
+      }
+
       const { $cursor } = state.selection;
-      if (!$cursor) {
-        return false;
-      }
-      if ($cursor.parent.nodeSize !== 2) {
-        return false;
-      }
       const possibleSelection: TextSelection = Selection.findFrom(
         state.doc.resolve($cursor.before()),
         -1,
@@ -88,6 +113,7 @@ export const keymapPlugins: Plugin[] = [
       dispatch(tr);
       return true;
     },
+    Enter: splitListItem(schema.nodes.list_item),
   }),
   keymap(baseKeymap),
 ];
