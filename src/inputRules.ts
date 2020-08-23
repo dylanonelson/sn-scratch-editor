@@ -10,7 +10,7 @@ import { MarkType, NodeType } from 'prosemirror-model';
 import { schema } from './schema';
 
 function markWrappingRule(c: string, markType: MarkType) {
-  return new InputRule(new RegExp(`${c}(.*?)${c}`), (state, match, start, end) => {
+  return new InputRule(new RegExp(`${c}(.*?)${c}$`), (state, match, start, end) => {
     const [_, text] = match;
     const { tr } = state;
     if (!text) {
@@ -44,6 +44,7 @@ export const inputRulesPlugin = inputRules({
     ...smartQuotes,
     ellipsis,
     textblockTypeInputRule(/^# /, schema.nodes.heading2),
+    textblockTypeInputRule(/^```/, schema.nodes.code_block),
     markWrappingRule('`', schema.marks.code),
     markWrappingRule('\\*\\*', schema.marks.strong),
     markWrappingRule('\\*', schema.marks.em),
