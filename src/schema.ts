@@ -142,15 +142,18 @@ const spec = {
       ...bulletList,
       content: 'list_item+',
       group: 'block',
+      selectable: false,
     },
     ordered_list: {
       ...orderedList,
       content: 'list_item+',
       group: 'block',
+      selectable: false,
     },
     list_item: {
       ...listItem,
       content: 'paragraph+',
+      selectable: false,
     },
     heading1: heading1Spec,
     heading2: heading2Spec,
