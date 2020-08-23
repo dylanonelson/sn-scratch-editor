@@ -201,7 +201,7 @@ button[data-format]:hover {
 
 button.selected:after {
   background: #aaa;
-  bottom: -1px;
+  bottom: 0;
   content: '';
   display: block;
   height: 3px;
