@@ -59,7 +59,7 @@ h1.sn-editor {
   margin-bottom: 12px;
 }
 
-* + h1.sn-editor {
+.ProseMirror * + h1.sn-editor {
   margin-top: 32px;
 }
 
@@ -67,6 +67,10 @@ h2.sn-editor {
   font-size: var(--h2-font-size);
   font-weight: 700;
   margin-bottom: var(--default-gap);
+}
+
+.ProseMirror h1 + h2.sn-editor {
+  margin-top: 20px;
 }
 
 .ProseMirror *:not(h1) + h2.sn-editor {
@@ -147,9 +151,12 @@ pre code {
 .checklist-item {
   align-items: flex-start;
   display: flex;
-  margin-bottom: var(--default-checkbox-gap);
   padding-left: 30px;
   position: relative;
+}
+
+.checklist-item + .checklist-item {
+  margin-top: var(--default-checkbox-gap);
 }
 
 .checklist-item + *:not(.checklist-item) {
@@ -185,7 +192,7 @@ pre code {
   background-color: var(--sn-stylekit-background-color, white);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
-  overflow-x: scroll;
+  overflow-x: auto;
   position: fixed;
   right: 0;
   top: 0;
