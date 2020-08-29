@@ -21,11 +21,6 @@ module.exports = ({ analyzer, production } = {}) => {
     module: {
       rules: [
         {
-          exclude: '/node_modules/',
-          test: /\.node$/i,
-          loader: 'html-node-loader',
-        },
-        {
           test: /\.svg$/i,
           loader: 'svg-inline-loader',
         },
@@ -76,12 +71,6 @@ module.exports = ({ analyzer, production } = {}) => {
     ],
     resolve: {
       extensions: ['.ts', '.js'],
-    },
-    resolveLoader: {
-      modules: [
-        'node_modules',
-        path.resolve(__dirname, 'loaders'),
-      ],
     },
     output: {
       filename: 'bundle.js',

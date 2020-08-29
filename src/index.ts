@@ -20,17 +20,9 @@ interface AppWindow extends Window {
 declare const window: AppWindow;
 
 function getDocForNewEditorState() {
-  try {
-    console.log('parsed md:', markdownParser.parse(client.latestText))
-  } catch (e) {
-    console.error(e);
-  }
   return client.latestText
     ? markdownParser.parse(client.latestText)
     : schema.topNodeType.createAndFill();
-  // return client.latestDoc
-  //   ? schema.nodeFromJSON(client.latestDoc)
-  //   : schema.topNodeType.createAndFill();
 }
 
 async function init() {

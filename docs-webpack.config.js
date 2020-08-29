@@ -17,5 +17,10 @@ module.exports = (...args) => {
     port: 1104,
   }
 
+  config.module.rules.push({
+    test: /\.md$/,
+    loader: 'raw-loader',
+  });
+
   return config;
 };

@@ -2,14 +2,14 @@
 // this module will be swapped in for client.ts.
 
 import { DOMParser } from 'prosemirror-model';
-import demoDocNode from './demo-doc.node';
+import demoMarkdown from './demoDocs.md';
 import { schema } from './schema';
+import { markdownSerializer } from './markdown';
 
 class DemoClient {
   constructor() {}
-  get latestDoc() {
-    return DOMParser.fromSchema(schema)
-      .parse(demoDocNode).toJSON();
+  get latestText() {
+    return demoMarkdown;
   }
   ready() {
     return Promise.resolve();

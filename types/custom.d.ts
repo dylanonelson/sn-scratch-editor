@@ -1,6 +1,6 @@
-declare module '*.node' {
-  const node: Node;
-  export default node;
+declare module '*.md' {
+  const txt: string;
+  export default txt;
 }
 
 declare module '*.svg' {
