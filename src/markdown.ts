@@ -28,6 +28,12 @@ export const markdownSerializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
     paragraph(state, node) {
+      if (node.nodeSize === 2) {
+        // Write a non-breaking empty space so markdown retains the line as an empty paragraph
+        state.write('&nbsp;');
+        state.closeBlock(node);
+        return;
+      }
       defaultMarkdownSerializer.nodes.paragraph(state, node);
     },
     list_item(state, node) {
