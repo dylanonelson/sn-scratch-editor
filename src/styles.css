@@ -196,6 +196,7 @@ pre code {
   position: fixed;
   right: 0;
   top: 0;
+  z-index: 1;
 }
 
 #toolbar {
@@ -355,4 +356,39 @@ div#link-modal button#clear.active {
 
 div#link-modal button#confirm {
   color: var(--sn-stylekit-info-color, var(--color-primary));
+}
+
+div#link-tooltip {
+  background: var(--sn-stylekit-background-color, white);
+  border: 1px solid var(--sn-stylekit-border-color, #ccc);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  display: none;
+  padding: 6px 10px;
+  position: absolute;
+  text-overflow: ellipsis;
+  transform: translateX(-20%);
+}
+
+div#link-tooltip.show {
+  display: block;
+}
+
+div#link-tooltip a {
+  display: flex;
+  justify-content: center;
+}
+
+div#link-tooltip div.text {
+  display: block;
+  margin-right: 6px;
+  max-width: 250px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+div#link-tooltip i {
+  display: block;
+  height: 14px;
+  width: 14px;
 }

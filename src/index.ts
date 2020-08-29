@@ -6,6 +6,7 @@ import { EditorState, Plugin } from 'prosemirror-state';
 import { history } from 'prosemirror-history';
 import { inputRulesPlugin } from './inputRules';
 import { ToolbarPlugin } from './ToolbarPlugin';
+import { TooltipPlugin } from './TooltipPlugin';
 import { schema } from './schema';
 import { client } from './client';
 import { nodeViews } from './nodeViews';
@@ -41,6 +42,7 @@ async function init() {
             document.querySelector('#toolbar'),
             document.querySelector('#link-modal'),
           ),
+          new TooltipPlugin(document.querySelector('#link-tooltip'), document.querySelector('#root')),
           new Plugin({
             props: {
               nodeViews,
