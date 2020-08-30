@@ -13,7 +13,6 @@ import { nodeViews } from './nodeViews';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
 
-
 interface AppWindow extends Window {
   view: EditorView;
 }
@@ -42,7 +41,10 @@ async function init() {
             document.querySelector('#toolbar'),
             document.querySelector('#link-modal'),
           ),
-          new TooltipPlugin(document.querySelector('#link-tooltip'), document.querySelector('#root')),
+          new TooltipPlugin(
+            document.querySelector('#link-tooltip'),
+            document.querySelector('#root'),
+          ),
           new Plugin({
             props: {
               nodeViews,
@@ -55,25 +57,32 @@ async function init() {
       dispatchTransaction(tr) {
         const next = view.state.apply(tr);
         view.updateState(next);
-        client.saveNote(
-          next.doc.toJSON(),
-          markdownSerializer.serialize(next.doc),
-          next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
-        );
+        if (tr.docChanged) {
+          client.saveNote(
+            next.doc.toJSON(),
+            markdownSerializer.serialize(next.doc),
+            next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
+          );
+        }
       },
     },
   ));
 
   client.onUpdate((doc) => {
-    const plugins = view.state.plugins.filter(plugin => (plugin instanceof ToolbarPlugin) === false);
+    const plugins = view.state.plugins.filter(
+      (plugin) => plugin instanceof ToolbarPlugin === false,
+    );
 
     view.setProps({
       state: EditorState.create({
         doc: getDocForNewEditorState(),
-        plugins: [...plugins, new ToolbarPlugin(
-          document.querySelector('#toolbar'),
-          document.querySelector('#link-modal'),
-        )],
+        plugins: [
+          ...plugins,
+          new ToolbarPlugin(
+            document.querySelector('#toolbar'),
+            document.querySelector('#link-modal'),
+          ),
+        ],
       }),
     });
   });
