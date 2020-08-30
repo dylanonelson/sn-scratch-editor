@@ -10,7 +10,7 @@ To use the Scratch editor in Standard Notes, click Extensions in the lower left 
 
 ## Formatting your notes
 
-Scratch includes a number of ways to format your notes. It has **bold**, *italic*, and `monospace` text, and it lets you add [links](.). It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
+Scratch includes a number of ways to format your notes. It has **bold**, *italic*, and `monospace` text, and it lets you add [links](https://github.com/dylanonelson/sn-scratch-editor). It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
 
 ## How to use this editor
 

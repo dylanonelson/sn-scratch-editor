@@ -103,7 +103,6 @@ class LinkModal {
     this.el = el;
     this.textInput.value = this.text = text;
     this.urlInput.value = this.url = url;
-    this.urlOpenLink.href = url;
     this.onConfirm = onConfirm;
     this.onClear = onClear;
     this.frameEl = el.querySelector('#frame');
@@ -176,10 +175,6 @@ class LinkModal {
 
   get urlInput() {
     return this.el.querySelector('input#url') as HTMLInputElement;
-  }
-
-  get urlOpenLink() {
-    return this.el.querySelector('label[for=url] a') as HTMLAnchorElement;
   }
 
   get confirmBtn() {

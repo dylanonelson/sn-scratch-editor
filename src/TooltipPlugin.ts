@@ -11,11 +11,22 @@ import { schema } from './schema';
 
 const SHOW_CLS = 'show';
 
+const HTTP_LINK = new RegExp('^https?://');
+
+const MAILTO_LINK = new RegExp('^mailto:');
+
 export class TooltipPlugin extends Plugin {
   private rootEl: HTMLDivElement;
   private tooltipEl: HTMLDivElement;
   private view: EditorView;
   private txt: string;
+
+  static nodeToAnchorHref(url: string) {
+    if (HTTP_LINK.test(url) || MAILTO_LINK.test(url)) {
+      return url;
+    }
+    return `http://${url}`;
+  }
 
   constructor(el: HTMLDivElement) {
     super({
@@ -68,7 +79,7 @@ export class TooltipPlugin extends Plugin {
   private show = ($pos: ResolvedPos, url: string) => {
     const { left, top } = this.view.coordsAtPos($pos.pos);
     this.linkTextEl.innerText = url;
-    this.anchorEl.href = url;
+    this.anchorEl.href = TooltipPlugin.nodeToAnchorHref(url);
     this.tooltipEl.style.left = `${left}px`;
     const scrolled = (this.view.root as Document).documentElement;
     // Pull top up by presumed height of tooltip plus some margin
