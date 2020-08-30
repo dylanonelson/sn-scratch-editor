@@ -41,10 +41,7 @@ async function init() {
             document.querySelector('#toolbar'),
             document.querySelector('#link-modal'),
           ),
-          new TooltipPlugin(
-            document.querySelector('#link-tooltip'),
-            document.querySelector('#root'),
-          ),
+          new TooltipPlugin(document.querySelector('#link-tooltip')),
           new Plugin({
             props: {
               nodeViews,

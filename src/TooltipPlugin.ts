@@ -17,7 +17,7 @@ export class TooltipPlugin extends Plugin {
   private view: EditorView;
   private txt: string;
 
-  constructor(el: HTMLDivElement, rootEl: HTMLDivElement) {
+  constructor(el: HTMLDivElement) {
     super({
       view: (viewInstance) => {
         this.view = viewInstance;
@@ -32,7 +32,6 @@ export class TooltipPlugin extends Plugin {
       },
     });
 
-    this.rootEl = rootEl;
     this.tooltipEl = el;
   }
 
@@ -71,7 +70,9 @@ export class TooltipPlugin extends Plugin {
     this.linkTextEl.innerText = url;
     this.anchorEl.href = url;
     this.tooltipEl.style.left = `${left}px`;
-    this.tooltipEl.style.top = `${top - 36 + this.rootEl.scrollTop}px`;
+    const scrolled = (this.view.root as Document).documentElement;
+    // Pull top up by presumed height of tooltip plus some margin
+    this.tooltipEl.style.top = `${top - 36 + scrolled.scrollTop}px`;
     this.tooltipEl.classList.add(SHOW_CLS);
   };
 
