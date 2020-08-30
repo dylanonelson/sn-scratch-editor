@@ -22,6 +22,8 @@ Scratch includes a number of ways to format your notes. It has **bold**, *italic
 
 ## Hotkeys
 
+You can also see a legend for many of these hotkeys in the alt text of the toolbar buttons.
+
 * `ctrl + =` cycles through the levels of headings (there are two)
 
 * `ctrl + j` turns the current text chunk into a plain paragraph
@@ -40,6 +42,12 @@ Scratch includes a number of ways to format your notes. It has **bold**, *italic
 
 * `cmd + space` checks or unchecks a checkbox if your cursor is inside its attached text
 
+* `cmd + k` opens a link editing dialog
+
+* `cmd + z` is undo
+
+* `cmd + y` is redo
+
 ## Formatting macros
 
 * smart curly quote and apostrophe substitution
@@ -50,15 +58,15 @@ Scratch includes a number of ways to format your notes. It has **bold**, *italic
 
 * insert numbered lists by typing `1. `
 
-* insert bold text by wrapping it in `**`
+* insert bold text by wrapping it in `*`
 
-* insert italic text by wrapping it in `*`
+* insert italic text by wrapping it in `_`
 
 * insert a code block by typing three backticks ` ``` `
 
 ## Markdown integration
 
-Scratch saves your note as markdown text. That means that if you write your notes in Scratch, you can also edit them in the other markdown editors that come with Standard Notes. It also means that if you want to stop using Scratch, you can simply uninstall it and forget that it ever existed.
+Scratch saves your note as markdown text. That means that if you write your notes in Scratch, you can also edit them in the other markdown editors that come with Standard Notes. It also means that if you want to stop using Scratch, you can simply uninstall it and forget that it ever existed. You can see what this text looks like in markdown by viewing [the source](https://github.com/dylanonelson/sn-scratch-editor/blob/master/src/demoDocs.md).
 
 If you edit a note in a different editor, and then open it in Scratch, Scratch will pick up your changes (assuming those changes were made to the underlying markdown text of the note, and not using some other custom format). However, there are certain kinds of formatting that markdown supports that Scratch does not, at least not yet. If you add some text of this kind, like for example a block quote, Scratch will render it as a special type of “escaped” code block. These blocks are saved back to the underlying markdown note as pure markdown, not as a code block. If you wind up with one of these special code blocks in your note, you will see a alert to that effect in the upper right-hand corner of the code block.
 
@@ -74,11 +82,10 @@ If you create, edit, and view your checklists in Scratch, you don’t have to wo
 
 ## Coming soon
 
- Scratch is a work in progress, which I made mainly for myself 😉. I have a running list of things I’d like to add, provided I can find the time and motivation. You can think of the following as a list of things that Scratch *doesn’t* have, at least not yet.
+Scratch is a work in progress. I have a running list of things I’d like to add, provided I can find the time and motivation. You can think of the following as a list of things that Scratch *doesn’t* have, at least not yet.
 
 1. tables, or something like them
 
 1. syntax highlighting and one-click copy-to-clipboard for code blocks
 
 1. nested lists, with full support for markdown formatting within list items
-
