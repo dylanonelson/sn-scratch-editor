@@ -22,6 +22,7 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
     const clickTargetDiv = document.createElement('div');
     clickTargetDiv.classList.add(CLICK_TARGET_CLASSNAME);
     clickTargetDiv.contentEditable = 'false';
+    clickTargetDiv.tabIndex = 0;
 
     const p = document.createElement('p');
 
@@ -31,7 +32,7 @@ export const nodeViews: EditorProps<typeof schema>['nodeViews'] = {
 
     const focusHandler = (event: MouseEvent) => {
       const { relatedTarget, target } = event;
-      if (relatedTarget !== inputDiv) {
+      if (clickTargetDiv.contains(relatedTarget as Node) === false) {
         // Input is taking focus
         return;
       }
