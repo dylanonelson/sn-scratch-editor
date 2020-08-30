@@ -9,7 +9,6 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = ({ analyzer, production } = {}) => {
-  console.log('analyzer', analyzer);
   return {
     entry: [
       './src/index.ts',

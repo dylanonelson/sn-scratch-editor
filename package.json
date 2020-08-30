@@ -4,10 +4,10 @@
   "description": "",
   "scripts": {
     "analyze": "npm run build:dist -- --env.analyzer",
-    "build": "npm run build:docs && npm run build:dist",
+    "build": "./scripts/build.sh",
     "build:dist": "webpack --env.production",
     "build:docs": "webpack --config=docs-webpack.config.js",
-    "deploy": "npm run build && firebase deploy",
+    "deploy": "./scripts/deploy.sh",
     "dev:dist": "webpack-dev-server",
     "dev:docs": "webpack-dev-server --config=docs-webpack.config.js -d",
     "test": "jest"
