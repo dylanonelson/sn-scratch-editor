@@ -121,13 +121,14 @@ const codeBlockSpec: NodeSpec = {
     const spec = [
       'pre',
       { [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs.markdown_escaped },
-      ['code', 0],
     ] as DOMOutputSpecArray;
     if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
       // DOMOutputSpec types are messed up :(
       // @ts-ignore
       spec.push(['div', {class: 'info'}, 'i'])
     }
+    // @ts-ignore
+    spec.push(['code', 0]);
     return spec;
   },
 };
