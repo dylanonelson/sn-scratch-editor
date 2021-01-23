@@ -16,7 +16,6 @@ const HTTP_LINK = new RegExp('^https?://');
 const MAILTO_LINK = new RegExp('^mailto:');
 
 export class TooltipPlugin extends Plugin {
-  private rootEl: HTMLDivElement;
   private tooltipEl: HTMLDivElement;
   private view: EditorView;
   private txt: string;
@@ -77,14 +76,22 @@ export class TooltipPlugin extends Plugin {
   };
 
   private show = ($pos: ResolvedPos, url: string) => {
-    const { left, top } = this.view.coordsAtPos($pos.pos);
     this.linkTextEl.innerText = url;
     this.anchorEl.href = TooltipPlugin.nodeToAnchorHref(url);
-    this.tooltipEl.style.left = `${left}px`;
+    this.tooltipEl.classList.add(SHOW_CLS);
+
+    const { left, top } = this.view.coordsAtPos($pos.pos);
+    const actualWidth = this.tooltipEl.offsetWidth;
+    const availableWidth = document.documentElement.clientWidth;
+    // tooltip max-width is 100% - 10, for 5px of space from each window edge
+    if ((left + actualWidth) > availableWidth) {
+      this.tooltipEl.style.left = `${Math.max(5, left - actualWidth)}px`;
+    } else {
+      this.tooltipEl.style.left = `${Math.max(5, left)}px`;
+    }
     const scrolled = (this.view.root as Document).documentElement;
     // Pull top up by presumed height of tooltip plus some margin
     this.tooltipEl.style.top = `${top - 36 + scrolled.scrollTop}px`;
-    this.tooltipEl.classList.add(SHOW_CLS);
   };
 
   get linkTextEl(): HTMLSpanElement {
