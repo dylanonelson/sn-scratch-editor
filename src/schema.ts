@@ -167,15 +167,12 @@ const spec = {
     },
     em: {
       ...marks.em,
-      inclusive: false,
     },
     strong: {
       ...marks.strong,
-      inclusive: false,
     },
     code: {
       ...marks.code,
-      inclusive: false,
       attrs: {
         ...marks.code.attrs,
         [MARKDOWN_ESCAPED_ATTR]: {
