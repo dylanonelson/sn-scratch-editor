@@ -50,7 +50,12 @@ em {
 div.ProseMirror {
   position: relative;
   /* 80px top padding to account for 41px toolbar */
-  padding: 80px 15px 40px 15px;
+  padding: 80px 15px 0 15px;
+}
+
+div#extender {
+  cursor: text;
+  height: 120px;
 }
 
 h1.sn-editor {
