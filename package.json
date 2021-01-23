@@ -1,6 +1,6 @@
 {
   "name": "sn-scratchpad-editor",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "",
   "scripts": {
     "analyze": "npm run build:dist -- --env.analyzer",
