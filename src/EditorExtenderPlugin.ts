@@ -17,10 +17,10 @@ export class EditorExtenderPlugin extends Plugin {
         return {
           destroy() {
             this.el.removeEventListener('click');
-          }
+          },
         };
       },
-    })
+    });
   }
 
   handleClick = () => {

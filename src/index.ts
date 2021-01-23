@@ -43,9 +43,7 @@ async function init() {
             document.querySelector('#link-modal'),
           ),
           new TooltipPlugin(document.querySelector('#link-tooltip')),
-          new EditorExtenderPlugin(
-            document.querySelector('#extender'),
-          ),
+          new EditorExtenderPlugin(document.querySelector('#extender')),
           new Plugin({
             props: {
               nodeViews,
@@ -70,6 +68,7 @@ async function init() {
   ));
 
   client.onUpdate((doc) => {
+    // When the user opens a new note, keep all the plugin instances except the toolbar
     const plugins = view.state.plugins.filter(
       (plugin) => plugin instanceof ToolbarPlugin === false,
     );
