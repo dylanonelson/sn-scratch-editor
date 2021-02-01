@@ -15,8 +15,8 @@ export class EditorExtenderPlugin extends Plugin {
         this.el.addEventListener('click', this.handleClick);
 
         return {
-          destroy() {
-            this.el.removeEventListener('click');
+          destroy: () => {
+            this.el.removeEventListener('click', this.handleClick);
           },
         };
       },
