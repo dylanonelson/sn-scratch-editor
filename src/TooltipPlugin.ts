@@ -89,7 +89,7 @@ export class TooltipPlugin extends Plugin {
     } else {
       this.tooltipEl.style.left = `${Math.max(5, left)}px`;
     }
-    const scrolled = (this.view.root as Document).documentElement;
+    const scrolled = (this.view.root as Document).body;
     // Pull top up by presumed height of tooltip plus some margin
     this.tooltipEl.style.top = `${top - 36 + scrolled.scrollTop}px`;
   };

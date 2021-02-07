@@ -33,6 +33,16 @@ body {
   background: var(--sn-stylekit-info-color, var(--color-primary));
 }
 
+/* Restore position: fixed behavior when iOS keyboard is open */
+html, body {
+  overflow: auto;
+  height: 100%;
+}
+
+body {
+  position: relative;
+}
+
 button {
   cursor: pointer;
 }
