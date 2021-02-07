@@ -19,6 +19,13 @@ body {
   font-family: var(--ff-serif), serif;
 }
 
+@media only screen and (max-width: 720px) {
+  body {
+    --base-font-size: 16px;
+    --h2-font-size: 17px;
+  }
+}
+
 * {
   background: inherit;
   border: 0;
