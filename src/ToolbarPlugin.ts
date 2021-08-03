@@ -389,7 +389,7 @@ export class ToolbarPlugin extends Plugin {
           }
 
           const is7 = e.which === 55;
-          const hasMod = e.metaKey;
+          const hasMod = e.metaKey || e.ctrlKey;
           if (is7 && hasMod) {
             this.toggleList(
               schema.nodes.unordered_list,

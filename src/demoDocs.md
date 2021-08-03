@@ -34,19 +34,19 @@ You can also see a legend for many of these hotkeys in the alt text of the toolb
 
 * `ctrl + t` creates a checklist item from the current text chunk
 
-* `cmd + b` toggles bold formatting on and off
+* `cmd + b` / `ctrl + b` toggles bold formatting on and off
 
-* `cmd + i` toggles italic formatting on and off
+* `cmd + i` / `ctrl + i` toggles italic formatting on and off
 
-* `cmd + '` toggles monospace formatting on and off
+* `cmd + '`  / `ctrl + '` toggles monospace formatting on and off
 
-* `cmd + space` checks or unchecks a checkbox if your cursor is inside its attached text
+* `cmd + space` / `ctrl + space` checks or unchecks a checkbox if your cursor is inside its attached text
 
-* `cmd + k` opens a link editing dialog
+* `cmd + k` / `ctrl + k` opens a link editing dialog
 
-* `cmd + z` is undo
+* `cmd + z` / `ctrl + z` is undo
 
-* `cmd + y` is redo
+* `cmd + y` / `ctrl + y` is redo
 
 ## Formatting macros
 
