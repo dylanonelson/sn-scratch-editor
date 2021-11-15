@@ -1,6 +1,16 @@
 {
   "hosting": {
     "public": "dist",
+    "headers": [{
+      "source": "ext.json",
+      "headers": [{
+        "key": "Access-Control-Allow-Origin",
+        "value": "*"
+      }, {
+        "key": "Access-Control-Allow-Headers",
+        "value": "*"
+      }]
+    }],
     "ignore": [
       "firebase.json",
       "**/.*",
