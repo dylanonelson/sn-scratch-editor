@@ -13,10 +13,6 @@ module.exports = (...args) => {
       ),
     ]);
 
-  config.devServer = {
-    port: 1104,
-  }
-
   config.module.rules.push({
     test: /\.md$/,
     loader: 'raw-loader',
