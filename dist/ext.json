@@ -3,11 +3,11 @@
   "name": "Scratch Editor",
   "content_type": "SN|Component",
   "area": "editor-editor",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "description": "An editor for writing things down.",
   "url": "https://scratch-editor.com",
   "hosted_url": "https://scratch-editor.com",
-  "download_url": "https://github.com/dylanonelson/sn-scratch-editor/archive/0.0.43.zip",
+  "download_url": "https://github.com/dylanonelson/sn-scratch-editor/archive/0.0.44.zip",
   "latest_url": "https://scratch-editor.com/ext.json",
   "marketing_url": "https://dylanonelson.github.io/sn-scratch-editor"
 }

@@ -14,7 +14,7 @@ module.exports = ({ analyzer, production } = {}) => {
       './src/index.ts',
       './src/styles.css',
     ],
-    devServer: { port: 1104 },
+    devServer: { port: 5001 },
     devtool: 'inline-source-map',
     mode: production ? 'production' : 'development',
     module: {
