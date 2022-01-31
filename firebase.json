@@ -9,6 +9,9 @@
       }, {
         "key": "Access-Control-Allow-Headers",
         "value": "*"
+      }, {
+        "key": "Cache-Control",
+        "value": "no-store"
       }]
     }],
     "ignore": [
