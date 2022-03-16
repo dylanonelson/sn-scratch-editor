@@ -30,7 +30,7 @@ export const markdownSerializer = new MarkdownSerializer(
     paragraph(state, node) {
       if (node.nodeSize === 2) {
         // Write a non-breaking empty space so markdown retains the line as an empty paragraph
-        state.write('&#160;');
+        state.write('\u00A0');
         state.closeBlock(node);
         return;
       }
