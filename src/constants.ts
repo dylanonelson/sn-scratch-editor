@@ -5,5 +5,5 @@ export const T_KEY = 84;
 export const U_KEY = 85;
 export const O_KEY = 79;
 export const EQUALS_KEY = 187;
-export const J_KEY= 74;
+export const J_KEY = 74;
 export const SPACE_KEY = 32;

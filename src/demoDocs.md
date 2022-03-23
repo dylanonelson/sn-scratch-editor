@@ -10,11 +10,11 @@ To use the Scratch editor in Standard Notes, click Extensions in the lower left 
 
 ## Formatting your notes
 
-Scratch includes a number of ways to format your notes. It has **bold**, *italic*, and `monospace` text, and it lets you add [links](https://github.com/dylanonelson/sn-scratch-editor). It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
+Scratch includes a number of ways to format your notes. It has **bold**, _italic_, and `monospace` text, and it lets you add [links](https://github.com/dylanonelson/sn-scratch-editor). It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
 
 ## How to use this editor
 
-[ ] [Download the desktop client](https://standardnotes.org/) or go to the [web app](https://app.standardnotes.org/)
+[ ][download the desktop client](https://standardnotes.org/) or go to the [web app](https://app.standardnotes.org/)
 
 [ ] Open the extensions menu in the lower left-hand corner
 
@@ -24,45 +24,45 @@ Scratch includes a number of ways to format your notes. It has **bold**, *italic
 
 You can also see a legend for many of these hotkeys in the alt text of the toolbar buttons.
 
-* `ctrl + =` cycles through the levels of headings (there are two)
+- `ctrl + =` cycles through the levels of headings (there are two)
 
-* `ctrl + j` turns the current text chunk into a plain paragraph
+- `ctrl + j` turns the current text chunk into a plain paragraph
 
-* `ctrl + u` wraps the current text chunk in a bulleted list
+- `ctrl + u` wraps the current text chunk in a bulleted list
 
-* `ctrl + o` wraps the current text chunk in a numbered list
+- `ctrl + o` wraps the current text chunk in a numbered list
 
-* `ctrl + t` creates a checklist item from the current text chunk
+- `ctrl + t` creates a checklist item from the current text chunk
 
-* `cmd + b` / `ctrl + b` toggles bold formatting on and off
+- `cmd + b` / `ctrl + b` toggles bold formatting on and off
 
-* `cmd + i` / `ctrl + i` toggles italic formatting on and off
+- `cmd + i` / `ctrl + i` toggles italic formatting on and off
 
-* `cmd + '`  / `ctrl + '` toggles monospace formatting on and off
+- `cmd + '` / `ctrl + '` toggles monospace formatting on and off
 
-* `cmd + space` / `ctrl + space` checks or unchecks a checkbox if your cursor is inside its attached text
+- `cmd + space` / `ctrl + space` checks or unchecks a checkbox if your cursor is inside its attached text
 
-* `cmd + k` / `ctrl + k` opens a link editing dialog
+- `cmd + k` / `ctrl + k` opens a link editing dialog
 
-* `cmd + z` / `ctrl + z` is undo
+- `cmd + z` / `ctrl + z` is undo
 
-* `cmd + y` / `ctrl + y` is redo
+- `cmd + y` / `ctrl + y` is redo
 
 ## Formatting macros
 
-* smart curly quote and apostrophe substitution
+- smart curly quote and apostrophe substitution
 
-* insert headings by typing `# `
+- insert headings by typing `#`
 
-* insert bulleted lists by typing `- `
+- insert bulleted lists by typing `-`
 
-* insert numbered lists by typing `1. `
+- insert numbered lists by typing `1.`
 
-* insert bold text by wrapping it in `*`
+- insert bold text by wrapping it in `*`
 
-* insert italic text by wrapping it in `_`
+- insert italic text by wrapping it in `_`
 
-* insert a code block by typing three backticks ` ``` `
+- insert a code block by typing three backticks ` ``` `
 
 ## Markdown integration
 
@@ -82,7 +82,7 @@ If you create, edit, and view your checklists in Scratch, you don’t have to wo
 
 ## Coming soon
 
-Scratch is a work in progress. I have a running list of things I’d like to add, provided I can find the time and motivation. You can think of the following as a list of things that Scratch *doesn’t* have, at least not yet.
+Scratch is a work in progress. I have a running list of things I’d like to add, provided I can find the time and motivation. You can think of the following as a list of things that Scratch _doesn’t_ have, at least not yet.
 
 1. tables, or something like them
 

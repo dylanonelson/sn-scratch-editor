@@ -1,5 +1,5 @@
 /** global */
-@import url("~prosemirror-view/style/prosemirror.css");
+@import url('~prosemirror-view/style/prosemirror.css');
 
 body {
   --base-font-size: 15px;
@@ -41,7 +41,8 @@ body {
 }
 
 /* Restore position: fixed behavior when iOS keyboard is open */
-html, body {
+html,
+body {
   overflow: auto;
   height: 100%;
 }
@@ -112,7 +113,8 @@ div.ProseMirror > p.sn-editor {
   margin-top: var(--default-gap);
 }
 
-ul, ol {
+ul,
+ol {
   margin-left: 25px;
   margin-bottom: var(--default-gap);
 }
@@ -138,7 +140,7 @@ pre {
   position: relative;
 }
 
-pre[data-markdown_escaped="true"] div.info {
+pre[data-markdown_escaped='true'] div.info {
   border-radius: 50%;
   border: 1px solid var(--sn-stylekit-info-color, var(--color-primary));
   color: var(--sn-stylekit-info-color, var(--color-primary));
@@ -154,11 +156,11 @@ pre[data-markdown_escaped="true"] div.info {
   line-height: 20px;
 }
 
-pre[data-markdown_escaped="true"] div.info:hover:after {
+pre[data-markdown_escaped='true'] div.info:hover:after {
   background: var(--sn-stylekit-background-color, white);
   border-radius: 2px;
   border: 1px solid var(--sn-stylekit-info-color, var(--color-primary));
-  content: 'This block of code was edited in another editor and contains markdown formatting that Scratch doesn\'t support yet. It will be serialized into markdown not as a code block but as a normal piece of markdown text.';
+  content: "This block of code was edited in another editor and contains markdown formatting that Scratch doesn't support yet. It will be serialized into markdown not as a code block but as a normal piece of markdown text.";
   font-size: 12px;
   padding: 5px;
   position: absolute;
@@ -229,7 +231,10 @@ pre code {
 }
 
 button[data-format]:hover {
-  background-color: var(--sn-stylekit-secondary-contrast-background-color, #eee);
+  background-color: var(
+    --sn-stylekit-secondary-contrast-background-color,
+    #eee
+  );
 }
 
 button.selected:after {
@@ -259,8 +264,8 @@ button[data-format] i {
   width: 25px;
 }
 
-button[data-format=link]:before,
-button[data-format=heading]:before {
+button[data-format='link']:before,
+button[data-format='heading']:before {
   background: var(--sn-stylekit-contrast-background-color, #ccc);
   bottom: 7px;
   content: '';
@@ -272,7 +277,7 @@ button[data-format=heading]:before {
   width: 1px;
 }
 
-button[data-format=code_block]:before {
+button[data-format='code_block']:before {
   content: '';
   display: block;
   position: absolute;
@@ -284,12 +289,12 @@ button[data-format=code_block]:before {
   border-radius: 2px;
 }
 
-button[data-format=code_block] i {
+button[data-format='code_block'] i {
   position: relative;
   background: transparent;
 }
 
-button[data-format=code_block] i span {
+button[data-format='code_block'] i span {
   display: block;
   height: 18px;
   position: absolute;
@@ -300,8 +305,11 @@ button[data-format=code_block] i span {
   z-index: 2;
 }
 
-button[data-format=code_block]:hover span {
-  background-color: var(--sn-stylekit-secondary-contrast-background-color, #eee);
+button[data-format='code_block']:hover span {
+  background-color: var(
+    --sn-stylekit-secondary-contrast-background-color,
+    #eee
+  );
 }
 
 svg {
@@ -330,11 +338,9 @@ div#frame {
   align-items: center;
   background: var(--sn-stylekit-background-color, white);
   border-radius: 2px;
-  box-shadow:
-    0 2px 2px 0 rgba(0,0,0,0.14),
-    0 3px 1px -2px rgba(0,0,0,0.12),
-    0 1px 5px 0 rgba(0,0,0,0.2);
-   box-sizing: border-box;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 230px;
@@ -365,7 +371,7 @@ div#link-modal label {
 div#link-modal label a i {
   display: inline-block;
   height: 14px;
-  position:  relative;
+  position: relative;
   top: 2px;
   width: 14px;
 }
@@ -407,7 +413,7 @@ div#link-modal button#confirm {
 div#link-tooltip {
   background: var(--sn-stylekit-background-color, white);
   border: 1px solid var(--sn-stylekit-border-color, #ccc);
-  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: none;
   max-width: calc(100% - 10px);
