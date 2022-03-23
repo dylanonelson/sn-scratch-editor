@@ -297,10 +297,10 @@ export class ToolbarPlugin extends Plugin {
     const { $from, $to } = selection;
     const linkMarkAtStart = $from
       .marks()
-      .find((mark) => mark.type === schema.marks.link);
+      .find((mark) => mark.type === schema.marks.link || schema.marks.inline_link);
     const linkMarkAtEnd = $to
       .marks()
-      .find((mark) => mark.type === schema.marks.link);
+      .find((mark) => mark.type === schema.marks.link || schema.marks.inline_link);
     const selectionIsInsideLink = linkMarkAtStart && linkMarkAtEnd;
 
     if (selection.empty && !selectionIsInsideLink) {
@@ -575,6 +575,10 @@ export class ToolbarPlugin extends Plugin {
     markTypes.forEach((markType) => {
       switch (markType) {
         case schema.marks.link: {
+          result.push('link');
+          break;
+        }
+        case schema.marks.inline_link: {
           result.push('link');
           break;
         }

@@ -59,6 +59,7 @@ export const markdownSerializer = new MarkdownSerializer(
   },
   {
     ...defaultMarkdownSerializer.marks,
+    inline_link: defaultMarkdownSerializer.marks.link,
     code: {
       close(state, mark) {
         return mark.attrs[MARKDOWN_ESCAPED_ATTR] ? '' : '`';

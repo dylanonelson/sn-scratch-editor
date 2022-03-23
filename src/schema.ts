@@ -165,6 +165,9 @@ const spec = {
     link: {
       ...marks.link,
     },
+    inline_link: {
+      ...marks.link,
+    },
     em: {
       ...marks.em,
     },

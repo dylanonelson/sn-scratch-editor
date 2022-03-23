@@ -54,9 +54,9 @@ export class TooltipPlugin extends Plugin {
         $cursor.nodeBefore &&
         $cursor.nodeAfter &&
         $cursor.nodeBefore.marks.some(
-          (mark) => mark.type === schema.marks.link,
+          (mark) => mark.type === schema.marks.link || schema.marks.inline_link,
         ) &&
-        $cursor.nodeAfter.marks.some((mark) => mark.type === schema.marks.link),
+        $cursor.nodeAfter.marks.some((mark) => mark.type === schema.marks.link || mark.type === schema.marks.inline_link),
     );
 
     if (withinLink === false) {
@@ -65,7 +65,7 @@ export class TooltipPlugin extends Plugin {
     }
 
     const mark = $cursor.nodeBefore.marks.find(
-      (mark) => mark.type === schema.marks.link,
+      (mark) => mark.type === schema.marks.link || mark.type === schema.marks.inline_link,
     );
 
     this.show($cursor, mark.attrs.href);
