@@ -10,6 +10,7 @@ import {
 } from 'prosemirror-model';
 
 export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
+export const INLINE_LINK_ATTR = 'inline_link';
 
 const EDITOR_CLS = 'sn-editor';
 

@@ -6,7 +6,12 @@ import {
   defaultMarkdownSerializer,
 } from 'prosemirror-markdown';
 import imageRule from 'markdown-it/lib/rules_inline/image';
-import { MARKDOWN_ESCAPED_ATTR, CheckboxStatus, schema } from './schema';
+import {
+  INLINE_LINK_ATTR,
+  MARKDOWN_ESCAPED_ATTR,
+  CheckboxStatus,
+  schema,
+} from './schema';
 
 export const markdownSerializer = new MarkdownSerializer(
   {
@@ -241,6 +246,9 @@ const parserShim = () => ({
       if (type.startsWith('heading') && tag === 'h2') {
         token.type = type.replace('heading', 'heading2');
       }
+      if (type === 'link' && token.attrGet('href') === token.content) {
+        token.attrSet(INLINE_LINK_ATTR, 'true');
+      }
 
       const output = tokenParser.take(token);
 
@@ -300,6 +308,9 @@ export const markdownParser = new MarkdownParser(
       getAttrs: (tok) => ({
         href: tok.attrGet('href'),
         title: tok.attrGet('title') || null,
+        ...(tok.attrGet(INLINE_LINK_ATTR) === 'true' && {
+          [INLINE_LINK_ATTR]: tok.attrGet(INLINE_LINK_ATTR),
+        }),
       }),
     },
   },
