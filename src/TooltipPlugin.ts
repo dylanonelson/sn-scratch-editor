@@ -7,7 +7,7 @@ import {
   TextSelection,
   Transaction,
 } from 'prosemirror-state';
-import { schema } from './schema';
+import { AUTO_LINK_ATTR, schema } from './schema';
 
 const SHOW_CLS = 'show';
 
@@ -18,7 +18,6 @@ const MAILTO_LINK = new RegExp('^mailto:');
 export class TooltipPlugin extends Plugin {
   private tooltipEl: HTMLDivElement;
   private view: EditorView;
-  private txt: string;
 
   static nodeToAnchorHref(url: string) {
     if (HTTP_LINK.test(url) || MAILTO_LINK.test(url)) {
@@ -54,9 +53,9 @@ export class TooltipPlugin extends Plugin {
         $cursor.nodeBefore &&
         $cursor.nodeAfter &&
         $cursor.nodeBefore.marks.some(
-          (mark) => mark.type === schema.marks.link || schema.marks.inline_link,
+          (mark) => mark.type === schema.marks.link,
         ) &&
-        $cursor.nodeAfter.marks.some((mark) => mark.type === schema.marks.link || mark.type === schema.marks.inline_link),
+        $cursor.nodeAfter.marks.some((mark) => mark.type === schema.marks.link),
     );
 
     if (withinLink === false) {
@@ -65,19 +64,20 @@ export class TooltipPlugin extends Plugin {
     }
 
     const mark = $cursor.nodeBefore.marks.find(
-      (mark) => mark.type === schema.marks.link || mark.type === schema.marks.inline_link,
+      (mark) => mark.type === schema.marks.link,
     );
 
-    this.show($cursor, mark.attrs.href);
+    this.show($cursor, mark.attrs.href, mark.attrs[AUTO_LINK_ATTR]);
   };
 
   private hide = () => {
     this.tooltipEl.classList.remove(SHOW_CLS);
   };
 
-  private show = ($pos: ResolvedPos, url: string) => {
+  private show = ($pos: ResolvedPos, url: string, isAutoLink: boolean) => {
     this.linkTextEl.innerText = url;
     this.anchorEl.href = TooltipPlugin.nodeToAnchorHref(url);
+    this.tooltipEl.classList.toggle('yes-auto-link', isAutoLink);
     this.tooltipEl.classList.add(SHOW_CLS);
 
     const { left, top } = this.view.coordsAtPos($pos.pos);

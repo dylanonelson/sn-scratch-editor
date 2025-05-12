@@ -422,12 +422,14 @@ div#link-tooltip {
 }
 
 div#link-tooltip.show {
-  display: block;
+  display: flex;
+  align-items: center;
 }
 
 div#link-tooltip a {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 div#link-tooltip div.text {
@@ -443,4 +445,16 @@ div#link-tooltip i {
   flex: 0 0 14px;
   height: 14px;
   width: 14px;
+}
+
+div.auto-link-indicator {
+  text-transform: uppercase;
+  font-family: var(--ff-mono), monospace;
+  font-size: 10px;
+  display: none;
+  padding-right: 6px;
+}
+
+div#link-tooltip.yes-auto-link div.auto-link-indicator {
+  display: block;
 }

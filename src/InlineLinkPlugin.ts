@@ -1,38 +1,85 @@
-import { EditorState, Plugin, Selection, Transaction } from 'prosemirror-state';
-import { Decoration, DecorationSet, EditorView } from 'prosemirror-view';
-import { schema } from './schema';
+import { Plugin, Transaction } from 'prosemirror-state';
+import { AUTO_LINK_ATTR, schema } from './schema';
+import LinkifyIt from 'linkify-it';
+
+const linkify = new LinkifyIt();
 
 export const findAndInsertInlineLinks = (state): Transaction => {
   const { tr } = state;
-  let decorationSet = new DecorationSet();
 
   tr.doc.descendants((node, pos, parent) => {
     if (!node.isTextblock) {
       return;
     }
 
-    const URL_REGEX = /(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})\/?(([\/\w\-\._~!$&'()*+,;=:@]|(%[0-F][0-F]))*)*\/?(\?([\w;/?:@&=+$,]|(%[0-F][0-F]))+)?/gi;
-    let urlMatch = URL_REGEX.exec(node.textContent);
+    // First, find and validate all existing autolinks. If an autolink contains text that is not a valid URL, remove the link.
+    const startingPositionInsideNode = pos + 1;
+    const autoLinkMaps: {startPos: number, endPos: number}[] = [];
+    node.forEach((child, offset, index) => {
+      if (!child.isText) {
+        return;
+      }
+      let childLinkMark = child.marks.find(mark => mark.type === schema.marks.link);
+      if (childLinkMark && childLinkMark.attrs[AUTO_LINK_ATTR] === true) {
+        if (autoLinkMaps.length) {
+          const lastMap = autoLinkMaps[autoLinkMaps.length - 1];
+          if (lastMap.endPos === startingPositionInsideNode + offset) {
+            lastMap.endPos = pos + offset + child.nodeSize;
+          }
+        } else {
+          autoLinkMaps.push({
+            startPos: startingPositionInsideNode + offset,
+            endPos: startingPositionInsideNode + offset + child.nodeSize
+          });
+        }
+      }
+    })
 
-    while (urlMatch) {
-      debugger
-      const [str] = urlMatch;
+    for (const autoLinkMap of autoLinkMaps) {
+      const linkText = tr.doc.textBetween(autoLinkMap.startPos, autoLinkMap.endPos);
+      if (!linkify.test(linkText)) {
+        tr.removeMark(autoLinkMap.startPos, autoLinkMap.endPos, schema.marks.link);
+      } else {
+        // This else statement ensures that existing autolinks will continue to update even if they are 
+        // adjacent to other text; the regex URL test will stop finding them in this case.
+        tr.addMark(autoLinkMap.startPos, autoLinkMap.endPos, schema.marks.link.create({ href: linkText, [AUTO_LINK_ATTR]: true }));
+      }
+    }
 
-      const start = pos + 1 + urlMatch.index;
-      const end = start + str.length;
+    // Then, find and insert new autolinks based on the same test.
+    const matches = linkify.match(node.textContent);
+    if (!matches) {
+      return;
+    }
+
+    for (const match of matches) {
+      const start = pos + 1 + match.index;
+      const end = start + match.text.length;
       
-      if (tr.doc.rangeHasMark(start, end, schema.marks.link)) {
-        urlMatch = URL_REGEX.exec(node.textContent);
+      if (tr.doc.rangeHasMark(start, end, schema.marks.code)) {
         continue;
       }
 
+      if (tr.doc.rangeHasMark(start, end, schema.marks.link)) {
+        let linkMarks = []
+        tr.doc.nodesBetween(start, end, (node) => {
+          if (node.isText) {
+            const linkMark = node.marks.find(mark => mark.type === schema.marks.link)
+            if (linkMark && linkMark.attrs[AUTO_LINK_ATTR] === false) {
+              linkMarks.push(linkMark);
+            }
+          }
+        });
+        if (linkMarks.length) {
+          continue;
+        }
+      }
+      
       tr.addMark(
         start,
         end,
-        schema.marks.inline_link.create({ href: str }),
+        schema.marks.link.create({ href: match.url, [AUTO_LINK_ATTR]: true }),
       );
-
-      urlMatch = URL_REGEX.exec(node.textContent);
     }
   });
 

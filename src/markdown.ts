@@ -7,7 +7,7 @@ import {
 } from 'prosemirror-markdown';
 import imageRule from 'markdown-it/lib/rules_inline/image';
 import {
-  INLINE_LINK_ATTR,
+  AUTO_LINK_ATTR,
   MARKDOWN_ESCAPED_ATTR,
   CheckboxStatus,
   schema,
@@ -247,7 +247,7 @@ const parserShim = () => ({
         token.type = type.replace('heading', 'heading2');
       }
       if (type === 'link' && token.attrGet('href') === token.content) {
-        token.attrSet(INLINE_LINK_ATTR, 'true');
+        token.attrSet(AUTO_LINK_ATTR, 'true');
       }
 
       const output = tokenParser.take(token);
@@ -305,13 +305,15 @@ export const markdownParser = new MarkdownParser(
     },
     link: {
       mark: 'link',
-      getAttrs: (tok) => ({
-        href: tok.attrGet('href'),
-        title: tok.attrGet('title') || null,
-        ...(tok.attrGet(INLINE_LINK_ATTR) === 'true' && {
-          [INLINE_LINK_ATTR]: tok.attrGet(INLINE_LINK_ATTR),
-        }),
-      }),
+      getAttrs(tok) {
+        return {
+          href: tok.attrGet('href'),
+          title: tok.attrGet('title') || null,
+          ...(tok.info === 'auto' && {
+            [AUTO_LINK_ATTR]: true,
+          }),
+        }
+      },
     },
   },
 );
