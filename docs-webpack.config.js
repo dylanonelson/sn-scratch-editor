@@ -5,9 +5,6 @@ const getConfig = require('./webpack.config.js');
 module.exports = (...args) => {
   const config = getConfig(...args);
   config.output.path = path.resolve(__dirname, 'docs')
-  config.devServer = {
-    port: 1104
-  };
   config.plugins = config.plugins
     .concat([
       new webpack.NormalModuleReplacementPlugin(
