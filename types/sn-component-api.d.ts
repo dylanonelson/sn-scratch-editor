@@ -1,6 +1,6 @@
 type ExtensionPermission = {
   name: string;
-}
+};
 
 interface Item {
   content: {
@@ -8,8 +8,8 @@ interface Item {
     preview_html: string;
     title: string;
     text: string;
-  },
-  uuid: string,
+  };
+  uuid: string;
 }
 
 interface ContextItem extends Item {}
@@ -26,7 +26,11 @@ declare module 'sn-components-api' {
   class ComponentManager {
     constructor(permissions: ExtensionPermission[], onReady?: () => void);
     streamContextItem(callback: (item: ContextItem) => void): void;
-    saveItemWithPresave(item: Item, presave?: PresaveCallback, callback?: SaveCompleteCallback): void;
+    saveItemWithPresave(
+      item: Item,
+      presave?: PresaveCallback,
+      callback?: SaveCompleteCallback,
+    ): void;
   }
 
   export = ComponentManager;
