@@ -125,7 +125,7 @@ const codeBlockSpec: NodeSpec = {
     if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
       // DOMOutputSpec types are messed up :(
       // @ts-ignore
-      spec.push(['div', {class: 'info'}, 'i'])
+      spec.push(['div', { class: 'info' }, 'i']);
     }
     // @ts-ignore
     spec.push(['code', 0]);
@@ -177,7 +177,7 @@ const spec = {
         ...marks.code.attrs,
         [MARKDOWN_ESCAPED_ATTR]: {
           default: false,
-        }
+        },
       },
     },
   },

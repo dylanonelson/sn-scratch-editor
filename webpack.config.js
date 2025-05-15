@@ -10,10 +10,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = ({ analyzer, production } = {}) => {
   return {
-    entry: [
-      './src/index.ts',
-      './src/styles.css',
-    ],
+    entry: ['./src/index.ts', './src/styles.css'],
     devServer: { port: 5001 },
     devtool: 'inline-source-map',
     mode: production ? 'production' : 'development',
@@ -25,10 +22,7 @@ module.exports = ({ analyzer, production } = {}) => {
         },
         {
           test: /\.css$/i,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-          ],
+          use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
         {
           test: /\.ts$/i,
@@ -38,15 +32,12 @@ module.exports = ({ analyzer, production } = {}) => {
         {
           enforce: 'pre',
           test: /\.js$/,
-          loader: 'source-map-loader'
+          loader: 'source-map-loader',
         },
       ],
     },
     optimization: {
-      minimizer: [
-        new OptimizeCSSAssetsPlugin(),
-        new TerserWebpackPlugin(),
-      ],
+      minimizer: [new OptimizeCSSAssetsPlugin(), new TerserWebpackPlugin()],
     },
     plugins: [
       // Clean out dist before each release build
@@ -58,10 +49,12 @@ module.exports = ({ analyzer, production } = {}) => {
         scriptLoading: 'defer',
       }),
       // Copy json files into dist
-      new CopyWebpackPlugin([{
-        flatten: true,
-        from: 'src/*.json',
-      }]),
+      new CopyWebpackPlugin([
+        {
+          flatten: true,
+          from: 'src/*.json',
+        },
+      ]),
       // Output css as css, not js
       new MiniCssExtractPlugin({
         filename: '[name].css',

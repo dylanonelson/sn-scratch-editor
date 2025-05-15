@@ -30,15 +30,13 @@ function recursiveDeleteEmpty(tr: Transaction, $pos: ResolvedPos): Transaction {
 
 function ensureTextSelectionInEmptyNode(state: EditorState): boolean {
   const { $cursor } = state.selection as TextSelection;
-  return Boolean(
-    $cursor && $cursor.parent.nodeSize === 2
-  );
+  return Boolean($cursor && $cursor.parent.nodeSize === 2);
 }
 
 function ensureChecklistItemTextSelection(state: EditorState) {
   const { $cursor } = state.selection as TextSelection;
   return Boolean(
-    $cursor && $cursor.parent.type === schema.nodes.checklist_item
+    $cursor && $cursor.parent.type === schema.nodes.checklist_item,
   );
 }
 
@@ -102,10 +100,7 @@ export const keymapPlugins: Plugin[] = [
       if (!possibleSelection) {
         return false;
       }
-      if (
-        possibleSelection.$cursor.node(-1).type !==
-        schema.nodes.list_item
-      ) {
+      if (possibleSelection.$cursor.node(-1).type !== schema.nodes.list_item) {
         return;
       }
       let tr = state.tr.setSelection(possibleSelection);

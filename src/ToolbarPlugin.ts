@@ -199,12 +199,17 @@ export class ToolbarPlugin extends Plugin {
   private swapTextBlock = (nodeType: NodeType) => {
     let { dispatch, state } = this.view;
     let { tr } = state;
-    if (nodeType !== schema.nodes.unordered_list && nodeType !== schema.nodes.ordered_list) {
+    if (
+      nodeType !== schema.nodes.unordered_list &&
+      nodeType !== schema.nodes.ordered_list
+    ) {
       liftListItem(schema.nodes.list_item)(state, dispatch);
     }
     ({ dispatch, state } = this.view);
     ({ tr } = state);
-    const { selection: { from, to } } = state;
+    const {
+      selection: { from, to },
+    } = state;
     tr.setBlockType(from, to, nodeType);
     dispatch(tr);
     this.view.focus();

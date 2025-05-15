@@ -84,7 +84,7 @@ export class TooltipPlugin extends Plugin {
     const actualWidth = this.tooltipEl.offsetWidth;
     const availableWidth = document.documentElement.clientWidth;
     // tooltip max-width is 100% - 10, for 5px of space from each window edge
-    if ((left + actualWidth) > availableWidth) {
+    if (left + actualWidth > availableWidth) {
       this.tooltipEl.style.left = `${Math.max(5, left - actualWidth)}px`;
     } else {
       this.tooltipEl.style.left = `${Math.max(5, left)}px`;
