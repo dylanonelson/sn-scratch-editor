@@ -99,7 +99,7 @@ describe('parser', () => {
         ## Code sample
 
         \`\`\`
-        npm run tst
+        npm run test
         \`\`\`
       `),
         [
