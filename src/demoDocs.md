@@ -14,7 +14,7 @@ Scratch includes a number of ways to format your notes. It has **bold**, _italic
 
 ## How to use this editor
 
-[ ] [Download the desktop client](https://standardnotes.org/) or go to the [web app](https://app.standardnotes.org/)
+[ ][download the desktop client](https://standardnotes.org/) or go to the [web app](https://app.standardnotes.org/)
 
 [ ] Open the extensions menu in the lower left-hand corner
 
