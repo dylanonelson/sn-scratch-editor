@@ -10,7 +10,9 @@
     "deploy": "./scripts/deploy.sh",
     "dev:dist": "webpack-dev-server",
     "dev:docs": "webpack-dev-server --config=docs-webpack.config.js -d",
-    "test": "jest"
+    "format": "prettier . --write",
+    "test": "jest",
+    "validate": "npm run test && prettier . --check"
   },
   "keywords": [
     "Standard Notes",

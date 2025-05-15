@@ -4,4 +4,4 @@ module.exports = function (source) {
     container.innerHTML = \`${source}\`;
     export default container.content.firstElementChild;
   `;
-}
+};

@@ -1,23 +1,25 @@
 {
   "hosting": {
     "public": "dist",
-    "headers": [{
-      "source": "ext.json",
-      "headers": [{
-        "key": "Access-Control-Allow-Origin",
-        "value": "*"
-      }, {
-        "key": "Access-Control-Allow-Headers",
-        "value": "*"
-      }, {
-        "key": "Cache-Control",
-        "value": "no-store"
-      }]
-    }],
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
+    "headers": [
+      {
+        "source": "ext.json",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Access-Control-Allow-Headers",
+            "value": "*"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          }
+        ]
+      }
+    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }
