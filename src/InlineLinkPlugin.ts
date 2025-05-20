@@ -14,12 +14,14 @@ export const findAndInsertInlineLinks = (state): Transaction => {
 
     // First, find and validate all existing autolinks. If an autolink contains text that is not a valid URL, remove the link.
     const startingPositionInsideNode = pos + 1;
-    const autoLinkMaps: {startPos: number, endPos: number}[] = [];
+    const autoLinkMaps: { startPos: number; endPos: number }[] = [];
     node.forEach((child, offset, index) => {
       if (!child.isText) {
         return;
       }
-      let childLinkMark = child.marks.find(mark => mark.type === schema.marks.link);
+      let childLinkMark = child.marks.find(
+        (mark) => mark.type === schema.marks.link,
+      );
       if (childLinkMark && childLinkMark.attrs[AUTO_LINK_ATTR] === true) {
         if (autoLinkMaps.length) {
           const lastMap = autoLinkMaps[autoLinkMaps.length - 1];
@@ -29,20 +31,31 @@ export const findAndInsertInlineLinks = (state): Transaction => {
         } else {
           autoLinkMaps.push({
             startPos: startingPositionInsideNode + offset,
-            endPos: startingPositionInsideNode + offset + child.nodeSize
+            endPos: startingPositionInsideNode + offset + child.nodeSize,
           });
         }
       }
-    })
+    });
 
     for (const autoLinkMap of autoLinkMaps) {
-      const linkText = tr.doc.textBetween(autoLinkMap.startPos, autoLinkMap.endPos);
+      const linkText = tr.doc.textBetween(
+        autoLinkMap.startPos,
+        autoLinkMap.endPos,
+      );
       if (!linkify.test(linkText)) {
-        tr.removeMark(autoLinkMap.startPos, autoLinkMap.endPos, schema.marks.link);
+        tr.removeMark(
+          autoLinkMap.startPos,
+          autoLinkMap.endPos,
+          schema.marks.link,
+        );
       } else {
-        // This else statement ensures that existing autolinks will continue to update even if they are 
+        // This else statement ensures that existing autolinks will continue to update even if they are
         // adjacent to other text; the regex URL test will stop finding them in this case.
-        tr.addMark(autoLinkMap.startPos, autoLinkMap.endPos, schema.marks.link.create({ href: linkText, [AUTO_LINK_ATTR]: true }));
+        tr.addMark(
+          autoLinkMap.startPos,
+          autoLinkMap.endPos,
+          schema.marks.link.create({ href: linkText, [AUTO_LINK_ATTR]: true }),
+        );
       }
     }
 
@@ -55,16 +68,18 @@ export const findAndInsertInlineLinks = (state): Transaction => {
     for (const match of matches) {
       const start = pos + 1 + match.index;
       const end = start + match.text.length;
-      
+
       if (tr.doc.rangeHasMark(start, end, schema.marks.code)) {
         continue;
       }
 
       if (tr.doc.rangeHasMark(start, end, schema.marks.link)) {
-        let linkMarks = []
+        let linkMarks = [];
         tr.doc.nodesBetween(start, end, (node) => {
           if (node.isText) {
-            const linkMark = node.marks.find(mark => mark.type === schema.marks.link)
+            const linkMark = node.marks.find(
+              (mark) => mark.type === schema.marks.link,
+            );
             if (linkMark && linkMark.attrs[AUTO_LINK_ATTR] === false) {
               linkMarks.push(linkMark);
             }
@@ -74,7 +89,7 @@ export const findAndInsertInlineLinks = (state): Transaction => {
           continue;
         }
       }
-      
+
       tr.addMark(
         start,
         end,

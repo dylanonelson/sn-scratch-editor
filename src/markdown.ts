@@ -1,11 +1,9 @@
 import markdownit from 'markdown-it';
-import Token from 'markdown-it/lib/token';
 import {
   MarkdownParser,
   MarkdownSerializer,
   defaultMarkdownSerializer,
 } from 'prosemirror-markdown';
-import imageRule from 'markdown-it/lib/rules_inline/image';
 import {
   AUTO_LINK_ATTR,
   MARKDOWN_ESCAPED_ATTR,
@@ -15,50 +13,50 @@ import {
 
 export const markdownSerializer = new MarkdownSerializer(
   {
-    heading1(state, node) {
+    heading1(state, node, parent, index) {
       state.write('# ');
       state.renderInline(node);
       state.closeBlock(node);
     },
-    heading2(state, node) {
+    heading2(state, node, parent, index) {
       state.write('## ');
       state.renderInline(node);
       state.closeBlock(node);
     },
-    checklist_item(state, node) {
+    checklist_item(state, node, parent, index) {
       const boxText =
         node.attrs.status === CheckboxStatus.DONE ? '[x] ' : '[ ] ';
       state.write(boxText);
       state.renderInline(node);
       state.closeBlock(node);
     },
-    paragraph(state, node) {
+    paragraph(state, node, parent, index) {
       if (node.nodeSize === 2) {
         // Write a non-breaking empty space so markdown retains the line as an empty paragraph
         state.write('\u00A0');
         state.closeBlock(node);
         return;
       }
-      defaultMarkdownSerializer.nodes.paragraph(state, node);
+      defaultMarkdownSerializer.nodes.paragraph(state, node, parent, index);
     },
-    list_item(state, node) {
-      defaultMarkdownSerializer.nodes.list_item(state, node);
+    list_item(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.list_item(state, node, parent, index);
     },
-    ordered_list(state, node) {
-      defaultMarkdownSerializer.nodes.ordered_list(state, node);
+    ordered_list(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.ordered_list(state, node, parent, index);
     },
-    unordered_list(state, node) {
-      defaultMarkdownSerializer.nodes.bullet_list(state, node);
+    unordered_list(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.bullet_list(state, node, parent, index);
     },
-    text(state, node) {
-      defaultMarkdownSerializer.nodes.text(state, node);
+    text(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.text(state, node, parent, index);
     },
-    code_block(state, node) {
+    code_block(state, node, parent, index) {
       if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
         state.write(node.textContent);
         state.ensureNewLine();
       } else {
-        defaultMarkdownSerializer.nodes.code_block(state, node);
+        defaultMarkdownSerializer.nodes.code_block(state, node, parent, index);
       }
     },
   },
@@ -78,6 +76,15 @@ export const markdownSerializer = new MarkdownSerializer(
 );
 
 const markdownItParser = markdownit();
+const Token = markdownItParser.core.State.prototype.Token;
+// We need to access the default image parser rule so we can wrap it in custom
+// logic. These methods and objects are meant to be internal but there seems to
+// be no other way to get at the default rules.
+// @ts-ignore
+const imageRuleIndex = markdownItParser.inline.ruler.__find__('image');
+const defaultImageRule =
+  // @ts-ignore
+  markdownItParser.inline.ruler.__rules__[imageRuleIndex].fn;
 
 const CHECKLIST_ITEM_OPEN_MARKERS = ['[x]', '[X]', '[ ]'];
 
@@ -109,7 +116,7 @@ markdownItParser.use((md) => {
         }
       } else if (isChecklistOpen && token.type === 'paragraph_close') {
         isChecklistOpen = false;
-        return new Token('checklist_item_close', 'div', -1);
+        return new coreState.Token('checklist_item_close', 'div', -1);
       }
 
       return token;
@@ -120,9 +127,9 @@ markdownItParser.use((md) => {
 
   md.inline.ruler.at('image', (inlineState) => {
     const { pos: originalPos } = inlineState;
-    const result = imageRule(inlineState);
+    const result = defaultImageRule(inlineState);
     if (result) {
-      const codeToken = new Token('code_inline', 'code', 0);
+      const codeToken = new inlineState.Token('code_inline', 'code', 0);
       codeToken.markup = '`';
       codeToken.content = inlineState.src.slice(originalPos, inlineState.pos);
       codeToken.attrSet(MARKDOWN_ESCAPED_ATTR, 'true');
@@ -133,8 +140,8 @@ markdownItParser.use((md) => {
 });
 
 class ScratchTokenParser {
-  private fullTokenList: Token[];
-  private tokenStack: Token[];
+  private fullTokenList: markdownit.Token[];
+  private tokenStack: markdownit.Token[];
   private parseable: boolean;
   private src: string;
 
@@ -159,7 +166,7 @@ class ScratchTokenParser {
     this.src = src;
   }
 
-  take(token: Token): null | Token[] {
+  take(token: markdownit.Token): null | markdownit.Token[] {
     const { nesting } = token;
     let { type } = token;
     type = ScratchTokenParser.getTypeName(type);
@@ -312,7 +319,7 @@ export const markdownParser = new MarkdownParser(
           ...(tok.info === 'auto' && {
             [AUTO_LINK_ATTR]: true,
           }),
-        }
+        };
       },
     },
   },

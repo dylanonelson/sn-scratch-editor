@@ -297,10 +297,16 @@ export class ToolbarPlugin extends Plugin {
     const { $from, $to } = selection;
     const linkMarkAtStart = $from
       .marks()
-      .find((mark) => mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR]);
+      .find(
+        (mark) =>
+          mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR],
+      );
     const linkMarkAtEnd = $to
       .marks()
-      .find((mark) => mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR]);
+      .find(
+        (mark) =>
+          mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR],
+      );
     const selectionIsInsideLink = linkMarkAtStart && linkMarkAtEnd;
 
     if (selection.empty && !selectionIsInsideLink) {

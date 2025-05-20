@@ -85,9 +85,7 @@ describe('Inline links plugin', () => {
   });
 
   const createStateAndAddExclamation = (text: string) => {
-    const doc = schemaHelpers.doc(
-      schemaHelpers.paragraph(text),
-    );
+    const doc = schemaHelpers.doc(schemaHelpers.paragraph(text));
     const editorState = EditorState.create({
       doc,
       schema,
@@ -101,7 +99,7 @@ describe('Inline links plugin', () => {
 
   it('inserts inline links when they occur multiple times in a paragraph', () => {
     const editorState = createStateAndAddExclamation(
-      'Check out https://standardnotes.org and also visit https://standardnotes.org/features'
+      'Check out https://standardnotes.org and also visit https://standardnotes.org/features',
     );
 
     // Verify the text content is correct
@@ -121,8 +119,8 @@ describe('Inline links plugin', () => {
     expect(firstLinkMark.attrs.href).toBe('https://standardnotes.org');
 
     // Verify second link mark
-    const secondLinkStart = 'Check out https://standardnotes.org and also visit '
-      .length + 1;
+    const secondLinkStart =
+      'Check out https://standardnotes.org and also visit '.length + 1;
     const secondLinkNode = editorState.doc.nodeAt(secondLinkStart);
     expect(secondLinkNode.type.isText).toBe(true);
     expect(secondLinkNode.textContent).toBe(
@@ -163,7 +161,7 @@ describe('Inline links plugin', () => {
   it('removes autolinks when the contained text is not a valid URL', () => {
     // First create a document with a valid autolink
     const stateWithAutolink = createStateAndAddExclamation(
-      'Check out https://standardnotes.org for more info'
+      'Check out https://standardnotes.org for more info',
     );
 
     // Verify the autolink was created
@@ -178,13 +176,15 @@ describe('Inline links plugin', () => {
     // Verify the autolink was removed
     const modifiedNode = newState.doc.nodeAt(11);
     expect(modifiedNode.marks.length).toBe(0);
-    expect(modifiedNode.textContent).toBe('Check out hinvalidttps://standardnotes.org for more info!');
+    expect(modifiedNode.textContent).toBe(
+      'Check out hinvalidttps://standardnotes.org for more info!',
+    );
   });
 
   it('maintains autolinks and updates their href when adjacent text makes the word unit invalid', () => {
     // First create a document with a valid autolink
     const stateWithAutolink = createStateAndAddExclamation(
-      'Check out https://standardnotes.org for more info'
+      'Check out https://standardnotes.org for more info',
     );
 
     // Verify the autolink was created

@@ -206,7 +206,14 @@ describe('parser', () => {
           [
             'here',
             new Map([
-              [schema.marks.link, { href: 'https://example.com', title: null, [AUTO_LINK_ATTR]: false }],
+              [
+                schema.marks.link,
+                {
+                  href: 'https://example.com',
+                  title: null,
+                  [AUTO_LINK_ATTR]: false,
+                },
+              ],
             ]),
           ],
         ],
@@ -220,11 +227,23 @@ describe('parser', () => {
       `),
         [
           ['Check out ', new Map()],
-          ['https://standardnotes.org', new Map([[schema.marks.link, { href: 'https://standardnotes.org', title: null, [AUTO_LINK_ATTR]: true }]])],
+          [
+            'https://standardnotes.org',
+            new Map([
+              [
+                schema.marks.link,
+                {
+                  href: 'https://standardnotes.org',
+                  title: null,
+                  [AUTO_LINK_ATTR]: true,
+                },
+              ],
+            ]),
+          ],
           [' for more info', new Map()],
         ],
-      )
-    })
+      );
+    });
 
     it('combines marks', () => {
       parseTestInlineHelper(

@@ -1,15 +1,6 @@
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { marks, nodes } from 'prosemirror-schema-basic';
-import OrderedMap from 'orderedmap';
-import {
-  DOMOutputSpecArray,
-  MarkSpec,
-  Node,
-  NodeSpec,
-  NodeType,
-  Schema,
-  SchemaSpec,
-} from 'prosemirror-model';
+import { NodeSpec, Schema, SchemaSpec } from 'prosemirror-model';
 
 export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
 export const AUTO_LINK_ATTR = 'auto_link'; // Links auto-detected from user input, as opposed to links added as metadata by the user
@@ -121,18 +112,12 @@ const codeBlockSpec: NodeSpec = {
     },
   },
   toDOM(node) {
-    const spec = [
-      'pre',
-      { [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs.markdown_escaped },
-    ] as DOMOutputSpecArray;
-    if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
-      // DOMOutputSpec types are messed up :(
-      // @ts-ignore
-      spec.push(['div', { class: 'info' }, 'i']);
-    }
-    // @ts-ignore
-    spec.push(['code', 0]);
-    return spec;
+    const attrs = {
+      [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs[MARKDOWN_ESCAPED_ATTR],
+    };
+    return node.attrs[MARKDOWN_ESCAPED_ATTR]
+      ? ['pre', attrs, ['div', { class: 'info' }, 'i'], ['code', 0]]
+      : ['pre', attrs, ['code', 0]];
   },
 };
 
@@ -167,15 +152,37 @@ const spec: SchemaSpec = {
   marks: {
     link: {
       attrs: {
-        href: {default: ""},
-        title: {default: null},
-        [AUTO_LINK_ATTR]: {default: false},
+        href: { default: '' },
+        title: { default: null },
+        [AUTO_LINK_ATTR]: { default: false },
       },
       inclusive: false,
-      parseDOM: [{tag: "a[href]", getAttrs(dom: HTMLElement) {
-        return {href: dom.getAttribute("href"), title: dom.getAttribute("title"), [`data-${AUTO_LINK_ATTR}`]: dom.getAttribute(`data-${AUTO_LINK_ATTR}`)};
-      }}],
-      toDOM(node) { let {href, title} = node.attrs; return ["a", {href, title, [`data-${AUTO_LINK_ATTR}`]: node.attrs[AUTO_LINK_ATTR]}, 0] }
+      parseDOM: [
+        {
+          tag: 'a[href]',
+          getAttrs(dom: HTMLElement) {
+            return {
+              href: dom.getAttribute('href'),
+              title: dom.getAttribute('title'),
+              [`data-${AUTO_LINK_ATTR}`]: dom.getAttribute(
+                `data-${AUTO_LINK_ATTR}`,
+              ),
+            };
+          },
+        },
+      ],
+      toDOM(node) {
+        let { href, title } = node.attrs;
+        return [
+          'a',
+          {
+            href,
+            title,
+            [`data-${AUTO_LINK_ATTR}`]: node.attrs[AUTO_LINK_ATTR],
+          },
+          0,
+        ];
+      },
     },
     em: {
       ...marks.em,

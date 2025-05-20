@@ -45,7 +45,8 @@ export class TooltipPlugin extends Plugin {
   }
 
   private checkSelection = () => {
-    const selection: TextSelection = this.view.state.selection;
+    const selection = this.view.state.selection;
+    if (!(selection instanceof TextSelection)) return;
     const { $cursor } = selection;
 
     const withinLink = Boolean(
