@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import ComponentManager from 'sn-components-api';
+import ComponentManager from '@standardnotes/component-relay';
 import { baseKeymap } from 'prosemirror-commands';
 import { EditorView } from 'prosemirror-view';
 import { EditorState, Plugin } from 'prosemirror-state';
@@ -24,8 +24,8 @@ function getDocForNewEditorState() {
   return client.latestText
     ? markdownParser.parse(client.latestText)
     : client.latestDoc
-    ? schema.nodeFromJSON(client.latestDoc)
-    : schema.topNodeType.createAndFill();
+      ? schema.nodeFromJSON(client.latestDoc)
+      : schema.topNodeType.createAndFill();
 }
 
 async function init() {

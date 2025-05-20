@@ -6,14 +6,9 @@ import {
   Transaction,
 } from 'prosemirror-state';
 import { ResolvedPos } from 'prosemirror-model';
-import { EditorView } from 'prosemirror-view';
-import { baseKeymap, joinBackward, setBlockType } from 'prosemirror-commands';
+import { baseKeymap, setBlockType } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
-import {
-  liftListItem,
-  sinkListItem,
-  splitListItem,
-} from 'prosemirror-schema-list';
+import { splitListItem } from 'prosemirror-schema-list';
 import { schema } from './schema';
 
 function recursiveDeleteEmpty(tr: Transaction, $pos: ResolvedPos): Transaction {
@@ -91,12 +86,16 @@ export const keymapPlugins: Plugin[] = [
         return false;
       }
 
-      const { $cursor } = state.selection;
-      const possibleSelection: TextSelection = Selection.findFrom(
+      const selection = state.selection;
+      if (!(selection instanceof TextSelection)) return false;
+
+      const { $cursor } = selection;
+      const possibleSelection = Selection.findFrom(
         state.doc.resolve($cursor.before()),
         -1,
         true,
-      );
+        // We can assert this here bc of the textOnly arg above
+      ) as TextSelection;
       if (!possibleSelection) {
         return false;
       }

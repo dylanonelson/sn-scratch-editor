@@ -2,7 +2,7 @@ import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { marks, nodes } from 'prosemirror-schema-basic';
 import OrderedMap from 'orderedmap';
 import {
-  DOMOutputSpecArray,
+  DOMOutputSpec,
   Node,
   NodeSpec,
   NodeType,
@@ -118,18 +118,12 @@ const codeBlockSpec: NodeSpec = {
     },
   },
   toDOM(node) {
-    const spec = [
-      'pre',
-      { [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs.markdown_escaped },
-    ] as DOMOutputSpecArray;
-    if (node.attrs[MARKDOWN_ESCAPED_ATTR]) {
-      // DOMOutputSpec types are messed up :(
-      // @ts-ignore
-      spec.push(['div', { class: 'info' }, 'i']);
-    }
-    // @ts-ignore
-    spec.push(['code', 0]);
-    return spec;
+    const attrs = {
+      [`data-${MARKDOWN_ESCAPED_ATTR}`]: node.attrs[MARKDOWN_ESCAPED_ATTR],
+    };
+    return node.attrs[MARKDOWN_ESCAPED_ATTR]
+      ? ['pre', attrs, ['div', { class: 'info' }, 'i'], ['code', 0]]
+      : ['pre', attrs, ['code', 0]];
   },
 };
 
