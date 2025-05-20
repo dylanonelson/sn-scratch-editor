@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DOMParser } from 'prosemirror-model';
-import ComponentManager from 'sn-components-api';
+import ComponentManager from '@standardnotes/component-relay';
 import { markdownParser } from './markdown';
 import { schema } from './schema';
 
@@ -62,10 +62,14 @@ class Client {
       resolveClientReady = resolve;
     });
 
-    this.componentManager = new ComponentManager(
-      [{ name: 'stream-context-item' }],
-      () => {
-        this.componentManager.streamContextItem((item) => {
+    this.componentManager = new ComponentManager({
+      targetWindow: window,
+      options: {
+        debug: true,
+        acceptsThemes: true,
+      },
+      onReady: () => {
+        this.componentManager.streamContextItem((item: Item) => {
           console.debug('streamContextItem update:', item);
 
           const callListeners = this.shouldCallListeners(item, this._item);
@@ -81,7 +85,7 @@ class Client {
           resolveClientReady();
         });
       },
-    );
+    });
   }
 
   get latestDoc() {
@@ -118,7 +122,15 @@ class Client {
         preview_plain: textPreview,
       },
     };
-    this.componentManager.saveItemWithPresave(toSave);
+    this.componentManager.saveItemWithPresave(
+      toSave,
+      () => {
+        // Presave callback
+      },
+      () => {
+        // Save complete callback
+      },
+    );
   }
 
   shouldCallListeners = (nextItem, previousItem) => {
