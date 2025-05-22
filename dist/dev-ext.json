@@ -5,9 +5,5 @@
   "area": "editor-editor",
   "version": "0.0.1",
   "description": "Development environment for Scratch.",
-<<<<<<< HEAD
-  "url": "http://localhost:5001"
-=======
   "url": "http://localhost:8001"
->>>>>>> master
 }
