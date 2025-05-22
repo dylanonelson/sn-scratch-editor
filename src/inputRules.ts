@@ -27,14 +27,6 @@ function markWrappingRule(
         .resolve(start)
         .marksAcross(state.doc.resolve(end));
 
-      // Bail out if the mark is inside a code mark and the rule is not valid inside a code mark
-      if (
-        !isValidInsideCodeMark &&
-        existingMarks.some((m) => m.type.name === 'code')
-      ) {
-        return;
-      }
-
       return (
         tr
           .replaceRangeWith(
@@ -48,6 +40,9 @@ function markWrappingRule(
             endPos: tr.selection.from,
           })
       );
+    },
+    {
+      inCodeMark: isValidInsideCodeMark,
     },
   );
 }
@@ -79,10 +74,16 @@ function listTypeRule(prefix: string, listType: NodeType): InputRule {
   );
 }
 
+const arrowChars = [
+  new InputRule(new RegExp('<\\->$'), '↔', { inCodeMark: false }),
+  new InputRule(new RegExp('\\->$'), '→', { inCodeMark: false }),
+];
+
 export const inputRulesPlugin = inputRules({
   rules: [
     ...smartQuotes,
     ellipsis,
+    ...arrowChars,
     textblockTypeInputRule(/^# /, schema.nodes.heading2),
     textblockTypeInputRule(/^```/, schema.nodes.code_block),
     markWrappingRule('`', schema.marks.code, false),

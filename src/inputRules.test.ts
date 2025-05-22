@@ -192,3 +192,44 @@ describe('Forced space plugin', () => {
     ).toBeUndefined();
   });
 });
+
+describe('Input rules plugin - arrow character rules', () => {
+  it('Converts -> to a right arrow (→) character', () => {
+    const view = createEditorViewWithInputRulesAndSelection(
+      2,
+      schemaHelpers.paragraph('-'),
+    );
+    view.someProp('handleTextInput', (f) => f(view, 2, 2, '>'));
+
+    const doc = view.state.doc;
+    expect(doc.firstChild.type.name).toBe('paragraph');
+    expect(doc.textContent).toBe('→');
+  });
+
+  it('Converts <-> to a bidirectional arrow (↔) character', () => {
+    const view = createEditorViewWithInputRulesAndSelection(
+      3,
+      schemaHelpers.paragraph('<-'),
+    );
+    view.someProp('handleTextInput', (f) => f(view, 3, 3, '>'));
+
+    const doc = view.state.doc;
+    expect(doc.firstChild.type.name).toBe('paragraph');
+    expect(doc.textContent).toBe('↔');
+  });
+
+  it('Does not convert arrow syntax inside code marks', () => {
+    const view = createEditorViewWithInputRulesAndSelection(
+      2,
+      schemaHelpers.paragraph(schemaHelpers.code('-')),
+    );
+    view.someProp('handleTextInput', (f) => f(view, 2, 2, '>'));
+
+    const doc = view.state.doc;
+    expect(doc.firstChild.type.name).toBe('paragraph');
+    expect(doc.textContent).toBe('-');
+    const textNode = doc.firstChild.firstChild;
+    expect(textNode.marks).toHaveLength(1);
+    expect(textNode.marks[0].type.name).toBe('code');
+  });
+});
