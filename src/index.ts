@@ -4,7 +4,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { EditorView } from 'prosemirror-view';
 import { EditorState, Plugin } from 'prosemirror-state';
 import { history } from 'prosemirror-history';
-import { inputRulesPlugin } from './inputRules';
+import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
 import { ToolbarPlugin } from './ToolbarPlugin';
 import { TooltipPlugin } from './TooltipPlugin';
 import { EditorExtenderPlugin } from './EditorExtenderPlugin';
@@ -52,6 +52,7 @@ async function init() {
           }),
           new InlineLinkPlugin(),
           inputRulesPlugin,
+          inputRulesForcedSpacePlugin,
           history(),
         ],
       }),
