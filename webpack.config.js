@@ -12,7 +12,7 @@ module.exports = ({ analyzer, production } = {}) => {
   return {
     entry: ['./src/index.ts', './src/styles.css'],
     devServer: {
-      port: 8080,
+      port: 8001,
       host: 'localhost',
       headers: {
         'Access-Control-Allow-Origin': '*',

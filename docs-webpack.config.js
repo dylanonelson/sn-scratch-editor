@@ -5,6 +5,7 @@ const getConfig = require('./webpack.config.js');
 module.exports = (...args) => {
   const config = getConfig(...args);
   config.output.path = path.resolve(__dirname, 'docs');
+  config.output.publicPath = '/sn-scratch-editor/';
   config.plugins = config.plugins.concat([
     new webpack.NormalModuleReplacementPlugin(
       /src\/client\.ts$/,
