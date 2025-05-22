@@ -11,8 +11,9 @@
     "dev:dist": "webpack serve --mode development",
     "dev:docs": "webpack serve --config=docs-webpack.config.js --mode development",
     "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "test": "jest",
-    "validate": "npm run test && prettier . --check"
+    "validate": "./scripts/validate.sh"
   },
   "keywords": [
     "Standard Notes",
