@@ -13,6 +13,7 @@ import { client } from './client';
 import { nodeViews } from './nodeViews';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
+import { InlineLinkPlugin } from './InlineLinkPlugin';
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -49,6 +50,7 @@ async function init() {
               nodeViews,
             },
           }),
+          new InlineLinkPlugin(),
           inputRulesPlugin,
           history(),
         ],

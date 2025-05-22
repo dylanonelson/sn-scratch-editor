@@ -1,15 +1,9 @@
 import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 import { marks, nodes } from 'prosemirror-schema-basic';
-import OrderedMap from 'orderedmap';
-import {
-  DOMOutputSpec,
-  Node,
-  NodeSpec,
-  NodeType,
-  Schema,
-} from 'prosemirror-model';
+import { NodeSpec, Schema, SchemaSpec } from 'prosemirror-model';
 
 export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
+export const AUTO_LINK_ATTR = 'auto_link'; // Links auto-detected from user input, as opposed to links added as metadata by the user
 
 const EDITOR_CLS = 'sn-editor';
 
@@ -127,7 +121,7 @@ const codeBlockSpec: NodeSpec = {
   },
 };
 
-const spec = {
+const spec: SchemaSpec = {
   nodes: {
     doc: docSpec,
     // Order matters here. pm apparently inserts the first valid node on enter.
@@ -157,7 +151,38 @@ const spec = {
   },
   marks: {
     link: {
-      ...marks.link,
+      attrs: {
+        href: { default: '' },
+        title: { default: null },
+        [AUTO_LINK_ATTR]: { default: false },
+      },
+      inclusive: false,
+      parseDOM: [
+        {
+          tag: 'a[href]',
+          getAttrs(dom: HTMLElement) {
+            return {
+              href: dom.getAttribute('href'),
+              title: dom.getAttribute('title'),
+              [`data-${AUTO_LINK_ATTR}`]: dom.getAttribute(
+                `data-${AUTO_LINK_ATTR}`,
+              ),
+            };
+          },
+        },
+      ],
+      toDOM(node) {
+        let { href, title } = node.attrs;
+        return [
+          'a',
+          {
+            href,
+            title,
+            [`data-${AUTO_LINK_ATTR}`]: node.attrs[AUTO_LINK_ATTR],
+          },
+          0,
+        ];
+      },
     },
     em: {
       ...marks.em,

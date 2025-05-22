@@ -15,7 +15,9 @@ class DemoClient {
     return Promise.resolve();
   }
   onUpdate() {}
-  saveNote() {}
+  saveNote(jsonDoc: {}, mdDoc: string, textPreview: string) {
+    (window as any).saveNoteArgs = { jsonDoc, mdDoc, textPreview };
+  }
 }
 
 export const client = new DemoClient();

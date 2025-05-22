@@ -17,7 +17,7 @@ import {
 import { RemoveMarkStep, findWrapping } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
 import { toggleMark } from 'prosemirror-commands';
-import { schema } from './schema';
+import { AUTO_LINK_ATTR, schema } from './schema';
 import {
   chainCommands,
   selectParentNode,
@@ -297,10 +297,16 @@ export class ToolbarPlugin extends Plugin {
     const { $from, $to } = selection;
     const linkMarkAtStart = $from
       .marks()
-      .find((mark) => mark.type === schema.marks.link);
+      .find(
+        (mark) =>
+          mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR],
+      );
     const linkMarkAtEnd = $to
       .marks()
-      .find((mark) => mark.type === schema.marks.link);
+      .find(
+        (mark) =>
+          mark.type === schema.marks.link && !mark.attrs[AUTO_LINK_ATTR],
+      );
     const selectionIsInsideLink = linkMarkAtStart && linkMarkAtEnd;
 
     if (selection.empty && !selectionIsInsideLink) {
@@ -575,6 +581,10 @@ export class ToolbarPlugin extends Plugin {
     markTypes.forEach((markType) => {
       switch (markType) {
         case schema.marks.link: {
+          result.push('link');
+          break;
+        }
+        case schema.marks.inline_link: {
           result.push('link');
           break;
         }

@@ -4,7 +4,12 @@ import {
   MarkdownSerializer,
   defaultMarkdownSerializer,
 } from 'prosemirror-markdown';
-import { MARKDOWN_ESCAPED_ATTR, CheckboxStatus, schema } from './schema';
+import {
+  AUTO_LINK_ATTR,
+  MARKDOWN_ESCAPED_ATTR,
+  CheckboxStatus,
+  schema,
+} from './schema';
 
 export const markdownSerializer = new MarkdownSerializer(
   {
@@ -57,6 +62,7 @@ export const markdownSerializer = new MarkdownSerializer(
   },
   {
     ...defaultMarkdownSerializer.marks,
+    inline_link: defaultMarkdownSerializer.marks.link,
     code: {
       close(state, mark) {
         return mark.attrs[MARKDOWN_ESCAPED_ATTR] ? '' : '`';
@@ -247,6 +253,9 @@ const parserShim = () => ({
       if (type.startsWith('heading') && tag === 'h2') {
         token.type = type.replace('heading', 'heading2');
       }
+      if (type === 'link' && token.attrGet('href') === token.content) {
+        token.attrSet(AUTO_LINK_ATTR, 'true');
+      }
 
       const output = tokenParser.take(token);
 
@@ -303,10 +312,15 @@ export const markdownParser = new MarkdownParser(
     },
     link: {
       mark: 'link',
-      getAttrs: (tok) => ({
-        href: tok.attrGet('href'),
-        title: tok.attrGet('title') || null,
-      }),
+      getAttrs(tok) {
+        return {
+          href: tok.attrGet('href'),
+          title: tok.attrGet('title') || null,
+          ...(tok.info === 'auto' && {
+            [AUTO_LINK_ATTR]: true,
+          }),
+        };
+      },
     },
   },
 );

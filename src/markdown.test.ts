@@ -1,5 +1,5 @@
 import { MarkType, Node, NodeType } from 'prosemirror-model';
-import { schema } from './schema';
+import { AUTO_LINK_ATTR, schema } from './schema';
 import { markdownParser, markdownSerializer } from './markdown';
 
 function fl(txt: string, indent: null | number = null) {
@@ -206,9 +206,41 @@ describe('parser', () => {
           [
             'here',
             new Map([
-              [schema.marks.link, { href: 'https://example.com', title: null }],
+              [
+                schema.marks.link,
+                {
+                  href: 'https://example.com',
+                  title: null,
+                  [AUTO_LINK_ATTR]: false,
+                },
+              ],
             ]),
           ],
+        ],
+      );
+    });
+
+    it('parses autolinks', () => {
+      parseTestInlineHelper(
+        fl(`
+        Check out <https://standardnotes.org> for more info
+      `),
+        [
+          ['Check out ', new Map()],
+          [
+            'https://standardnotes.org',
+            new Map([
+              [
+                schema.marks.link,
+                {
+                  href: 'https://standardnotes.org',
+                  title: null,
+                  [AUTO_LINK_ATTR]: true,
+                },
+              ],
+            ]),
+          ],
+          [' for more info', new Map()],
         ],
       );
     });
