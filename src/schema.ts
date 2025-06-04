@@ -43,6 +43,16 @@ const heading2Spec: NodeSpec = {
   parseDOM: [{ tag: 'h2' }],
 };
 
+const heading3Spec: NodeSpec = {
+  content: 'inline*',
+  defining: true,
+  group: 'block',
+  toDOM(node) {
+    return ['h3', { class: EDITOR_CLS }, 0];
+  },
+  parseDOM: [{ tag: 'h3' }],
+};
+
 const paragraphSpec: NodeSpec = {
   content: 'inline*',
   group: 'block',
@@ -146,6 +156,7 @@ const spec: SchemaSpec = {
     },
     heading1: heading1Spec,
     heading2: heading2Spec,
+    heading3: heading3Spec,
     text: textSpec,
     code_block: codeBlockSpec,
   },

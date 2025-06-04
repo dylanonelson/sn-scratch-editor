@@ -72,6 +72,7 @@ export const inputRulesPlugin = inputRules({
     ...smartQuotes,
     ellipsis,
     textblockTypeInputRule(/^# /, schema.nodes.heading2),
+    textblockTypeInputRule(/^## /, schema.nodes.heading3),
     textblockTypeInputRule(/^```/, schema.nodes.code_block),
     markWrappingRule('`', schema.marks.code),
     markWrappingRule('\\*', schema.marks.strong),

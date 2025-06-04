@@ -1,6 +1,9 @@
 import { MarkType, Node, NodeType } from 'prosemirror-model';
 import { AUTO_LINK_ATTR, schema } from './schema';
 import { markdownParser, markdownSerializer } from './markdown';
+import { builders } from 'prosemirror-test-builder';
+
+const schemaHelpers = builders(schema, {});
 
 function fl(txt: string, indent: null | number = null) {
   return txt
@@ -93,6 +96,26 @@ describe('parser', () => {
       );
     });
 
+    it('parses unordered lists when used with "+" and "*"', () => {
+      parseTestBlockHelper(
+        fl(`
+        # Asterisk list
+        * first item
+        * second item
+
+        # Plus list
+        + first item
+        + second item
+      `),
+        [
+          [schema.nodes.heading1, 'Asterisk list', {}],
+          [schema.nodes.unordered_list, 'first itemsecond item', {}],
+          [schema.nodes.heading1, 'Plus list', {}],
+          [schema.nodes.unordered_list, 'first itemsecond item', {}],
+        ],
+      );
+    });
+
     it('parses code blocks', () => {
       parseTestBlockHelper(
         fl(`
@@ -109,6 +132,27 @@ describe('parser', () => {
             'npm run test',
             { markdown_escaped: false },
           ],
+        ],
+      );
+    });
+
+    it('parses multiple levels of headings', () => {
+      parseTestBlockHelper(
+        fl(`
+        ## Heading 2
+
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+        ### Heading 3
+      `),
+        [
+          [schema.nodes.heading2, 'Heading 2', {}],
+          [
+            schema.nodes.paragraph,
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            {},
+          ],
+          [schema.nodes.heading3, 'Heading 3', {}],
         ],
       );
     });
@@ -275,6 +319,117 @@ describe('parser', () => {
           ],
         ],
       );
+    });
+  });
+});
+
+describe('serializer', () => {
+  describe('block serialization', () => {
+    it('serializes a basic document', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.heading1('Heading 1'),
+        schemaHelpers.paragraph('A paragraph.'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('# Heading 1\n\nA paragraph.');
+    });
+
+    it('serializes unordered lists', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.heading1('To do'),
+        schemaHelpers.unordered_list(
+          schemaHelpers.list_item('first item'),
+          schemaHelpers.list_item('second item'),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('# To do\n\n* first item\n\n* second item');
+    });
+
+    it('serializes code blocks', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.heading2('Code sample'),
+        schemaHelpers.code_block({ markdown_escaped: false }, 'npm run test'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('## Code sample\n\n```\nnpm run test\n```');
+    });
+
+    it('serializes checklist items', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.checklist_item({ status: 1 }, 'not done'),
+        schemaHelpers.checklist_item({ status: 0 }, 'done'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('[ ] not done\n\n[x] done');
+    });
+  });
+
+  describe('inline node serialization', () => {
+    it('serializes emphasis', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('Sounds ', schemaHelpers.em('good')),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Sounds *good*');
+    });
+
+    it('serializes strong', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('Sounds ', schemaHelpers.strong('great')),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Sounds **great**');
+    });
+
+    it('serializes links', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph(
+          'Click ',
+          schemaHelpers.link(
+            {
+              href: 'https://example.com',
+              title: null,
+              [AUTO_LINK_ATTR]: false,
+            },
+            'here',
+          ),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Click [here](https://example.com)');
+    });
+
+    it('serializes autolinks', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph(
+          'Check out ',
+          schemaHelpers.link(
+            {
+              href: 'https://standardnotes.org',
+              title: null,
+              [AUTO_LINK_ATTR]: true,
+            },
+            'https://standardnotes.org',
+          ),
+          ' for more info',
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe(
+        'Check out <https://standardnotes.org> for more info',
+      );
+    });
+
+    it('serializes combined marks', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph(
+          'Definitely ',
+          schemaHelpers.strong(schemaHelpers.em('do')),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Definitely ***do***');
     });
   });
 });

@@ -228,10 +228,12 @@ export class ToolbarPlugin extends Plugin {
     let nextType: NodeType;
     if (type === schema.nodes.heading2) {
       nextType = schema.nodes.heading1;
+    } else if (type === schema.nodes.heading3) {
+      nextType = schema.nodes.heading2;
     } else if (type === schema.nodes.heading1) {
       nextType = schema.nodes.paragraph;
     } else {
-      nextType = schema.nodes.heading2;
+      nextType = schema.nodes.heading3;
     }
     this.swapTextBlock(nextType);
   };
