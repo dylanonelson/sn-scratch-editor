@@ -23,6 +23,11 @@ export const markdownSerializer = new MarkdownSerializer(
       state.renderInline(node);
       state.closeBlock(node);
     },
+    heading3(state, node, parent, index) {
+      state.write('### ');
+      state.renderInline(node);
+      state.closeBlock(node);
+    },
     checklist_item(state, node, parent, index) {
       const boxText =
         node.attrs.status === CheckboxStatus.DONE ? '[x] ' : '[ ] ';
@@ -148,6 +153,7 @@ class ScratchTokenParser {
   static DOCUMENT_MAP = new Map([
     ['heading1', ['inline']],
     ['heading2', ['inline']],
+    ['heading3', ['inline']],
     ['paragraph', ['inline']],
     ['fence', ['inline']],
     ['bullet_list', ['list_item', 'inline']],
@@ -253,6 +259,9 @@ const parserShim = () => ({
       if (type.startsWith('heading') && tag === 'h2') {
         token.type = type.replace('heading', 'heading2');
       }
+      if (type.startsWith('heading') && tag === 'h3') {
+        token.type = type.replace('heading', 'heading3');
+      }
       if (type === 'link' && token.attrGet('href') === token.content) {
         token.attrSet(AUTO_LINK_ATTR, 'true');
       }
@@ -285,6 +294,7 @@ export const markdownParser = new MarkdownParser(
     },
     heading1: { block: 'heading1' },
     heading2: { block: 'heading2' },
+    heading3: { block: 'heading3' },
     list_item: { block: 'list_item' },
     ordered_list: { block: 'ordered_list' },
     paragraph: { block: 'paragraph' },

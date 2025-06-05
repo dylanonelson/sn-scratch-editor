@@ -1,29 +1,12 @@
-import {
-  Plugin,
-  EditorState,
-  Selection,
-  TextSelection,
-  Transaction,
-} from 'prosemirror-state';
+import { Plugin, EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
-import {
-  MarkType,
-  NodeRange,
-  NodeType,
-  ResolvedPos,
-  Schema,
-} from 'prosemirror-model';
+import { MarkType, NodeType } from 'prosemirror-model';
 import { RemoveMarkStep, findWrapping } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
 import { toggleMark } from 'prosemirror-commands';
 import { AUTO_LINK_ATTR, schema } from './schema';
-import {
-  chainCommands,
-  selectParentNode,
-  setBlockType,
-  wrapIn,
-} from 'prosemirror-commands';
+import { selectParentNode } from 'prosemirror-commands';
 import { CheckboxStatus } from './schema';
 
 const APPLY_FORMAT_ATTR = 'data-format';
@@ -228,10 +211,12 @@ export class ToolbarPlugin extends Plugin {
     let nextType: NodeType;
     if (type === schema.nodes.heading2) {
       nextType = schema.nodes.heading1;
+    } else if (type === schema.nodes.heading3) {
+      nextType = schema.nodes.heading2;
     } else if (type === schema.nodes.heading1) {
       nextType = schema.nodes.paragraph;
     } else {
-      nextType = schema.nodes.heading2;
+      nextType = schema.nodes.heading3;
     }
     this.swapTextBlock(nextType);
   };

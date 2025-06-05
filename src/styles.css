@@ -4,16 +4,19 @@
 body {
   --base-font-size: 15px;
   --border-color: 1px solid #ccc;
-  --h2-font-size: 15px;
+  --h2-font-size: 16px;
   --h1-font-size: 20px;
+  --h3-font-size: 15px;
   --ff-sans: 'Roboto', sans-serif;
   --ff-serif: 'Roboto Slab', serif;
   --ff-mono: 'Roboto Mono', monospace;
   --color-primary: rgb(8, 109, 214);
   --default-gap: 14px;
+  --h3-gap: 11px;
   --default-item-gap: 5px;
   --default-checkbox-gap: 8px;
   --text-color: rgba(0, 0, 0, 0.9);
+  --h3-text-color: rgba(0, 0, 0, 0.7);
   color: var(--sn-stylekit-foreground-color, var(--text-color));
   font-size: var(--base-font-size);
   font-family: var(--ff-serif), serif;
@@ -23,6 +26,7 @@ body {
   body {
     --base-font-size: 16px;
     --h2-font-size: 17px;
+    --h3-font-size: 17px;
   }
 }
 
@@ -100,16 +104,31 @@ h2.sn-editor {
   margin-top: 28px;
 }
 
+h3.sn-editor {
+  font-size: var(--h3-font-size);
+  color: var(--h3-text-color);
+  text-decoration: underline;
+  margin-bottom: var(--h3-gap);
+}
+
+.ProseMirror h2 + h3.sn-editor {
+  margin-top: 20px;
+}
+
+.ProseMirror *:not(h1, h2) + h3.sn-editor {
+  margin-top: 22px;
+}
+
 div.ProseMirror > p.sn-editor {
   line-height: 1.4;
   margin-bottom: var(--default-gap);
 }
 
-*:not(ul, ol) + ul {
+*:not(ul, ol, h3) + ul {
   margin-top: var(--default-gap);
 }
 
-*:not(ul, ol) + ol {
+*:not(ul, ol, h3) + ol {
   margin-top: var(--default-gap);
 }
 

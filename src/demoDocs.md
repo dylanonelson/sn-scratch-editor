@@ -10,7 +10,7 @@ To use the Scratch editor in Standard Notes, click Extensions in the lower left 
 
 ## Formatting your notes
 
-Scratch includes a number of ways to format your notes. It has **bold**, _italic_, and `monospace` text, and it lets you add [links](https://github.com/dylanonelson/sn-scratch-editor). It includes two levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
+Scratch includes a number of ways to format your notes. It has **bold**, _italic_, and `monospace` text, and it lets you add [links](https://github.com/dylanonelson/sn-scratch-editor). It includes three levels of heads, two types of lists, and todo items that have a checkbox. Scratch tries to be smart about spacing so that you don’t have to insert empty lines.
 
 ## How to use this editor
 
@@ -24,7 +24,7 @@ Scratch includes a number of ways to format your notes. It has **bold**, _italic
 
 You can also see a legend for many of these hotkeys in the alt text of the toolbar buttons.
 
-- `ctrl + =` cycles through the levels of headings (there are two)
+- `ctrl + =` cycles through the levels of headings (there are three)
 
 - `ctrl + j` turns the current text chunk into a plain paragraph
 
@@ -52,7 +52,7 @@ You can also see a legend for many of these hotkeys in the alt text of the toolb
 
 - smart curly quote and apostrophe substitution
 
-- insert headings by typing `#`
+- insert headings by typing `#` or `##` or `###`
 
 - insert bulleted lists by typing `-`
 
