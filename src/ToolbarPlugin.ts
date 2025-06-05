@@ -149,7 +149,7 @@ class LinkModal {
   };
 
   private handleGlobalKeydown = (e: KeyboardEvent) => {
-    const isEnter = e.which === 13;
+    const isEnter = e.key === 'Enter';
     if (
       document.activeElement === this.textInput ||
       (document.activeElement === this.urlInput && isEnter)
@@ -157,8 +157,8 @@ class LinkModal {
       this.handleConfirm();
       return;
     }
-    const isEsc = e.which === 27;
-    if (e.which === 27) {
+    const isEsc = e.key === 'Escape';
+    if (isEsc) {
       this.handleCancel();
     }
   };
@@ -393,17 +393,16 @@ export class ToolbarPlugin extends Plugin {
         };
       },
       props: {
-        handleKeyDown: (view, e) => {
-          const isT = e.which === 84;
+        handleKeyDown: (_view, e) => {
           const hasCtrl = e.ctrlKey;
-          if (isT && hasCtrl) {
+          const hasMod = e.metaKey;
+
+          if (hasCtrl && e.key === 't') {
             this.toggleChecklistItem();
             return true;
           }
 
-          const is7 = e.which === 55;
-          const hasMod = e.metaKey || e.ctrlKey;
-          if (is7 && hasMod) {
+          if (hasMod && e.key === '7') {
             this.toggleList(
               schema.nodes.unordered_list,
               schema.nodes.list_item,
@@ -411,8 +410,7 @@ export class ToolbarPlugin extends Plugin {
             return true;
           }
 
-          const isU = e.which === 85;
-          if (isU && hasCtrl) {
+          if (hasCtrl && e.key === 'u') {
             this.toggleList(
               schema.nodes.unordered_list,
               schema.nodes.list_item,
@@ -420,62 +418,52 @@ export class ToolbarPlugin extends Plugin {
             return true;
           }
 
-          const isO = e.which === 79;
-          if (isO && hasCtrl) {
+          if (hasCtrl && e.key === 'o') {
             this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
             return true;
           }
 
-          const isPlus = e.which === 187;
-          if (isPlus && hasCtrl) {
+          if (hasCtrl && e.key === '=') {
             this.promoteHeading(this.view.state, this.view.dispatch);
             return true;
           }
 
-          const isJ = e.which === 74;
-          if (isJ && hasCtrl) {
+          if (hasCtrl && e.key === 'j') {
             this.swapTextBlock(schema.nodes.paragraph);
             return true;
           }
 
-          const isSpace = e.which === 32;
-          if (hasCtrl && isSpace) {
+          if (hasCtrl && e.code === 'Space') {
             return toggleChecklistItemState(
               this.view.state,
               this.view.dispatch,
             );
           }
 
-          const isZ = e.which === 90;
-          if (hasMod && isZ) {
+          if (hasMod && e.key === 'z') {
             return undo(this.view.state, this.view.dispatch);
           }
 
-          const isY = e.which === 89;
-          if (hasMod && isY) {
+          if (hasMod && e.key === 'y') {
             return redo(this.view.state, this.view.dispatch);
           }
 
-          const isI = e.which === 73;
-          if (hasMod && isI) {
+          if (hasMod && e.key === 'i') {
             this.toggleMark(schema.marks.em);
             return true;
           }
 
-          const isB = e.which === 66;
-          if (hasMod && isB) {
+          if (hasMod && e.key === 'b') {
             this.toggleMark(schema.marks.strong);
             return true;
           }
 
-          const isPrime = e.which === 222;
-          if (hasMod && isPrime) {
+          if (hasCtrl && e.key === "'") {
             this.toggleMark(schema.marks.code);
             return true;
           }
 
-          const isK = e.which === 75;
-          if (hasMod && isK) {
+          if (hasMod && e.key === 'k') {
             this.activateLinkModal(this.view.state, this.view.dispatch);
             return true;
           }
@@ -512,7 +500,7 @@ export class ToolbarPlugin extends Plugin {
 
     const result = [];
 
-    const { $from, $to, content } = state.selection;
+    const { $from, $to } = state.selection;
     const blockRange = $from.blockRange(
       $to,
       (node) => node.type !== schema.nodes.list_item,
@@ -541,7 +529,11 @@ export class ToolbarPlugin extends Plugin {
     }
     result.push(selected);
 
-    const marks = $from.marksAcross($to);
+    let marks = $from.pos === $to.pos ? $from.marks() : $from.marksAcross($to);
+    if (state.selection.empty && state.storedMarks) {
+      marks = state.storedMarks;
+    }
+
     if (marks) {
       result.push(...marks.map((mark) => mark.type));
     }
