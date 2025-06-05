@@ -116,7 +116,7 @@ h3.sn-editor {
 }
 
 .ProseMirror *:not(h1, h2) + h3.sn-editor {
-  margin-top: 24px;
+  margin-top: 22px;
 }
 
 div.ProseMirror > p.sn-editor {
