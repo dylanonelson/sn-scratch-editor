@@ -623,7 +623,8 @@ export class ToolbarPlugin extends Plugin {
 
     switch (nodeType) {
       case schema.nodes.heading1:
-      case schema.nodes.heading2: {
+      case schema.nodes.heading2:
+      case schema.nodes.heading3: {
         result.push('heading');
         break;
       }
