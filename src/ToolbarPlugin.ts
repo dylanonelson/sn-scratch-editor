@@ -1,6 +1,10 @@
 import { Plugin, EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { liftListItem, wrapInList } from 'prosemirror-schema-list';
+import {
+  liftListItem,
+  sinkListItem,
+  wrapInList,
+} from 'prosemirror-schema-list';
 import { MarkType, NodeType } from 'prosemirror-model';
 import { RemoveMarkStep, findWrapping } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
@@ -13,9 +17,130 @@ const APPLY_FORMAT_ATTR = 'data-format';
 
 type Command = typeof selectParentNode;
 
+/**
+ * Swap text blocks to a given node type
+ * This handles lifting list items if needed before converting
+ */
+export function swapTextBlock(view: EditorView, nodeType: NodeType): void {
+  let { dispatch, state } = view;
+  let { tr } = state;
+
+  if (
+    nodeType !== schema.nodes.unordered_list &&
+    nodeType !== schema.nodes.ordered_list
+  ) {
+    liftListItem(schema.nodes.list_item)(state, dispatch);
+  }
+
+  ({ dispatch, state } = view);
+  ({ tr } = state);
+  const {
+    selection: { from, to },
+  } = state;
+  tr.setBlockType(from, to, nodeType);
+  dispatch(tr);
+}
+
+export const indentListItem: Command = function (
+  state: EditorState,
+  dispatch: EditorView['dispatch'] | undefined,
+) {
+  return (
+    sinkListItem(schema.nodes.list_item)(state, dispatch) ||
+    wrapInList(schema.nodes.unordered_list)(state, dispatch)
+  );
+};
+
+export const outdentListItem: Command = function (
+  state: EditorState,
+  dispatch: EditorView['dispatch'] | undefined,
+) {
+  return liftListItem(schema.nodes.list_item)(state, dispatch);
+};
+
+/**
+ * Update the list type of the selection.
+ * - If the selection overlaps with list nodes and non-list nodes, or if it
+ *   includes any portion of a nested list, do nothing
+ * - If the selection is not a list, change it into one
+ * - If the selection is a list but not the desired list type, change it into
+ *   the desired list type
+ * - If the selection is the passed in list type, change it into a paragraph
+ */
+export const toggleList = function (
+  view: EditorView,
+  listType: NodeType,
+  itemType: NodeType,
+): void {
+  const {
+    state: {
+      selection: { $from, $to },
+    },
+  } = view;
+
+  const listBlockRange = $from.blockRange(
+    $to,
+    (node) => node.type === listType,
+  );
+  if (listBlockRange) {
+    // If the selection is with a list that is nested inside another list, do
+    // nothing. Depth of 2 accounts for the list node and the list item node.
+    if (listBlockRange.depth > 2) {
+      return;
+    }
+
+    const { dispatch, state } = view;
+
+    let containsNestedList = false;
+    const $rangeStart = state.doc.resolve(listBlockRange.start);
+    const $rangeEnd = state.doc.resolve(listBlockRange.end);
+    listBlockRange.parent.nodesBetween(
+      $rangeStart.parentOffset,
+      $rangeEnd.parentOffset,
+      (node) => {
+        console.log('node', node.type.name, node.textContent);
+        if (containsNestedList || node.isTextblock) {
+          return false;
+        }
+        if (
+          node.type === schema.nodes.unordered_list ||
+          node.type === schema.nodes.ordered_list
+        ) {
+          containsNestedList = true;
+          return false;
+        }
+      },
+    );
+    if (containsNestedList) {
+      return;
+    }
+
+    // If the selection is entirely within a list lift the selected items out
+    liftListItem(itemType)(state, dispatch);
+    return;
+  } else {
+    const blockRange = $from.blockRange($to);
+    for (
+      let index = blockRange.startIndex;
+      index < blockRange.endIndex;
+      index += 1
+    ) {
+      if (blockRange.parent.child(index).type === listType) {
+        // If the selection is partially inside a list, do nothing
+        return;
+      }
+    }
+    // If the selection is entirely outside a list, convert everything to a paragraph
+    // so it can subsequently become a list
+    swapTextBlock(view, schema.nodes.paragraph);
+    const { dispatch, state } = view;
+    wrapInList(listType)(state, dispatch);
+  }
+};
+
 const toggleChecklistItemState: Command = function (
   state: EditorState,
-  dispatch: EditorView['dispatch'],
+  dispatch: EditorView['dispatch'] | undefined,
 ) {
   const { $from, $to } = state.selection;
 
@@ -180,21 +305,7 @@ export class ToolbarPlugin extends Plugin {
   private modal: LinkModal;
 
   private swapTextBlock = (nodeType: NodeType) => {
-    let { dispatch, state } = this.view;
-    let { tr } = state;
-    if (
-      nodeType !== schema.nodes.unordered_list &&
-      nodeType !== schema.nodes.ordered_list
-    ) {
-      liftListItem(schema.nodes.list_item)(state, dispatch);
-    }
-    ({ dispatch, state } = this.view);
-    ({ tr } = state);
-    const {
-      selection: { from, to },
-    } = state;
-    tr.setBlockType(from, to, nodeType);
-    dispatch(tr);
+    swapTextBlock(this.view, nodeType);
     this.view.focus();
   };
 
@@ -222,40 +333,7 @@ export class ToolbarPlugin extends Plugin {
   };
 
   private toggleList = (listType: NodeType, itemType: NodeType) => {
-    const {
-      state: {
-        selection: { $from, $to },
-        tr,
-      },
-    } = this.view;
-
-    const listBlockRange = $from.blockRange(
-      $to,
-      (node) => node.type === listType,
-    );
-    if (listBlockRange) {
-      const { dispatch, state } = this.view;
-      // If the selection is entirely within a list lift the selected items out
-      liftListItem(itemType)(state, dispatch);
-      return;
-    } else {
-      const blockRange = $from.blockRange($to);
-      for (
-        let index = blockRange.startIndex;
-        index < blockRange.endIndex;
-        index += 1
-      ) {
-        if (blockRange.parent.child(index).type === listType) {
-          // If the selection is partially inside a list, do nothing
-          return;
-        }
-      }
-      // If the selection is entirely outside a list, convert everything to a paragraph
-      // so it can subsequently become a list
-      this.swapTextBlock(schema.nodes.paragraph);
-      const { dispatch, state } = this.view;
-      wrapInList(listType)(state, dispatch);
-    }
+    toggleList(this.view, listType, itemType);
   };
 
   private toggleChecklistItem = () => {
@@ -369,9 +447,8 @@ export class ToolbarPlugin extends Plugin {
             this.unhighlightSelectedAttrs();
             this.modal?.destroy();
           },
-          update: (view, previousState) => {
-            this.unhighlightSelectedAttrs();
-            this.highlightSelectedAttrs(view.state);
+          update: (view, _previousState) => {
+            this.updateToolbarForSelection(view.state);
           },
         };
       },
@@ -379,7 +456,28 @@ export class ToolbarPlugin extends Plugin {
         handleKeyDown: (_view, e) => {
           const hasCtrl = e.ctrlKey;
           const hasMod = e.metaKey;
+          const hasShift = e.shiftKey;
 
+          if (hasCtrl && e.key === 'l') {
+            indentListItem(this.view.state, this.view.dispatch);
+            return true;
+          }
+          if (hasCtrl && e.key === 'h') {
+            outdentListItem(this.view.state, this.view.dispatch);
+            return true;
+          }
+          if (e.key === 'Tab' && !hasCtrl && !hasMod) {
+            if (hasShift) {
+              outdentListItem(this.view.state, this.view.dispatch);
+            } else {
+              indentListItem(this.view.state, this.view.dispatch);
+            }
+            return true;
+          }
+          if (e.key === 'Tab' && !hasCtrl && !hasMod) {
+            outdentListItem(this.view.state, this.view.dispatch);
+            return true;
+          }
           if (hasCtrl && e.key === 't') {
             this.toggleChecklistItem();
             return true;
@@ -457,14 +555,8 @@ export class ToolbarPlugin extends Plugin {
     });
   }
 
-  unhighlightSelectedAttrs = () => {
-    const selectedBtns = this.toolbarEl.querySelectorAll('.selected');
-    selectedBtns.forEach((btn) => {
-      btn.classList.remove('selected');
-    });
-  };
-
-  highlightSelectedAttrs = (state: EditorState) => {
+  updateToolbarForSelection = (state: EditorState) => {
+    this.unhighlightSelectedAttrs();
     const selectedAttrs = this.getSelectedFormatAttrs(state);
     if (selectedAttrs) {
       selectedAttrs.forEach((attr) => {
@@ -476,6 +568,12 @@ export class ToolbarPlugin extends Plugin {
     }
   };
 
+  unhighlightSelectedAttrs = () => {
+    const selectedBtns = this.toolbarEl.querySelectorAll('.selected');
+    selectedBtns.forEach((btn) => {
+      btn.classList.remove('selected');
+    });
+  };
   getSelectedFormatAndMarks = (state: EditorState) => {
     if (!state.selection) {
       return;
@@ -528,7 +626,6 @@ export class ToolbarPlugin extends Plugin {
     const [nodeType, ...markTypes] = this.getSelectedFormatAndMarks(state);
     const result = [];
 
-    let activeBtnAttr = null;
     switch (nodeType) {
       case schema.nodes.heading1:
       case schema.nodes.heading2: {
@@ -634,6 +731,14 @@ export class ToolbarPlugin extends Plugin {
       }
       case 'link': {
         this.activateLinkModal(this.view.state, this.view.dispatch);
+        break;
+      }
+      case 'indent': {
+        indentListItem(this.view.state, this.view.dispatch);
+        break;
+      }
+      case 'outdent': {
+        outdentListItem(this.view.state, this.view.dispatch);
         break;
       }
       default: {

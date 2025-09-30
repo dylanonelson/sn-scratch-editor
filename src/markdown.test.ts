@@ -20,6 +20,50 @@ function expectBlockResultTuplesToMatch(result, expected) {
   });
 }
 
+function expectNestedBlockResultTuplesToMatch(result, expected, depth = 0) {
+  if (result.t !== expected.t) {
+    throw new Error(
+      `Expected node type ${expected.t.name} at depth ${depth}, got ${result.t.name}`,
+    );
+  }
+  expect(result.a).toEqual(expected.a);
+  expect(typeof result.c).toBe(typeof expected.c);
+  expect(result.c.length).toBe(expected.c.length);
+  if (Array.isArray(result.c)) {
+    const childDepth = depth + 1;
+    result.c.forEach((child, i) => {
+      expectNestedBlockResultTuplesToMatch(child, expected.c[i], childDepth);
+    });
+  } else {
+    expect(result.c).toBe(expected.c);
+  }
+}
+
+interface NestedBlockResult {
+  // Node type
+  t: NodeType;
+  // Attrs
+  a: {};
+  // Children or text content
+  c: string | NestedBlockResult[];
+}
+
+function getNestedBlockResult(node: Node): NestedBlockResult {
+  const children: NestedBlockResult[] = [];
+  const result: NestedBlockResult = {
+    t: node.type,
+    a: node.attrs,
+    c: node.isTextblock ? node.textContent : children,
+  };
+  if (!node.isTextblock) {
+    for (let i = 0; i < node.childCount; i += 1) {
+      const child = node.child(i);
+      children.push(getNestedBlockResult(child));
+    }
+  }
+  return result;
+}
+
 function getBlockResultTuple(node: Node): [NodeType, string][] {
   const result = [];
   for (let i = 0; i < node.childCount; i += 1) {
@@ -35,6 +79,14 @@ function parseTestBlockHelper(
 ) {
   const result = markdownParser.parse(mdString);
   expectBlockResultTuplesToMatch(getBlockResultTuple(result), expected);
+}
+
+function parseTestNestedBlockHelper(
+  mdString: string,
+  expected: NestedBlockResult,
+) {
+  const result = markdownParser.parse(mdString);
+  expectNestedBlockResultTuplesToMatch(getNestedBlockResult(result), expected);
 }
 
 function expectInlineResultTuplesToMatch(result, expected) {
@@ -171,7 +223,7 @@ describe('parser', () => {
       );
     });
 
-    it("doesn't parse nested lists", () => {
+    it('parses nested lists as lists', () => {
       parseTestBlockHelper(
         fl(
           `
@@ -184,11 +236,7 @@ describe('parser', () => {
         ),
         [
           [schema.nodes.heading2, 'Nested', {}],
-          [
-            schema.nodes.code_block,
-            '- top level\n  - next level',
-            { markdown_escaped: true },
-          ],
+          [schema.nodes.unordered_list, 'top levelnext level', {}],
         ],
       );
     });
@@ -211,6 +259,78 @@ describe('parser', () => {
             { markdown_escaped: true },
           ],
         ],
+      );
+    });
+
+    it('parses every level of nested lists', () => {
+      parseTestNestedBlockHelper(
+        fl(
+          `
+        - top level
+            - next level
+            - next level again
+        - top level again
+        `,
+          8,
+        ),
+        {
+          t: schema.nodes.doc,
+          a: {},
+          c: [
+            {
+              t: schema.nodes.unordered_list,
+              a: {},
+              c: [
+                {
+                  t: schema.nodes.list_item,
+                  a: {},
+                  c: [
+                    { t: schema.nodes.paragraph, a: {}, c: 'top level' },
+                    {
+                      t: schema.nodes.unordered_list,
+                      a: {},
+                      c: [
+                        {
+                          t: schema.nodes.list_item,
+                          a: {},
+                          c: [
+                            {
+                              t: schema.nodes.paragraph,
+                              a: {},
+                              c: 'next level',
+                            },
+                          ],
+                        },
+                        {
+                          t: schema.nodes.list_item,
+                          a: {},
+                          c: [
+                            {
+                              t: schema.nodes.paragraph,
+                              a: {},
+                              c: 'next level again',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  t: schema.nodes.list_item,
+                  a: {},
+                  c: [
+                    {
+                      t: schema.nodes.paragraph,
+                      a: {},
+                      c: 'top level again',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
       );
     });
   });
@@ -346,6 +466,33 @@ describe('serializer', () => {
       expect(result).toBe('# To do\n\n* first item\n\n* second item');
     });
 
+    it('serializes a doc with only an unordered list in it', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.unordered_list(
+          schemaHelpers.list_item('first item'),
+          schemaHelpers.list_item('second item'),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('* first item\n\n* second item');
+    });
+
+    it('serializes nested lists', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.heading2('Nested'),
+        schemaHelpers.unordered_list(
+          schemaHelpers.list_item(
+            schemaHelpers.paragraph('top level'),
+            schemaHelpers.unordered_list(
+              schemaHelpers.list_item(schemaHelpers.paragraph('next level')),
+            ),
+          ),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('## Nested\n\n* top level\n\n  * next level');
+    });
+
     it('serializes code blocks', () => {
       const doc = schemaHelpers.doc(
         schemaHelpers.heading2('Code sample'),
@@ -431,5 +578,21 @@ describe('serializer', () => {
       const result = markdownSerializer.serialize(doc);
       expect(result).toBe('Definitely ***do***');
     });
+  });
+});
+
+describe('From Markdown to ProseMirror and back', () => {
+  it('roundtrips a basic document', () => {
+    const md = '# Heading 1\n\nA paragraph.';
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
+  });
+
+  it('roundtrips a doc with only an unordered list in it', () => {
+    const md = '* first item\n\n* second item';
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
   });
 });

@@ -158,7 +158,7 @@ class ScratchTokenParser {
     ['fence', ['inline']],
     ['bullet_list', ['list_item', 'inline']],
     ['ordered_list', ['list_item', 'inline']],
-    ['list_item', ['paragraph', 'inline']],
+    ['list_item', ['paragraph', 'ordered_list', 'bullet_list']],
     ['checklist_item', ['inline']],
     ['inline', []],
   ]);
@@ -173,6 +173,7 @@ class ScratchTokenParser {
   }
 
   take(token: markdownit.Token): null | markdownit.Token[] {
+    console.log(token);
     const { nesting } = token;
     let { type } = token;
     type = ScratchTokenParser.getTypeName(type);
