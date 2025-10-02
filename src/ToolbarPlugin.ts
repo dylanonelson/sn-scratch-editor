@@ -474,10 +474,6 @@ export class ToolbarPlugin extends Plugin {
             }
             return true;
           }
-          if (e.key === 'Tab' && !hasCtrl && !hasMod) {
-            outdentListItem(this.view.state, this.view.dispatch);
-            return true;
-          }
           if (hasCtrl && e.key === 't') {
             this.toggleChecklistItem();
             return true;

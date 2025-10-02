@@ -338,15 +338,6 @@ button[data-format='code_block']:hover span {
   );
 }
 
-button.inactive-by-default {
-  display: none;
-}
-
-button.inactive-by-default.active {
-  /* To match default button styles */
-  display: inline-block;
-}
-
 svg {
   fill: currentColor;
 }

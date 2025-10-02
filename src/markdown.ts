@@ -173,7 +173,6 @@ class ScratchTokenParser {
   }
 
   take(token: markdownit.Token): null | markdownit.Token[] {
-    console.log(token);
     const { nesting } = token;
     let { type } = token;
     type = ScratchTokenParser.getTypeName(type);
