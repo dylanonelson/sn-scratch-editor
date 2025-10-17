@@ -1,6 +1,10 @@
 import { EditorState, TextSelection, Transaction } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { toggleList } from './ToolbarPlugin';
+import {
+  outdentListSelection,
+  swapTextBlock,
+  toggleList,
+} from './ToolbarPlugin';
 import { schema } from './schema';
 import { builders } from 'prosemirror-test-builder';
 
@@ -273,5 +277,171 @@ describe('toggleList', () => {
 
       expect(mockDispatch).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('swapTextBlock', () => {
+  it('should do nothing when selection is within a nested list', () => {
+    const document = doc(ul(li(p('Parent'), ul(li(p('Nest<s>ed'))))));
+    const mockDispatch = jest.fn();
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.s,
+      mockDispatch,
+    );
+
+    swapTextBlock(view, schema.nodes.paragraph);
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  it('should do nothing when the selection begins within a nested list', () => {
+    const document = doc(
+      ul(li(p('Item one'), ul(li(p('Nested <s>one')))), li(p('Item<e> two'))),
+    );
+    const mockDispatch = jest.fn();
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.e,
+      mockDispatch,
+    );
+
+    swapTextBlock(view, schema.nodes.paragraph);
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+});
+
+describe('outdentListSelection', () => {
+  it('should outdent the list item  when the selection begins at the top level of the outdentable selection', () => {
+    const document = doc(
+      ul(li(p('Item <s>one'), ul(li(p('Nested one')), li(p('Nested<e> two'))))),
+    );
+    const view = createMockView(document, document.tag.s, document.tag.e);
+    outdentListSelection(view.state, view.dispatch);
+    expect(view.state.doc.child(0).type.name).toBe(schema.nodes.paragraph.name);
+    expect(view.state.doc.child(0).textContent).toBe('Item one');
+    expect(view.state.doc.child(1).type.name).toBe(
+      schema.nodes.unordered_list.name,
+    );
+    expect(view.state.doc.child(1).textContent).toBe('Nested oneNested two');
+  });
+
+  it('should outdent the list item  when the selection is within the top level of the outdentable selection', () => {
+    const document = doc(
+      ul(li(p('Item <s>one'), ul(li(p('Nested one')), li(p('Nested two'))))),
+    );
+    const view = createMockView(document, document.tag.s, document.tag.s);
+    outdentListSelection(view.state, view.dispatch);
+    expect(view.state.doc.child(0).type.name).toBe(schema.nodes.paragraph.name);
+    expect(view.state.doc.child(0).textContent).toBe('Item one');
+    expect(view.state.doc.child(1).type.name).toBe(
+      schema.nodes.unordered_list.name,
+    );
+    expect(view.state.doc.child(1).textContent).toBe('Nested oneNested two');
+  });
+
+  it('should outdent the list item when the selection is in a sublist and can be outdented cleanly', () => {
+    const document = doc(
+      ul(li(p('Item one'), ul(li(p('Nested <s>one')), li(p('Nested two'))))),
+    );
+    const view = createMockView(document, document.tag.s, document.tag.s);
+    outdentListSelection(view.state, view.dispatch);
+    expect(view.state.doc.child(0).type.name).toBe(
+      schema.nodes.unordered_list.name,
+    );
+    const unorderedListNode = view.state.doc.child(0);
+    expect(unorderedListNode.childCount).toBe(2);
+    const secondListItemNode = unorderedListNode.child(1);
+    expect(secondListItemNode.type.name).toBe('list_item');
+    expect(secondListItemNode.childCount).toBe(2);
+    expect(secondListItemNode.textContent).toBe('Nested oneNested two');
+  });
+
+  it('should do nothing when the selection spans a nested list and the outdent would pull the preceding list items outward', () => {
+    const document = doc(
+      ul(
+        li(p('Item one'), ul(li(p('Nested <s>one')), li(p('Nested two')))),
+        li(p('Item<e> two')),
+      ),
+    );
+    const mockDispatch = jest.fn();
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.e,
+      mockDispatch,
+    );
+    outdentListSelection(view.state, view.dispatch);
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  it('should do nothing when the selection spans many list items but ultimately winds up pulling in a large parent list', () => {
+    // prettier-ignore
+    const document = doc(
+      ul(
+        li(
+          p('Item 1'),
+          ul(
+            li(p('Nested 1-1')),
+            li(p('Nest<s2>ed 1-2')),
+            ul(
+              li(p('Nested 2-1')),
+              li(
+                p('Nested 3-1'),
+                ul(
+                  li(p('Nested 4-1')),
+                  li(p('Nes<s1>ted 4-2')),
+                ),
+              ),
+            ),
+            li(
+              p('Nested 2-2'),
+              ul(
+                li(p('Nested 3-2')),
+                li(p('Nes<s3>ted 3-3'))
+              )
+            ),
+          ),
+        ),
+        li(p('I<e2>tem<e1> 1-2')),
+        li(
+          p('Item 1-3'),
+          ul(
+            li(p('Nested 1-3')),
+            li(p('Neste<e3>d 1-4')),
+          ),
+        ),
+      ),
+    );
+    const mockDispatch = jest.fn();
+    let view = createMockView(
+      document,
+      document.tag.s1,
+      document.tag.e1,
+      mockDispatch,
+    );
+    outdentListSelection(view.state, view.dispatch);
+    expect(mockDispatch).not.toHaveBeenCalled();
+
+    view = createMockView(
+      document,
+      document.tag.s2,
+      document.tag.e2,
+      mockDispatch,
+    );
+    outdentListSelection(view.state, view.dispatch);
+    expect(mockDispatch).not.toHaveBeenCalled();
+
+    view = createMockView(
+      document,
+      document.tag.s3,
+      document.tag.e3,
+      mockDispatch,
+    );
+    outdentListSelection(view.state, view.dispatch);
+    expect(mockDispatch).not.toHaveBeenCalled();
   });
 });

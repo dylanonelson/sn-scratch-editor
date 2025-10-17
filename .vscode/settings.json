@@ -1,0 +1,16 @@
+{
+  // Use Prettier for all languages by default
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // Format on save
+  "editor.formatOnSave": true,
+  // Ensure Prettier is used for TS/JS explicitly (Cursor/VSCode honor these)
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  // Respect project Prettier config
+  "prettier.useEditorConfig": true,
+  // Point Prettier to the local binary so plugin consistently uses repo version
+  "prettier.prettierPath": "./node_modules/prettier/index.cjs"
+}

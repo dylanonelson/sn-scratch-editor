@@ -217,7 +217,7 @@ describe('ToolbarPlugin', () => {
     });
   });
 
-  test.only('applies heading format when the user selects text and presses cmd+=', () => {
+  test('applies heading format when the user selects text and presses cmd+=', () => {
     const { state } = view;
     const tr = state.tr.setSelection(TextSelection.create(state.doc, 1));
     view.dispatch(tr);

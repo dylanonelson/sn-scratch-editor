@@ -5,13 +5,14 @@ import {
   sinkListItem,
   wrapInList,
 } from 'prosemirror-schema-list';
-import { MarkType, NodeType } from 'prosemirror-model';
-import { RemoveMarkStep, findWrapping } from 'prosemirror-transform';
+import { MarkType, NodeRange, NodeType, ResolvedPos } from 'prosemirror-model';
+import { RemoveMarkStep } from 'prosemirror-transform';
 import { undo, redo } from 'prosemirror-history';
 import { toggleMark } from 'prosemirror-commands';
 import { AUTO_LINK_ATTR, schema } from './schema';
 import { selectParentNode } from 'prosemirror-commands';
 import { CheckboxStatus } from './schema';
+import { isListBlock } from './schemaHelpers';
 
 const APPLY_FORMAT_ATTR = 'data-format';
 
@@ -24,7 +25,17 @@ type Command = typeof selectParentNode;
 export function swapTextBlock(view: EditorView, nodeType: NodeType): void {
   let { dispatch, state } = view;
   let { tr } = state;
+  let {
+    selection: { $from, $to },
+  } = state;
 
+  const listBlockRange = getListBlockRange($from, $to);
+  if (containsNestedList($from, $to, listBlockRange)) {
+    return;
+  }
+  if (isWithinNestedList($from, $to, listBlockRange)) {
+    return;
+  }
   if (
     nodeType !== schema.nodes.unordered_list &&
     nodeType !== schema.nodes.ordered_list
@@ -41,7 +52,7 @@ export function swapTextBlock(view: EditorView, nodeType: NodeType): void {
   dispatch(tr);
 }
 
-export const indentListItem: Command = function (
+export const indentListSelection: Command = function (
   state: EditorState,
   dispatch: EditorView['dispatch'] | undefined,
 ) {
@@ -51,10 +62,93 @@ export const indentListItem: Command = function (
   );
 };
 
-export const outdentListItem: Command = function (
+function getListBlockRange(
+  $from: ResolvedPos,
+  $to: ResolvedPos,
+  listTypes = [schema.nodes.unordered_list, schema.nodes.ordered_list],
+): NodeRange | false {
+  const listBlockRange = $from.blockRange($to, (node) =>
+    isListBlock(node, listTypes),
+  );
+  return listBlockRange || false;
+}
+
+function containsNestedList(
+  $from: ResolvedPos,
+  $to: ResolvedPos,
+  listBlockRange = getListBlockRange($from, $to),
+): boolean {
+  if (!listBlockRange) {
+    return false;
+  }
+  let containsNestedList = false;
+  const { doc } = $from;
+  const $rangeStart = doc.resolve(listBlockRange.start);
+  const $rangeEnd = doc.resolve(listBlockRange.end);
+  listBlockRange.parent.nodesBetween(
+    $rangeStart.parentOffset,
+    $rangeEnd.parentOffset,
+    (node) => {
+      if (containsNestedList || node.isTextblock) {
+        return false;
+      }
+      if (isListBlock(node)) {
+        containsNestedList = true;
+        return false;
+      }
+    },
+  );
+  return containsNestedList;
+}
+
+function isWithinNestedList(
+  $from: ResolvedPos,
+  $to: ResolvedPos,
+  listBlockRange = getListBlockRange($from, $to),
+): boolean {
+  if (!listBlockRange) {
+    return false;
+  }
+  // The depth of the list item nodes within the listBlockRange will be 1 if
+  // they are in a top level list.
+  return listBlockRange.depth > 1;
+}
+
+/**
+ * The current selection can be outdented if: One, it is within a list. And two,
+ * the beginning (ie, the top) of the selection points into the same list item
+ * as the one that will be outdented by the outdent command. This is important
+ * because if the selection is within a sublist of what gets outdented, it feels
+ * unexpected; list items many levels up and above the selection can be changed
+ * as a result. Changing list items below the current selection isn't ideal
+ * either, but it makes more intuitive sense than the inverse.
+ *
+ * If the selection cannot be outdented, return false. If it can be outdented,
+ * return the node range that surrounds the selected list items.
+ */
+function canOutdentListSelection(state: EditorState): NodeRange | false {
+  const { $from, $to } = state.selection;
+  const listBlockRange = getListBlockRange($from, $to);
+  if (!listBlockRange) {
+    return false;
+  }
+  // We need to figure out if the $from position points into a sublist or if its
+  // parent is the same as the first list item in the node range. Add 2 to
+  // $from.parentOffset to account for the opening token of both the list item
+  // and the paragraph.
+  if ($from.pos !== listBlockRange.start + $from.parentOffset + 2) {
+    return false;
+  }
+  return listBlockRange;
+}
+
+export const outdentListSelection: Command = function (
   state: EditorState,
   dispatch: EditorView['dispatch'] | undefined,
 ) {
+  if (!canOutdentListSelection(state)) {
+    return false;
+  }
   return liftListItem(schema.nodes.list_item)(state, dispatch);
 };
 
@@ -78,63 +172,37 @@ export const toggleList = function (
     },
   } = view;
 
-  const listBlockRange = $from.blockRange(
-    $to,
-    (node) => node.type === listType,
-  );
-  if (listBlockRange) {
-    // If the selection is with a list that is nested inside another list, do
-    // nothing. Depth of 2 accounts for the list node and the list item node.
-    if (listBlockRange.depth > 2) {
-      return;
-    }
-
-    const { dispatch, state } = view;
-
-    let containsNestedList = false;
-    const $rangeStart = state.doc.resolve(listBlockRange.start);
-    const $rangeEnd = state.doc.resolve(listBlockRange.end);
-    listBlockRange.parent.nodesBetween(
-      $rangeStart.parentOffset,
-      $rangeEnd.parentOffset,
-      (node) => {
-        if (containsNestedList || node.isTextblock) {
-          return false;
-        }
-        if (
-          node.type === schema.nodes.unordered_list ||
-          node.type === schema.nodes.ordered_list
-        ) {
-          containsNestedList = true;
-          return false;
-        }
-      },
-    );
-    if (containsNestedList) {
-      return;
-    }
-
-    // If the selection is entirely within a list lift the selected items out
-    liftListItem(itemType)(state, dispatch);
+  const listBlockRange = getListBlockRange($from, $to, [listType]);
+  if (containsNestedList($from, $to, listBlockRange)) {
+    // If the selection overlaps with a nested list, do nothing.
     return;
-  } else {
-    const blockRange = $from.blockRange($to);
-    for (
-      let index = blockRange.startIndex;
-      index < blockRange.endIndex;
-      index += 1
-    ) {
-      if (blockRange.parent.child(index).type === listType) {
-        // If the selection is partially inside a list, do nothing
-        return;
-      }
-    }
-    // If the selection is entirely outside a list, convert everything to a paragraph
-    // so it can subsequently become a list
-    swapTextBlock(view, schema.nodes.paragraph);
-    const { dispatch, state } = view;
-    wrapInList(listType)(state, dispatch);
   }
+  if (isWithinNestedList($from, $to, listBlockRange)) {
+    // If the selection is within a nested list, do nothing.
+    return;
+  }
+  if (listBlockRange) {
+    // If the selection spans exclusively a list at depth 1 lift the selected
+    // items out and be done.
+    liftListItem(itemType)(view.state, view.dispatch);
+    return;
+  }
+  // If the selection is outside of a list, check if it is partially inside a list.
+  const blockRange = $from.blockRange($to);
+  for (
+    let index = blockRange.startIndex;
+    index < blockRange.endIndex;
+    index += 1
+  ) {
+    if (isListBlock(blockRange.parent.child(index), [listType])) {
+      // If the selection is partially inside a list, do nothing
+      return;
+    }
+  }
+  // If the selection is entirely outside a list, convert everything to a paragraph
+  // so it can subsequently become a list
+  swapTextBlock(view, schema.nodes.paragraph);
+  wrapInList(listType)(view.state, view.dispatch);
 };
 
 const toggleChecklistItemState: Command = function (
@@ -336,8 +404,7 @@ export class ToolbarPlugin extends Plugin {
   };
 
   private toggleChecklistItem = () => {
-    const { dispatch, state } = this.view;
-    const { doc, tr } = state;
+    const { state } = this.view;
     const { $from, $to } = state.selection;
     const blockRange = $from.blockRange($to);
 
@@ -458,18 +525,18 @@ export class ToolbarPlugin extends Plugin {
           const hasShift = e.shiftKey;
 
           if (hasCtrl && e.key === 'l') {
-            indentListItem(this.view.state, this.view.dispatch);
+            indentListSelection(this.view.state, this.view.dispatch);
             return true;
           }
           if (hasCtrl && e.key === 'h') {
-            outdentListItem(this.view.state, this.view.dispatch);
+            outdentListSelection(this.view.state, this.view.dispatch);
             return true;
           }
           if (e.key === 'Tab' && !hasCtrl && !hasMod) {
             if (hasShift) {
-              outdentListItem(this.view.state, this.view.dispatch);
+              outdentListSelection(this.view.state, this.view.dispatch);
             } else {
-              indentListItem(this.view.state, this.view.dispatch);
+              indentListSelection(this.view.state, this.view.dispatch);
             }
             return true;
           }
@@ -730,11 +797,11 @@ export class ToolbarPlugin extends Plugin {
         break;
       }
       case 'indent': {
-        indentListItem(this.view.state, this.view.dispatch);
+        indentListSelection(this.view.state, this.view.dispatch);
         break;
       }
       case 'outdent': {
-        outdentListItem(this.view.state, this.view.dispatch);
+        outdentListSelection(this.view.state, this.view.dispatch);
         break;
       }
       default: {
