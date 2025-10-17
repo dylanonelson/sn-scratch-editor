@@ -48,6 +48,10 @@ You can also see a legend for many of these hotkeys in the alt text of the toolb
 
 - `cmd + y` / `ctrl + y` is redo
 
+- `ctrl + .` is indent
+
+- `ctrl + ,` is outdent
+
 ## Formatting macros
 
 - smart curly quote and apostrophe substitution
@@ -87,5 +91,3 @@ Scratch is a work in progress. I have a running list of things I’d like to add
 1. tables, or something like them
 
 1. syntax highlighting and one-click copy-to-clipboard for code blocks
-
-1. nested lists, with full support for markdown formatting within list items
