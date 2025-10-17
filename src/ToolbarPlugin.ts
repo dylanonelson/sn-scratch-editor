@@ -98,7 +98,6 @@ export const toggleList = function (
       $rangeStart.parentOffset,
       $rangeEnd.parentOffset,
       (node) => {
-        console.log('node', node.type.name, node.textContent);
         if (containsNestedList || node.isTextblock) {
           return false;
         }
