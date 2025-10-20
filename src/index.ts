@@ -14,6 +14,7 @@ import { nodeViews } from './nodeViews';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
 import { InlineLinkPlugin } from './InlineLinkPlugin';
+import { JoinListsPlugin } from './JoinListsPlugin';
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -51,6 +52,7 @@ async function init() {
             },
           }),
           new InlineLinkPlugin(),
+          new JoinListsPlugin(),
           inputRulesPlugin,
           inputRulesForcedSpacePlugin,
           history(),
