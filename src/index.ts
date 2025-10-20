@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Node as ProsemirrorNode } from 'prosemirror-model';
 import ComponentManager from '@standardnotes/component-relay';
 import { baseKeymap } from 'prosemirror-commands';
 import { EditorView } from 'prosemirror-view';
@@ -15,6 +16,7 @@ import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
 import { InlineLinkPlugin } from './InlineLinkPlugin';
 import { JoinListsPlugin } from './JoinListsPlugin';
+import { debounce } from 'es-toolkit';
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -32,6 +34,14 @@ function getDocForNewEditorState() {
 
 async function init() {
   await client.ready();
+
+  const debouncedSave = debounce((doc: ProsemirrorNode) => {
+    client.saveNote(
+      doc.toJSON(),
+      markdownSerializer.serialize(doc),
+      doc.textBetween(0, doc.nodeSize - 2, ' '),
+    );
+  }, 850);
 
   const view = (window.view = new EditorView(
     document.querySelector('#editor'),
@@ -62,11 +72,7 @@ async function init() {
         const next = view.state.apply(tr);
         view.updateState(next);
         if (tr.docChanged) {
-          client.saveNote(
-            next.doc.toJSON(),
-            markdownSerializer.serialize(next.doc),
-            next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
-          );
+          debouncedSave(next.doc);
         }
       },
     },
