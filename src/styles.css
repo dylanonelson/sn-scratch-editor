@@ -144,6 +144,10 @@ li {
   margin-bottom: var(--default-item-gap);
 }
 
+li p:not(:only-child) {
+  margin-bottom: var(--default-gap);
+}
+
 li ul,
 li ol {
   margin-top: var(--default-item-gap);
@@ -240,6 +244,7 @@ pre code {
 
 .checklist-item p {
   line-height: 24px;
+  min-width: 1px;
 }
 
 #toolbar-wrapper {
