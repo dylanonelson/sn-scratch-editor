@@ -1,22 +1,19 @@
-import { v4 as uuidv4 } from 'uuid';
-import { Node as ProsemirrorNode } from 'prosemirror-model';
-import ComponentManager from '@standardnotes/component-relay';
-import { baseKeymap } from 'prosemirror-commands';
-import { EditorView } from 'prosemirror-view';
-import { EditorState, Plugin } from 'prosemirror-state';
+import { debounce } from 'es-toolkit';
 import { history } from 'prosemirror-history';
-import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
-import { ToolbarPlugin } from './ToolbarPlugin';
-import { TooltipPlugin } from './TooltipPlugin';
-import { EditorExtenderPlugin } from './EditorExtenderPlugin';
-import { schema } from './schema';
+import { Node as ProsemirrorNode } from 'prosemirror-model';
+import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
 import { client } from './client';
-import { nodeViews } from './nodeViews';
+import { EditorExtenderPlugin } from './EditorExtenderPlugin';
+import { InlineLinkPlugin } from './InlineLinkPlugin';
+import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
+import { JoinListsPlugin } from './JoinListsPlugin';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
-import { InlineLinkPlugin } from './InlineLinkPlugin';
-import { JoinListsPlugin } from './JoinListsPlugin';
-import { debounce } from 'es-toolkit';
+import { nodeViews } from './nodeViews';
+import { schema } from './schema';
+import { ToolbarPlugin } from './ToolbarPlugin';
+import { TooltipPlugin } from './TooltipPlugin';
 
 interface AppWindow extends Window {
   view: EditorView;

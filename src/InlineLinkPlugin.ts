@@ -1,6 +1,6 @@
+import LinkifyIt from 'linkify-it';
 import { Plugin, Transaction } from 'prosemirror-state';
 import { AUTO_LINK_ATTR, schema } from './schema';
-import LinkifyIt from 'linkify-it';
 
 const linkify = new LinkifyIt();
 

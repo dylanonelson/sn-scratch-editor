@@ -1,7 +1,7 @@
 import { MarkType, Node, NodeType } from 'prosemirror-model';
-import { AUTO_LINK_ATTR, schema } from './schema';
-import { markdownParser, markdownSerializer } from './markdown';
 import { builders } from 'prosemirror-test-builder';
+import { markdownParser, markdownSerializer } from './markdown';
+import { AUTO_LINK_ATTR, schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 

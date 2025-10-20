@@ -1,6 +1,6 @@
-import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
-import { marks, nodes } from 'prosemirror-schema-basic';
 import { NodeSpec, Schema, SchemaSpec } from 'prosemirror-model';
+import { marks, nodes } from 'prosemirror-schema-basic';
+import { bulletList, listItem, orderedList } from 'prosemirror-schema-list';
 
 export const MARKDOWN_ESCAPED_ATTR = 'markdown_escaped';
 export const AUTO_LINK_ATTR = 'auto_link'; // Links auto-detected from user input, as opposed to links added as metadata by the user

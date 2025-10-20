@@ -1,17 +1,15 @@
-import { Plugin, EditorState, TextSelection } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
+import { selectParentNode, toggleMark } from 'prosemirror-commands';
+import { redo, undo } from 'prosemirror-history';
+import { MarkType, NodeRange, NodeType, ResolvedPos } from 'prosemirror-model';
 import {
   liftListItem,
   sinkListItem,
   wrapInList,
 } from 'prosemirror-schema-list';
-import { MarkType, NodeRange, NodeType, ResolvedPos } from 'prosemirror-model';
+import { EditorState, Plugin, TextSelection } from 'prosemirror-state';
 import { RemoveMarkStep } from 'prosemirror-transform';
-import { undo, redo } from 'prosemirror-history';
-import { toggleMark } from 'prosemirror-commands';
-import { AUTO_LINK_ATTR, schema } from './schema';
-import { selectParentNode } from 'prosemirror-commands';
-import { CheckboxStatus } from './schema';
+import { EditorView } from 'prosemirror-view';
+import { AUTO_LINK_ATTR, CheckboxStatus, schema } from './schema';
 import { isListBlock } from './schemaHelpers';
 
 const APPLY_FORMAT_ATTR = 'data-format';

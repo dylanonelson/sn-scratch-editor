@@ -1,9 +1,9 @@
-import { EditorState, TextSelection } from 'prosemirror-state';
-import { schema } from './schema';
-import { builders } from 'prosemirror-test-builder';
-import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
-import { EditorView } from 'prosemirror-view';
 import { Node } from 'prosemirror-model';
+import { EditorState, TextSelection } from 'prosemirror-state';
+import { builders } from 'prosemirror-test-builder';
+import { EditorView } from 'prosemirror-view';
+import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
+import { schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 

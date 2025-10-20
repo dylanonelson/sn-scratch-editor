@@ -1,12 +1,4 @@
 import {
-  EditorState,
-  Plugin,
-  Selection,
-  TextSelection,
-  Transaction,
-} from 'prosemirror-state';
-import { Node, ResolvedPos } from 'prosemirror-model';
-import {
   baseKeymap,
   chainCommands,
   deleteSelection,
@@ -18,7 +10,15 @@ import {
   splitBlock,
 } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
+import { ResolvedPos } from 'prosemirror-model';
 import { splitListItem } from 'prosemirror-schema-list';
+import {
+  EditorState,
+  Plugin,
+  Selection,
+  TextSelection,
+  Transaction,
+} from 'prosemirror-state';
 import { schema } from './schema';
 import { isListItemBlock, isParagraphBlock } from './schemaHelpers';
 

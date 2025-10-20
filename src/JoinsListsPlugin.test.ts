@@ -1,13 +1,9 @@
-import { builders } from 'prosemirror-test-builder';
-import { Selection, TextSelection } from 'prosemirror-state';
-import { findAndInsertInlineLinks, InlineLinkPlugin } from './InlineLinkPlugin';
-import { AUTO_LINK_ATTR, schema } from './schema';
-import { EditorState } from 'prosemirror-state';
-import { JoinListsPlugin } from './JoinListsPlugin';
-import { joinPoint } from 'prosemirror-transform';
-import { inputRulesPlugin } from './inputRules';
-import { toggleList } from './ToolbarPlugin';
 import { wrapInList } from 'prosemirror-schema-list';
+import { EditorState, TextSelection } from 'prosemirror-state';
+import { builders } from 'prosemirror-test-builder';
+import { inputRulesPlugin } from './inputRules';
+import { JoinListsPlugin } from './JoinListsPlugin';
+import { schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 

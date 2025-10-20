@@ -1,12 +1,6 @@
 import { ResolvedPos } from 'prosemirror-model';
+import { Plugin, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import {
-  Plugin,
-  EditorState,
-  Selection,
-  TextSelection,
-  Transaction,
-} from 'prosemirror-state';
 import { AUTO_LINK_ATTR, schema } from './schema';
 
 const SHOW_CLS = 'show';

@@ -1,4 +1,5 @@
 import { EditorState, TextSelection, Transaction } from 'prosemirror-state';
+import { builders } from 'prosemirror-test-builder';
 import { EditorView } from 'prosemirror-view';
 import {
   outdentListSelection,
@@ -6,7 +7,6 @@ import {
   toggleList,
 } from './ToolbarPlugin';
 import { schema } from './schema';
-import { builders } from 'prosemirror-test-builder';
 
 const { doc, p, ul, ol, li, h1, h2, h3 } = builders(schema, {
   p: { nodeType: 'paragraph' },
