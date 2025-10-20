@@ -151,7 +151,7 @@ const spec: SchemaSpec = {
     },
     list_item: {
       ...listItem,
-      content: 'paragraph+',
+      content: 'paragraph (paragraph | ordered_list | unordered_list)*',
       selectable: false,
     },
     heading1: heading1Spec,

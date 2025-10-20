@@ -158,7 +158,7 @@ class ScratchTokenParser {
     ['fence', ['inline']],
     ['bullet_list', ['list_item', 'inline']],
     ['ordered_list', ['list_item', 'inline']],
-    ['list_item', ['paragraph', 'inline']],
+    ['list_item', ['paragraph', 'ordered_list', 'bullet_list']],
     ['checklist_item', ['inline']],
     ['inline', []],
   ]);

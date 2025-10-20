@@ -142,6 +142,12 @@ li {
   margin-bottom: var(--default-item-gap);
 }
 
+li ul,
+li ol {
+  margin-top: var(--default-item-gap);
+  margin-bottom: 0;
+}
+
 code {
   font-family: var(--ff-mono), monospace;
   background: var(--sn-stylekit-contrast-background-color, #efefef);
@@ -284,7 +290,8 @@ button[data-format] i {
 }
 
 button[data-format='link']:before,
-button[data-format='heading']:before {
+button[data-format='heading']:before,
+button[data-format='outdent']:before {
   background: var(--sn-stylekit-contrast-background-color, #ccc);
   bottom: 7px;
   content: '';
