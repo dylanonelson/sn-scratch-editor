@@ -524,7 +524,6 @@ export class ToolbarPlugin extends Plugin {
           const hasMod = e.metaKey;
           const hasShift = e.shiftKey;
 
-          console.log('e.key', e.key);
           if (hasCtrl && e.key === '.') {
             indentListSelection(this.view.state, this.view.dispatch);
             return true;
