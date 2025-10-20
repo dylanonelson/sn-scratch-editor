@@ -326,8 +326,9 @@ class LinkModal {
   private handleGlobalKeydown = (e: KeyboardEvent) => {
     const isEnter = e.key === 'Enter';
     if (
-      document.activeElement === this.textInput ||
-      (document.activeElement === this.urlInput && isEnter)
+      (document.activeElement === this.textInput ||
+        document.activeElement === this.urlInput) &&
+      isEnter
     ) {
       this.handleConfirm();
       return;
