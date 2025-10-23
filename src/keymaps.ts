@@ -10,70 +10,81 @@ import {
   splitBlock,
 } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
-import { ResolvedPos } from 'prosemirror-model';
-import { splitListItem } from 'prosemirror-schema-list';
-import {
-  EditorState,
-  Plugin,
-  Selection,
-  TextSelection,
-  Transaction,
-} from 'prosemirror-state';
+import { liftListItem, splitListItem } from 'prosemirror-schema-list';
+import { Command, Plugin, Selection, TextSelection } from 'prosemirror-state';
 import { schema } from './schema';
-import { isListItemBlock, isParagraphBlock } from './schemaHelpers';
+import { getListBlockRange } from './schemaHelpers';
 
-function recursiveDeleteEmpty(tr: Transaction, $pos: ResolvedPos): Transaction {
-  const parentNode = $pos.parent;
-  if (parentNode.nodeSize === 2) {
-    const { pos } = $pos;
-    return recursiveDeleteEmpty(
-      tr.deleteRange(pos - 1, pos + 1),
-      tr.doc.resolve(tr.mapping.map(pos)),
+function ensureTextSelectionInEmptyNode(command: Command): Command {
+  return function (state, dispatch) {
+    const { $cursor } = state.selection as TextSelection;
+    if (Boolean($cursor && $cursor.parent.nodeSize === 2)) {
+      return command(state, dispatch);
+    }
+    return false;
+  };
+}
+
+function ensureEmptyChecklistItemTextSelection(command: Command): Command {
+  return function (state, dispatch) {
+    const { $cursor } = state.selection as TextSelection;
+    if (
+      Boolean($cursor && $cursor.parent.type === schema.nodes.checklist_item)
+    ) {
+      return command(state, dispatch);
+    }
+    return false;
+  };
+}
+
+function ensureListItemTextSelection(command: Command): Command {
+  return function (state, dispatch) {
+    if (!(state.selection instanceof TextSelection)) {
+      return false;
+    }
+    const { $from, $to } = state.selection;
+    const listBlockRange = getListBlockRange($from, $to);
+    if (Boolean(listBlockRange)) {
+      return command(state, dispatch);
+    }
+    return false;
+  };
+}
+
+function ensureStartOfListItemTextSelection(command: Command): Command {
+  return function (state, dispatch) {
+    const { $from, $to } = state.selection;
+    const listBlockRange = getListBlockRange($from, $to);
+    console.log(
+      'listBlockRange, $from.parentOffset',
+      listBlockRange,
+      $from.parentOffset,
     );
-  }
-  return tr;
-}
-
-function ensureTextSelectionInEmptyNode(state: EditorState): boolean {
-  const { $cursor } = state.selection as TextSelection;
-  return Boolean($cursor && $cursor.parent.nodeSize === 2);
-}
-
-function ensureChecklistItemTextSelection(state: EditorState) {
-  const { $cursor } = state.selection as TextSelection;
-  return Boolean(
-    $cursor && $cursor.parent.type === schema.nodes.checklist_item,
-  );
-}
-
-function ensureListItemTextSelection(state: EditorState) {
-  if (!(state.selection instanceof TextSelection)) {
+    if (
+      state.selection instanceof TextSelection &&
+      Boolean(listBlockRange) &&
+      $from.parentOffset === 0
+    ) {
+      return command(state, dispatch);
+    }
     return false;
-  }
-  const { $cursor } = state.selection;
-  const { depth } = $cursor;
-  if (depth === 0) {
-    return false;
-  }
-  const grandparentNode = $cursor.node(depth - 1);
-  return isParagraphBlock($cursor.parent) && isListItemBlock(grandparentNode);
+  };
 }
 
 export const keymapPlugins: Plugin[] = [
   // checklist item handlers
   keymap({
-    Backspace(state, dispatch, view) {
-      if (ensureChecklistItemTextSelection(state) === false) {
-        return false;
-      }
-      if (view.endOfTextblock('left') === false) {
-        return false;
-      }
+    Backspace: ensureEmptyChecklistItemTextSelection(
+      function (state, dispatch, view) {
+        if (view.endOfTextblock('left') === false) {
+          return false;
+        }
 
-      if ((state.selection as TextSelection).$cursor.index(0) === 0) {
-        setBlockType(schema.nodes.paragraph)(state, dispatch);
-      }
-    },
+        if ((state.selection as TextSelection).$cursor.index(0) === 0) {
+          setBlockType(schema.nodes.paragraph)(state, dispatch);
+        }
+      },
+    ),
     Enter(state, dispatch) {
       const { selection, tr } = state;
       const { $from, from } = selection;
@@ -115,13 +126,20 @@ export const keymapPlugins: Plugin[] = [
       joinTextblockForward,
       selectNodeForward,
     ),
-    Enter: splitListItem(schema.nodes.list_item),
-    'Shift-Enter': function (state, dispatch) {
-      if (ensureListItemTextSelection(state) === false) {
-        return false;
-      }
-      return splitBlock(state, dispatch);
-    },
+    Enter: chainCommands(
+      ensureStartOfListItemTextSelection(liftListItem(schema.nodes.list_item)),
+      splitListItem(schema.nodes.list_item),
+      ensureListItemTextSelection(function (state, dispatch) {
+        const { tr } = state;
+        tr.deleteSelection();
+        // 2 = split the list item, not the paragraph. 1 is the default and
+        // would split the paragraph.
+        tr.split(tr.selection.from, 2);
+        dispatch(tr);
+        return true;
+      }),
+    ),
+    'Shift-Enter': ensureListItemTextSelection(splitBlock),
   }),
   keymap(baseKeymap),
 ];

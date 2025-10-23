@@ -11,6 +11,7 @@ import { JoinListsPlugin } from './JoinListsPlugin';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
 import { nodeViews } from './nodeViews';
+import { positionMapperPlugin } from './PositionMapperPlugin';
 import { schema } from './schema';
 import { ToolbarPlugin } from './ToolbarPlugin';
 import { TooltipPlugin } from './TooltipPlugin';
@@ -47,6 +48,7 @@ async function init() {
         doc: getDocForNewEditorState(),
         plugins: [
           ...keymapPlugins,
+          positionMapperPlugin,
           new ToolbarPlugin(
             document.querySelector('#toolbar'),
             document.querySelector('#link-modal'),

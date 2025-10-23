@@ -1,12 +1,22 @@
-import { EditorState, TextSelection, Transaction } from 'prosemirror-state';
+import { assert } from 'es-toolkit';
+import { Node } from 'prosemirror-model';
+import {
+  EditorState,
+  Plugin,
+  TextSelection,
+  Transaction,
+} from 'prosemirror-state';
 import { builders } from 'prosemirror-test-builder';
 import { EditorView } from 'prosemirror-view';
+import { positionMapperPlugin } from './PositionMapperPlugin';
+import { schema } from './schema';
+import { expectResultToMatch } from './test_helpers';
 import {
+  indentListSelection,
   outdentListSelection,
   swapTextBlock,
   toggleList,
-} from './ToolbarPlugin';
-import { schema } from './schema';
+} from './toolbarHelpers';
 
 const { doc, p, ul, ol, li, h1, h2, h3 } = builders(schema, {
   p: { nodeType: 'paragraph' },
@@ -38,16 +48,38 @@ class MockView {
   };
 }
 
+const expectNodeTypeWithChildren = (
+  node: Node,
+  typeName: string,
+  childTypes: string[],
+) => {
+  assert(node.type.name, typeName);
+
+  assert(
+    node.childCount === childTypes.length,
+    `Node ${typeName} should have ${childTypes.length} children but has ${node.childCount}`,
+  );
+
+  for (let i = 0; i < childTypes.length; i++) {
+    assert(
+      node.child(i).type.name === childTypes[i],
+      `Child ${i} should be ${childTypes[i]} but is ${node.child(i).type.name}`,
+    );
+  }
+};
+
 // Helper to create a mock EditorView with the given document and selection
 function createMockView(
   document: any,
   from: number,
   to: number,
   mockDispatch?: jest.Mock,
+  plugins?: Plugin[],
 ): EditorView {
   const state = EditorState.create({
     doc: document,
     selection: TextSelection.create(document, from, to),
+    plugins: plugins,
   });
 
   return new MockView(state, mockDispatch) as unknown as EditorView;
@@ -319,8 +351,14 @@ describe('outdentListSelection', () => {
     const document = doc(
       ul(li(p('Item <s>one'), ul(li(p('Nested one')), li(p('Nested<e> two'))))),
     );
-    const view = createMockView(document, document.tag.s, document.tag.e);
-    outdentListSelection(view.state, view.dispatch);
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.e,
+      undefined,
+      [positionMapperPlugin],
+    );
+    outdentListSelection(view);
     expect(view.state.doc.child(0).type.name).toBe(schema.nodes.paragraph.name);
     expect(view.state.doc.child(0).textContent).toBe('Item one');
     expect(view.state.doc.child(1).type.name).toBe(
@@ -333,8 +371,14 @@ describe('outdentListSelection', () => {
     const document = doc(
       ul(li(p('Item <s>one'), ul(li(p('Nested one')), li(p('Nested two'))))),
     );
-    const view = createMockView(document, document.tag.s, document.tag.s);
-    outdentListSelection(view.state, view.dispatch);
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.s,
+      undefined,
+      [positionMapperPlugin],
+    );
+    outdentListSelection(view);
     expect(view.state.doc.child(0).type.name).toBe(schema.nodes.paragraph.name);
     expect(view.state.doc.child(0).textContent).toBe('Item one');
     expect(view.state.doc.child(1).type.name).toBe(
@@ -347,8 +391,14 @@ describe('outdentListSelection', () => {
     const document = doc(
       ul(li(p('Item one'), ul(li(p('Nested <s>one')), li(p('Nested two'))))),
     );
-    const view = createMockView(document, document.tag.s, document.tag.s);
-    outdentListSelection(view.state, view.dispatch);
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.s,
+      undefined,
+      [positionMapperPlugin],
+    );
+    outdentListSelection(view);
     expect(view.state.doc.child(0).type.name).toBe(
       schema.nodes.unordered_list.name,
     );
@@ -360,25 +410,36 @@ describe('outdentListSelection', () => {
     expect(secondListItemNode.textContent).toBe('Nested oneNested two');
   });
 
-  it('should do nothing when the selection spans a nested list and the outdent would pull the preceding list items outward', () => {
+  it('should outdent only the nested list even when a child of the parent is selected', () => {
+    // prettier-ignore
     const document = doc(
       ul(
-        li(p('Item one'), ul(li(p('Nested <s>one')), li(p('Nested two')))),
+        li(
+          p('Item one'), 
+          ul(
+            li(p('Nested <s>one')),
+            li(p('Nested two'))
+          )
+        ),
         li(p('Item<e> two')),
       ),
     );
-    const mockDispatch = jest.fn();
     const view = createMockView(
       document,
       document.tag.s,
       document.tag.e,
-      mockDispatch,
+      undefined,
+      [positionMapperPlugin],
     );
-    outdentListSelection(view.state, view.dispatch);
-    expect(mockDispatch).not.toHaveBeenCalled();
+    outdentListSelection(view);
+    const expected = doc(
+      ul(li(p('Item one')), li(p('Nested one')), li(p('Nested two'))),
+      p('Item two'),
+    );
+    expectResultToMatch(view.state.doc, expected);
   });
 
-  it('should do nothing when the selection spans many list items but ultimately winds up pulling in a large parent list', () => {
+  it('should handle cases where the selection spans multiple nested lists gracefully', () => {
     // prettier-ignore
     const document = doc(
       ul(
@@ -386,14 +447,16 @@ describe('outdentListSelection', () => {
           p('Item 1'),
           ul(
             li(p('Nested 1-1')),
-            li(p('Nest<s2>ed 1-2')),
-            ul(
-              li(p('Nested 2-1')),
-              li(
-                p('Nested 3-1'),
-                ul(
-                  li(p('Nested 4-1')),
-                  li(p('Nes<s1>ted 4-2')),
+            li(
+              p('Nested 1-2'),
+              ul(
+                li(p('Nested 2-1')),
+                li(
+                  p('Nested 3-1'),
+                  ul(
+                    li(p('Nested 4-1')),
+                    li(p('Nes<s>ted 4-2')),
+                  ),
                 ),
               ),
             ),
@@ -401,12 +464,12 @@ describe('outdentListSelection', () => {
               p('Nested 2-2'),
               ul(
                 li(p('Nested 3-2')),
-                li(p('Nes<s3>ted 3-3'))
+                li(p('Nested 3-3'))
               )
             ),
           ),
         ),
-        li(p('I<e2>tem<e1> 1-2')),
+        li(p('I<e>tem 1-2')),
         li(
           p('Item 1-3'),
           ul(
@@ -416,32 +479,174 @@ describe('outdentListSelection', () => {
         ),
       ),
     );
-    const mockDispatch = jest.fn();
-    let view = createMockView(
+    const view = createMockView(
       document,
-      document.tag.s1,
-      document.tag.e1,
-      mockDispatch,
+      document.tag.s,
+      document.tag.e,
+      undefined,
+      [positionMapperPlugin],
     );
-    outdentListSelection(view.state, view.dispatch);
-    expect(mockDispatch).not.toHaveBeenCalled();
+    outdentListSelection(view);
+    // prettier-ignore
+    const expected = doc(
+      ul(
+        li(
+          p('Item 1'),
+          ul(
+            li(p('Nested 1-1')),
+            li(
+              p('Nested 1-2'),
+              ul(
+                li(p('Nested 2-1')),
+                li(
+                  p('Nested 3-1'),
+                  ul(
+                    li(p('Nested 4-1')),
+                  ),
+                ),
+                li(p('Nes<s>ted 4-2')),
+              ),
+            ),
+          ),
+        ),
+        li(
+          p('Nested 2-2'),
+          ul(
+            li(p('Nested 3-2')),
+            li(p('Nested 3-3'))
+          )
+        ),
+      ),
+      p('<e>Item 1-2'),
+      ul(
+        li(
+          p('Item 1-3'),
+          ul(
+            li(p('Nested 1-3')),
+            li(p('Neste<e>d 1-4')),
+          ),
+        ),
+      ),
+    );
+  });
+});
 
-    view = createMockView(
-      document,
-      document.tag.s2,
-      document.tag.e2,
-      mockDispatch,
+describe('indentListSelection', () => {
+  it('should indent the list item when the selection begins at the top level of the indentable selection', () => {
+    const document = doc(
+      ul(li(p('Item one')), li(p('Item two')), li(p('Item t<s>hree'))),
     );
-    outdentListSelection(view.state, view.dispatch);
-    expect(mockDispatch).not.toHaveBeenCalled();
+    const view = createMockView(document, document.tag.s, document.tag.s);
+    indentListSelection(view);
+    const docNode = view.state.doc;
+    expectNodeTypeWithChildren(docNode, schema.nodes.doc.name, [
+      schema.nodes.unordered_list.name,
+    ]);
+    const unorderedListNode = docNode.child(0);
+    expectNodeTypeWithChildren(
+      unorderedListNode,
+      schema.nodes.unordered_list.name,
+      [schema.nodes.list_item.name, schema.nodes.list_item.name],
+    );
+    const secondListItemNode = unorderedListNode.child(1);
+    expectNodeTypeWithChildren(
+      secondListItemNode,
+      schema.nodes.list_item.name,
+      [schema.nodes.paragraph.name, schema.nodes.unordered_list.name],
+    );
+    expect(secondListItemNode.textContent).toBe('Item twoItem three');
+  });
 
-    view = createMockView(
-      document,
-      document.tag.s3,
-      document.tag.e3,
-      mockDispatch,
+  it('should indent only the selected list item, even when that item has sublists', () => {
+    const document = doc(
+      ul(
+        li(p('Item one')),
+        li(p('Item t<s>wo'), ul(li(p('Nested one')), li(p('Nested two')))),
+        li(p('Item three')),
+      ),
     );
-    outdentListSelection(view.state, view.dispatch);
-    expect(mockDispatch).not.toHaveBeenCalled();
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.s,
+      undefined,
+      [positionMapperPlugin],
+    );
+    indentListSelection(view);
+    const docNode = view.state.doc;
+    expectNodeTypeWithChildren(docNode, schema.nodes.doc.name, [
+      schema.nodes.unordered_list.name,
+    ]);
+    const unorderedListNode = docNode.child(0);
+    expectNodeTypeWithChildren(
+      unorderedListNode,
+      schema.nodes.unordered_list.name,
+      [schema.nodes.list_item.name, schema.nodes.list_item.name],
+    );
+    const firstListItemNode = unorderedListNode.child(0);
+    expectNodeTypeWithChildren(firstListItemNode, schema.nodes.list_item.name, [
+      schema.nodes.paragraph.name,
+      schema.nodes.unordered_list.name,
+    ]);
+    expect(firstListItemNode.textContent).toBe(
+      'Item oneItem twoNested oneNested two',
+    );
+
+    const secondListItemNode = unorderedListNode.child(1);
+    expect(secondListItemNode.childCount).toBe(1);
+    expect(secondListItemNode.textContent).toBe('Item three');
+  });
+
+  it('should handle selections that span multiple list items gracefully', () => {
+    // prettier-ignore
+    const document = doc(
+      ul(
+        li(p('1')),
+        li(p('2<s>')),
+        li(
+          p('2-1'),
+          ul(
+            li(
+              p('3-<e>1'), 
+              ul(
+                li(p('4-1'))
+              )
+            ),
+            li(p('3-2')),
+          ),
+        ),
+        li(p('3')),
+      ),
+    );
+    const view = createMockView(
+      document,
+      document.tag.s,
+      document.tag.e,
+      undefined,
+      [positionMapperPlugin],
+    );
+    indentListSelection(view);
+    const docNode = view.state.doc;
+    // prettier-ignore
+    const expectedDoc = doc(
+      ul(
+        li(
+          p('1'),
+          ul(
+            li(p('2<s>')),
+            li(
+              p('2-1'),
+              ul(
+                li(p('3-<e>1')),
+                li(p('4-1'))
+              ),
+            ),
+            li(p('3-2'))
+          ),
+        ),
+        li(p('3')),
+      ),
+    );
+    expectResultToMatch(docNode, expectedDoc);
   });
 });

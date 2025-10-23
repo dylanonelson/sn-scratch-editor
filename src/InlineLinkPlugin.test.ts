@@ -9,7 +9,7 @@ describe('Inline links plugin', () => {
   it('inserts inline links when a document contains matching text', () => {
     const doc = schemaHelpers.doc(
       schemaHelpers.paragraph(
-        'Check out https://standardnotes.org for more info',
+        'Check out <link>https://standardnotes.org for more info<s>',
       ),
     );
     const editorState = EditorState.create({
@@ -19,17 +19,14 @@ describe('Inline links plugin', () => {
     });
 
     // Fire off a test transaction to trigger the plugin
-    const tr = editorState.tr.insert(
-      editorState.doc.content.size - 1,
-      schema.text('!'),
-    );
+    const tr = editorState.tr.insert(doc.tag.s, schema.text('!'));
     const newState = editorState.apply(tr);
     expect(newState.doc.textContent).toBe(
       'Check out https://standardnotes.org for more info!',
     );
 
     // Grab the text node that was created by the plugin
-    const linkNode = newState.doc.nodeAt(11);
+    const linkNode = newState.doc.nodeAt(doc.tag.link);
     expect(linkNode.type.isText).toBe(true);
     expect(linkNode.textContent).toBe('https://standardnotes.org');
     const linkMark = linkNode.marks[0];
