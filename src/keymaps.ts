@@ -127,7 +127,9 @@ export const keymapPlugins: Plugin[] = [
       selectNodeForward,
     ),
     Enter: chainCommands(
-      ensureStartOfListItemTextSelection(liftListItem(schema.nodes.list_item)),
+      ensureStartOfListItemTextSelection(
+        ensureTextSelectionInEmptyNode(liftListItem(schema.nodes.list_item)),
+      ),
       splitListItem(schema.nodes.list_item),
       ensureListItemTextSelection(function (state, dispatch) {
         const { tr } = state;
