@@ -9,8 +9,8 @@ import {
   indentListSelection,
   outdentListSelection,
   swapTextBlock,
-  toggleList,
   toggleChecklistItemState,
+  toggleList,
 } from './toolbarHelpers';
 
 const APPLY_FORMAT_ATTR = 'data-format';

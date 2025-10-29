@@ -11,19 +11,9 @@ import {
 } from 'prosemirror-commands';
 import { keymap } from 'prosemirror-keymap';
 import { liftListItem, splitListItem } from 'prosemirror-schema-list';
-import {
-  Command,
-  EditorState,
-  Plugin,
-  Selection,
-  TextSelection,
-} from 'prosemirror-state';
+import { Command, Plugin, Selection, TextSelection } from 'prosemirror-state';
 import { schema } from './schema';
-import {
-  getListBlockRange,
-  isListItemBlock,
-  isParagraphBlock,
-} from './schemaHelpers';
+import { getListBlockRange } from './schemaHelpers';
 
 function ensureTextSelectionInEmptyNode(command: Command): Command {
   return function (state, dispatch) {
