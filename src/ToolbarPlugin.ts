@@ -479,6 +479,9 @@ export class ToolbarPlugin extends Plugin {
         result.push('checklist_item');
         break;
       }
+      case schema.nodes.code_block: {
+        result.push('code_block');
+      }
       default: {
         result.push(null);
       }
