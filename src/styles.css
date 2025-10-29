@@ -16,8 +16,14 @@ body {
   --default-item-gap: 5px;
   --default-checkbox-gap: 8px;
   --text-color: rgba(0, 0, 0, 0.9);
-  --h3-text-color: var(--sn-stylekit-paragraph-text-color, var(--sn-stylekit-foreground-color, rgba(0, 0, 0, 0.7)));
-  color: var(--sn-stylekit-paragraph-text-color, var(--sn-stylekit-foreground-color, var(--text-color)));
+  --h3-text-color: var(
+    --sn-stylekit-paragraph-text-color,
+    var(--sn-stylekit-foreground-color, rgba(0, 0, 0, 0.7))
+  );
+  color: var(
+    --sn-stylekit-paragraph-text-color,
+    var(--sn-stylekit-foreground-color, var(--text-color))
+  );
   font-size: var(--base-font-size);
   font-family: var(--ff-serif), serif;
   scrollbar-color: var(--sn-stylekit-scrollbar-color, #ccc)
