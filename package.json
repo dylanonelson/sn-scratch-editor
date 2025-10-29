@@ -27,6 +27,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@types/jest": "^29.5.12",
     "@types/uuid": "^10.0.0",
+    "@types/webpack-env": "^1.18.8",
     "babel-jest": "^29.7.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^13.0.0",

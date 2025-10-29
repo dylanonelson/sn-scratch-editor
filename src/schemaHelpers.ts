@@ -1,4 +1,4 @@
-import { Node } from 'prosemirror-model';
+import { Node, NodeRange, ResolvedPos } from 'prosemirror-model';
 import { schema } from './schema';
 
 export function isListBlock(
@@ -14,4 +14,15 @@ export function isListItemBlock(node: Node): boolean {
 
 export function isParagraphBlock(node: Node): boolean {
   return node.type === schema.nodes.paragraph;
+}
+
+export function getListBlockRange(
+  $from: ResolvedPos,
+  $to: ResolvedPos,
+  listTypes = [schema.nodes.unordered_list, schema.nodes.ordered_list],
+): NodeRange | false {
+  const listBlockRange = $from.blockRange($to, (node) =>
+    isListBlock(node, listTypes),
+  );
+  return listBlockRange || false;
 }

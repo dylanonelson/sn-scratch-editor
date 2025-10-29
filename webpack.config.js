@@ -46,6 +46,9 @@ module.exports = ({ analyzer, production } = {}) => {
     optimization: {
       minimizer: [new CssMinimizerPlugin(), new TerserWebpackPlugin()],
     },
+    performance: {
+      hints: false,
+    },
     plugins: [
       // Clean out dist before each release build
       ...(production ? [new CleanWebpackPlugin()] : []),

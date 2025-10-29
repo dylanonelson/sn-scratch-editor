@@ -185,13 +185,12 @@ pre[data-markdown_escaped='true'] div.info {
   cursor: pointer;
   display: block;
   float: right;
-  height: 20px;
+  height: 18px;
   position: relative;
   right: 6px;
   text-align: center;
-  top: 6px;
-  width: 20px;
-  line-height: 20px;
+  width: 18px;
+  line-height: 18px;
 }
 
 pre[data-markdown_escaped='true'] div.info:hover:after {

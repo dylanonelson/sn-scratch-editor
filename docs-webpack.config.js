@@ -13,6 +13,12 @@ module.exports = (...args) => {
     ),
   ]);
 
+  config.devServer = Object.assign({}, config.devServer, {
+    historyApiFallback: {
+      index: '/sn-scratch-editor/index.html',
+    },
+  });
+
   config.module.rules.push({
     test: /\.md$/,
     loader: 'raw-loader',
