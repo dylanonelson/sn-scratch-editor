@@ -16,8 +16,14 @@ body {
   --default-item-gap: 5px;
   --default-checkbox-gap: 8px;
   --text-color: rgba(0, 0, 0, 0.9);
-  --h3-text-color: var(--sn-stylekit-paragraph-text-color, rgba(0, 0, 0, 0.7));
-  color: var(--sn-stylekit-paragraph-text-color, var(--text-color));
+  --h3-text-color: var(
+    --sn-stylekit-paragraph-text-color,
+    var(--sn-stylekit-foreground-color, rgba(0, 0, 0, 0.7))
+  );
+  color: var(
+    --sn-stylekit-paragraph-text-color,
+    var(--sn-stylekit-foreground-color, var(--text-color))
+  );
   font-size: var(--base-font-size);
   font-family: var(--ff-serif), serif;
   scrollbar-color: var(--sn-stylekit-scrollbar-color, #ccc)
@@ -248,7 +254,6 @@ pre code {
 }
 
 #toolbar-wrapper {
-  background-color: var(--sn-stylekit-background-color, white);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
   overflow-x: auto;
@@ -270,7 +275,7 @@ button[data-format]:hover {
 }
 
 button.selected:after {
-  background: #aaa;
+  background: var(--sn-stylekit-contrast-background-color, #aaa);
   bottom: 0;
   content: '';
   display: block;
@@ -281,7 +286,7 @@ button.selected:after {
 }
 
 button[data-format] {
-  background-color: var(--sn-stylekit-background-color, white);
+  background-color: inherit;
   cursor: pointer;
   height: 40px;
   margin-left: 10px;
