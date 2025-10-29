@@ -15,8 +15,6 @@ const sampleDocs = ctx.keys().reduce((acc, path) => {
   return acc;
 }, {});
 
-console.log(sampleDocs);
-
 class DemoClient {
   constructor() {}
   get latestText() {
