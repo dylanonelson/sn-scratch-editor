@@ -4,6 +4,7 @@
 body {
   --base-font-size: 15px;
   --border-color: 1px solid #ccc;
+  --background-color: var(--sn-stylekit-background-color, #fff);
   --h2-font-size: 16px;
   --h1-font-size: 20px;
   --h3-font-size: 15px;
@@ -254,6 +255,7 @@ pre code {
 }
 
 #toolbar-wrapper {
+  background: var(--background-color, #fff);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
   overflow-x: auto;
