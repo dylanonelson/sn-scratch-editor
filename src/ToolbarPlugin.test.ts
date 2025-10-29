@@ -1,9 +1,8 @@
 import { EditorState, TextSelection } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
-import { schema } from './schema';
 import { builders } from 'prosemirror-test-builder';
+import { EditorView } from 'prosemirror-view';
 import { ToolbarPlugin } from './ToolbarPlugin';
-import { CheckboxStatus } from './schema';
+import { CheckboxStatus, schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 

@@ -1,15 +1,26 @@
 import {
+  baseKeymap,
+  chainCommands,
+  deleteSelection,
+  joinTextblockBackward,
+  joinTextblockForward,
+  selectNodeBackward,
+  selectNodeForward,
+  setBlockType,
+  splitBlock,
+} from 'prosemirror-commands';
+import { keymap } from 'prosemirror-keymap';
+import { ResolvedPos } from 'prosemirror-model';
+import { splitListItem } from 'prosemirror-schema-list';
+import {
   EditorState,
   Plugin,
   Selection,
   TextSelection,
   Transaction,
 } from 'prosemirror-state';
-import { ResolvedPos } from 'prosemirror-model';
-import { baseKeymap, setBlockType } from 'prosemirror-commands';
-import { keymap } from 'prosemirror-keymap';
-import { splitListItem } from 'prosemirror-schema-list';
 import { schema } from './schema';
+import { isListItemBlock, isParagraphBlock } from './schemaHelpers';
 
 function recursiveDeleteEmpty(tr: Transaction, $pos: ResolvedPos): Transaction {
   const parentNode = $pos.parent;
@@ -33,6 +44,19 @@ function ensureChecklistItemTextSelection(state: EditorState) {
   return Boolean(
     $cursor && $cursor.parent.type === schema.nodes.checklist_item,
   );
+}
+
+function ensureListItemTextSelection(state: EditorState) {
+  if (!(state.selection instanceof TextSelection)) {
+    return false;
+  }
+  const { $cursor } = state.selection;
+  const { depth } = $cursor;
+  if (depth === 0) {
+    return false;
+  }
+  const grandparentNode = $cursor.node(depth - 1);
+  return isParagraphBlock($cursor.parent) && isListItemBlock(grandparentNode);
 }
 
 export const keymapPlugins: Plugin[] = [
@@ -81,33 +105,23 @@ export const keymapPlugins: Plugin[] = [
   }),
   // list item handlers
   keymap({
-    Backspace(state, dispatch) {
-      if (ensureTextSelectionInEmptyNode(state) === false) {
-        return false;
-      }
-
-      const selection = state.selection;
-      if (!(selection instanceof TextSelection)) return false;
-
-      const { $cursor } = selection;
-      const possibleSelection = Selection.findFrom(
-        state.doc.resolve($cursor.before()),
-        -1,
-        true,
-        // We can assert this here bc of the textOnly arg above
-      ) as TextSelection;
-      if (!possibleSelection) {
-        return false;
-      }
-      if (possibleSelection.$cursor.node(-1).type !== schema.nodes.list_item) {
-        return;
-      }
-      let tr = state.tr.setSelection(possibleSelection);
-      tr = recursiveDeleteEmpty(tr, $cursor);
-      dispatch(tr);
-      return true;
-    },
+    Backspace: chainCommands(
+      deleteSelection,
+      joinTextblockBackward,
+      selectNodeBackward,
+    ),
+    Delete: chainCommands(
+      deleteSelection,
+      joinTextblockForward,
+      selectNodeForward,
+    ),
     Enter: splitListItem(schema.nodes.list_item),
+    'Shift-Enter': function (state, dispatch) {
+      if (ensureListItemTextSelection(state) === false) {
+        return false;
+      }
+      return splitBlock(state, dispatch);
+    },
   }),
   keymap(baseKeymap),
 ];

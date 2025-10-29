@@ -6,8 +6,8 @@ import {
 } from 'prosemirror-markdown';
 import {
   AUTO_LINK_ATTR,
-  MARKDOWN_ESCAPED_ATTR,
   CheckboxStatus,
+  MARKDOWN_ESCAPED_ATTR,
   schema,
 } from './schema';
 

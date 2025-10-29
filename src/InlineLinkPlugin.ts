@@ -1,6 +1,6 @@
+import LinkifyIt from 'linkify-it';
 import { Plugin, Transaction } from 'prosemirror-state';
 import { AUTO_LINK_ATTR, schema } from './schema';
-import LinkifyIt from 'linkify-it';
 
 const linkify = new LinkifyIt();
 
@@ -104,8 +104,13 @@ export const findAndInsertInlineLinks = (state): Transaction => {
 export class InlineLinkPlugin extends Plugin {
   constructor() {
     super({
-      appendTransaction(transactions, oldState, newState) {
-        return findAndInsertInlineLinks(newState);
+      appendTransaction(transactions, _oldState, newState) {
+        for (let i = 0; i < transactions.length; i += 1) {
+          const tr = transactions[i];
+          if (tr.docChanged) {
+            return findAndInsertInlineLinks(newState);
+          }
+        }
       },
     });
   }

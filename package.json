@@ -39,6 +39,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "mini-css-extract-plugin": "^2.8.0",
     "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^4.3.0",
     "prosemirror-test-builder": "^1.1.1",
     "raw-loader": "^4.0.2",
     "source-map-loader": "^5.0.0",
@@ -50,11 +51,12 @@
     "webpack": "^5.90.1",
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
     "@standardnotes/component-relay": "^2.2.2",
     "core-js": "^3.42.0",
+    "es-toolkit": "^1.40.0",
     "glob": "^11.0.2",
     "jsdom": "^26.1.0",
     "lru-cache": "^11.1.0",

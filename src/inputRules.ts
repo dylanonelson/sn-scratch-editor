@@ -1,12 +1,12 @@
 import {
+  ellipsis,
+  InputRule,
   inputRules,
   smartQuotes,
-  ellipsis,
   textblockTypeInputRule,
-  InputRule,
 } from 'prosemirror-inputrules';
-import { Plugin, Selection } from 'prosemirror-state';
 import { MarkType, NodeType } from 'prosemirror-model';
+import { Plugin, Selection } from 'prosemirror-state';
 import { schema } from './schema';
 
 function markWrappingRule(

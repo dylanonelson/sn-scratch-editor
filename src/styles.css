@@ -4,6 +4,7 @@
 body {
   --base-font-size: 15px;
   --border-color: 1px solid #ccc;
+  --background-color: var(--sn-stylekit-background-color, #fff);
   --h2-font-size: 16px;
   --h1-font-size: 20px;
   --h3-font-size: 15px;
@@ -150,6 +151,10 @@ li {
   margin-bottom: var(--default-item-gap);
 }
 
+li p:not(:only-of-type) {
+  margin-bottom: var(--default-gap);
+}
+
 li ul,
 li ol {
   margin-top: var(--default-item-gap);
@@ -246,9 +251,11 @@ pre code {
 
 .checklist-item p {
   line-height: 24px;
+  min-width: 1px;
 }
 
 #toolbar-wrapper {
+  background: var(--background-color, #fff);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
   left: 0;
   overflow-x: auto;

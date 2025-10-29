@@ -7,3 +7,11 @@ export function isListBlock(
 ): boolean {
   return listTypes.includes(node.type);
 }
+
+export function isListItemBlock(node: Node): boolean {
+  return node.type === schema.nodes.list_item;
+}
+
+export function isParagraphBlock(node: Node): boolean {
+  return node.type === schema.nodes.paragraph;
+}

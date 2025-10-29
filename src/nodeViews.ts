@@ -1,6 +1,6 @@
-import { CheckboxStatus, schema } from './schema';
 import { EditorProps } from 'prosemirror-view';
-import { CheckboxOutline, Checkbox } from './assets';
+import { Checkbox, CheckboxOutline } from './assets';
+import { CheckboxStatus, schema } from './schema';
 
 const CHECKBOX_CHECKED_CLASSNAME = 'is-checked';
 const CLICK_TARGET_CLASSNAME = 'click-target';

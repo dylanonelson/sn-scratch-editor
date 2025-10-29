@@ -1,8 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import { DOMParser } from 'prosemirror-model';
 import ComponentManager from '@standardnotes/component-relay';
-import { markdownParser } from './markdown';
-import { schema } from './schema';
+import { v4 as uuidv4 } from 'uuid';
 
 const SN_ITEM_SAVE_KEY = 'com.dylanonelson.sn-editor';
 

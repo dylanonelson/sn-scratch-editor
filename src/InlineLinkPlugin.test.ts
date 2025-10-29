@@ -1,7 +1,7 @@
-import { builders } from 'prosemirror-test-builder';
-import { findAndInsertInlineLinks, InlineLinkPlugin } from './InlineLinkPlugin';
-import { AUTO_LINK_ATTR, schema } from './schema';
 import { EditorState } from 'prosemirror-state';
+import { builders } from 'prosemirror-test-builder';
+import { InlineLinkPlugin } from './InlineLinkPlugin';
+import { AUTO_LINK_ATTR, schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 

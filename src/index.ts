@@ -1,19 +1,19 @@
-import { v4 as uuidv4 } from 'uuid';
-import ComponentManager from '@standardnotes/component-relay';
-import { baseKeymap } from 'prosemirror-commands';
-import { EditorView } from 'prosemirror-view';
-import { EditorState, Plugin } from 'prosemirror-state';
+import { debounce } from 'es-toolkit';
 import { history } from 'prosemirror-history';
-import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
-import { ToolbarPlugin } from './ToolbarPlugin';
-import { TooltipPlugin } from './TooltipPlugin';
-import { EditorExtenderPlugin } from './EditorExtenderPlugin';
-import { schema } from './schema';
+import { Node as ProsemirrorNode } from 'prosemirror-model';
+import { EditorState, Plugin } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
 import { client } from './client';
-import { nodeViews } from './nodeViews';
+import { EditorExtenderPlugin } from './EditorExtenderPlugin';
+import { InlineLinkPlugin } from './InlineLinkPlugin';
+import { inputRulesForcedSpacePlugin, inputRulesPlugin } from './inputRules';
+import { JoinListsPlugin } from './JoinListsPlugin';
 import { keymapPlugins } from './keymaps';
 import { markdownParser, markdownSerializer } from './markdown';
-import { InlineLinkPlugin } from './InlineLinkPlugin';
+import { nodeViews } from './nodeViews';
+import { schema } from './schema';
+import { ToolbarPlugin } from './ToolbarPlugin';
+import { TooltipPlugin } from './TooltipPlugin';
 
 interface AppWindow extends Window {
   view: EditorView;
@@ -31,6 +31,14 @@ function getDocForNewEditorState() {
 
 async function init() {
   await client.ready();
+
+  const debouncedSave = debounce((doc: ProsemirrorNode) => {
+    client.saveNote(
+      doc.toJSON(),
+      markdownSerializer.serialize(doc),
+      doc.textBetween(0, doc.nodeSize - 2, ' '),
+    );
+  }, 850);
 
   const view = (window.view = new EditorView(
     document.querySelector('#editor'),
@@ -51,6 +59,7 @@ async function init() {
             },
           }),
           new InlineLinkPlugin(),
+          new JoinListsPlugin(),
           inputRulesPlugin,
           inputRulesForcedSpacePlugin,
           history(),
@@ -60,11 +69,7 @@ async function init() {
         const next = view.state.apply(tr);
         view.updateState(next);
         if (tr.docChanged) {
-          client.saveNote(
-            next.doc.toJSON(),
-            markdownSerializer.serialize(next.doc),
-            next.doc.textBetween(0, next.doc.nodeSize - 2, ' '),
-          );
+          debouncedSave(next.doc);
         }
       },
     },
