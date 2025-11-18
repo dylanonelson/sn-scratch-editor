@@ -58,7 +58,7 @@
     "@standardnotes/component-relay": "^2.2.2",
     "core-js": "^3.42.0",
     "es-toolkit": "^1.40.0",
-    "glob": "^11.0.2",
+    "glob": "^11.1.0",
     "jsdom": "^26.1.0",
     "lru-cache": "^11.1.0",
     "markdown-it": "^14.0.0",
