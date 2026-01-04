@@ -64,6 +64,14 @@ export const markdownSerializer = new MarkdownSerializer(
         defaultMarkdownSerializer.nodes.code_block(state, node, parent, index);
       }
     },
+    horizontal_rule(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.horizontal_rule(
+        state,
+        node,
+        parent,
+        index,
+      );
+    },
   },
   {
     ...defaultMarkdownSerializer.marks,
@@ -161,6 +169,7 @@ class ScratchTokenParser {
     ['list_item', ['paragraph', 'ordered_list', 'bullet_list']],
     ['checklist_item', ['inline']],
     ['inline', []],
+    ['hr', []],
   ]);
 
   static getTypeName(tokenType: string) {
@@ -309,6 +318,7 @@ export const markdownParser = new MarkdownParser(
         };
       },
     },
+    hr: { node: 'horizontal_rule' },
     em: { mark: 'em' },
     strong: { mark: 'strong' },
     code_inline: {
