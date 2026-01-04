@@ -142,7 +142,6 @@ export class ToolbarPlugin extends Plugin {
 
   private swapTextBlock = (nodeType: NodeType) => {
     swapTextBlock(this.view, nodeType);
-    this.view.focus();
   };
 
   private promoteHeading = (state: EditorState, dispatch) => {
@@ -271,7 +270,6 @@ export class ToolbarPlugin extends Plugin {
 
   private toggleMark = (mark: MarkType) => {
     toggleMark(mark)(this.view.state, this.view.dispatch);
-    this.view.focus();
   };
 
   constructor(toolbarEl: Element, modalEl: Element) {
@@ -296,105 +294,104 @@ export class ToolbarPlugin extends Plugin {
       },
       props: {
         handleKeyDown: (_view, e) => {
-          const hasCtrl = e.ctrlKey;
-          const hasMod = e.metaKey;
-          const hasShift = e.shiftKey;
-
-          if (hasCtrl && e.key === '.') {
-            indentListSelection(this.view);
-            return true;
+          const r = this.handleKeyDown(_view, e);
+          if (r) {
+            _view.focus();
           }
-          if (hasCtrl && e.key === ',') {
-            outdentListSelection(this.view);
-            return true;
-          }
-          if (e.key === 'Tab' && !hasCtrl && !hasMod) {
-            if (hasShift) {
-              outdentListSelection(this.view);
-            } else {
-              indentListSelection(this.view);
-            }
-            return true;
-          }
-          if (hasCtrl && e.key === 't') {
-            this.toggleChecklistItem();
-            return true;
-          }
-
-          if (hasMod && e.key === '7') {
-            this.toggleList(
-              schema.nodes.unordered_list,
-              schema.nodes.list_item,
-            );
-            return true;
-          }
-
-          if (hasCtrl && e.key === 'u') {
-            this.toggleList(
-              schema.nodes.unordered_list,
-              schema.nodes.list_item,
-            );
-            return true;
-          }
-
-          if (hasCtrl && e.key === 'o') {
-            this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
-            return true;
-          }
-
-          if (hasCtrl && e.key === '=') {
-            this.promoteHeading(this.view.state, this.view.dispatch);
-            return true;
-          }
-
-          if (hasCtrl && e.key === 'j') {
-            this.swapTextBlock(schema.nodes.paragraph);
-            return true;
-          }
-
-          if (hasCtrl && e.code === 'Space') {
-            return toggleChecklistItemState(
-              this.view.state,
-              this.view.dispatch,
-            );
-          }
-
-          if (hasCtrl && e.key === 'r') {
-            return this.insertHorizontalRule();
-          }
-
-          if (hasMod && e.key === 'z') {
-            return undo(this.view.state, this.view.dispatch);
-          }
-
-          if (hasMod && e.key === 'y') {
-            return redo(this.view.state, this.view.dispatch);
-          }
-
-          if (hasMod && e.key === 'i') {
-            this.toggleMark(schema.marks.em);
-            return true;
-          }
-
-          if (hasMod && e.key === 'b') {
-            this.toggleMark(schema.marks.strong);
-            return true;
-          }
-
-          if (hasCtrl && e.key === "'") {
-            this.toggleMark(schema.marks.code);
-            return true;
-          }
-
-          if (hasMod && e.key === 'k') {
-            this.activateLinkModal(this.view.state, this.view.dispatch);
-            return true;
-          }
-
-          return false;
+          return r;
         },
       },
     });
+  }
+
+  handleKeyDown(view, e) {
+    const hasCtrl = e.ctrlKey;
+    const hasMod = e.metaKey;
+    const hasShift = e.shiftKey;
+
+    if (hasCtrl && e.key === '.') {
+      indentListSelection(this.view);
+      return true;
+    }
+    if (hasCtrl && e.key === ',') {
+      outdentListSelection(this.view);
+      return true;
+    }
+    if (e.key === 'Tab' && !hasCtrl && !hasMod) {
+      if (hasShift) {
+        outdentListSelection(this.view);
+      } else {
+        indentListSelection(this.view);
+      }
+      return true;
+    }
+    if (hasCtrl && e.key === 't') {
+      this.toggleChecklistItem();
+      return true;
+    }
+
+    if (hasMod && e.key === '7') {
+      this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+      return true;
+    }
+
+    if (hasCtrl && e.key === 'u') {
+      this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
+      return true;
+    }
+
+    if (hasCtrl && e.key === 'o') {
+      this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
+      return true;
+    }
+
+    if (hasCtrl && e.key === '=') {
+      this.promoteHeading(this.view.state, this.view.dispatch);
+      return true;
+    }
+
+    if (hasCtrl && e.key === 'j') {
+      this.swapTextBlock(schema.nodes.paragraph);
+      return true;
+    }
+
+    if (hasCtrl && e.code === 'Space') {
+      return toggleChecklistItemState(this.view.state, this.view.dispatch);
+    }
+
+    if (hasCtrl && e.key === 'r') {
+      return this.insertHorizontalRule();
+    }
+
+    if (hasMod && e.key === 'z') {
+      return undo(this.view.state, this.view.dispatch);
+    }
+
+    if (hasMod && e.key === 'y') {
+      return redo(this.view.state, this.view.dispatch);
+    }
+
+    if (hasMod && e.key === 'i') {
+      this.toggleMark(schema.marks.em);
+      return true;
+    }
+
+    if (hasMod && e.key === 'b') {
+      this.toggleMark(schema.marks.strong);
+      return true;
+    }
+
+    if (hasCtrl && e.key === "'") {
+      this.toggleMark(schema.marks.code);
+      return true;
+    }
+
+    if (hasMod && e.key === 'k') {
+      this.activateLinkModal(this.view.state, this.view.dispatch);
+      return true;
+    }
+
+    return false;
   }
 
   updateToolbarForSelection = (state: EditorState) => {
@@ -532,6 +529,7 @@ export class ToolbarPlugin extends Plugin {
     if (button) {
       e.stopPropagation();
       this.applyFormat(button.getAttribute(APPLY_FORMAT_ATTR));
+      this.view.focus();
     }
   };
 
