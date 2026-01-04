@@ -359,3 +359,16 @@ export function indentListSelection(view: EditorView) {
       }),
   );
 }
+
+export const insertHorizontalRule: Command = (state, dispatch) => {
+  const {
+    tr,
+    selection: { from, to },
+  } = state;
+  tr.replaceRangeWith(from, to, schema.nodes.horizontal_rule.createAndFill());
+  if (tr.docChanged && dispatch) {
+    dispatch(tr);
+    return true;
+  }
+  return false;
+};

@@ -7,6 +7,7 @@ import { EditorView } from 'prosemirror-view';
 import { AUTO_LINK_ATTR, schema } from './schema';
 import {
   indentListSelection,
+  insertHorizontalRule,
   outdentListSelection,
   swapTextBlock,
   toggleChecklistItemState,
@@ -189,6 +190,13 @@ export class ToolbarPlugin extends Plugin {
     this.swapTextBlock(schema.nodes.checklist_item);
   };
 
+  private insertHorizontalRule = () => {
+    const {
+      view: { dispatch, state },
+    } = this;
+    insertHorizontalRule(state, dispatch);
+  };
+
   private activateLinkModal: Command = (state, dispatch) => {
     const { doc, selection } = state;
     const { $from, $to } = selection;
@@ -349,6 +357,10 @@ export class ToolbarPlugin extends Plugin {
               this.view.state,
               this.view.dispatch,
             );
+          }
+
+          if (hasCtrl && e.key === 'r') {
+            return this.insertHorizontalRule();
           }
 
           if (hasMod && e.key === 'z') {
@@ -573,6 +585,10 @@ export class ToolbarPlugin extends Plugin {
       }
       case 'outdent': {
         outdentListSelection(this.view);
+        break;
+      }
+      case 'horizontal_rule': {
+        this.insertHorizontalRule();
         break;
       }
       default: {

@@ -6,10 +6,9 @@ import { AUTO_LINK_ATTR, schema } from './schema';
 const schemaHelpers = builders(schema, {});
 
 function fl(txt: string, indent: null | number = null) {
-  return txt
-    .split('\n')
-    .map((l) => (indent ? l.slice(indent) : l.trim()))
-    .join('\n');
+  let t = txt.split('\n');
+  if (t[0] === '') t = t.slice(1);
+  return t.map((l) => (indent ? l.slice(indent) : l.trim())).join('\n');
 }
 
 function expectBlockResultTuplesToMatch(result, expected) {
@@ -333,6 +332,19 @@ describe('parser', () => {
         },
       );
     });
+    it('parses horizontal rules', () => {
+      const parsed = markdownParser.parse(
+        fl(`
+        First
+
+        ---
+
+        Second
+        `),
+      );
+      const ruleNode = parsed.child(1);
+      expect(ruleNode.type.name).toBe(schema.nodes.horizontal_rule.name);
+    });
   });
 
   describe('inline node parsing', () => {
@@ -512,6 +524,23 @@ describe('serializer', () => {
     });
   });
 
+  describe('leaf node serialization', () => {
+    it('serializes horizontal rules', () => {
+      const doc = schemaHelpers.doc(schemaHelpers.horizontal_rule());
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('---');
+    });
+    it('serializes horizontal rules inside documents', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('First'),
+        schemaHelpers.horizontal_rule(),
+        schemaHelpers.paragraph('Second'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('First\n\n---\n\nSecond');
+    });
+  });
+
   describe('inline node serialization', () => {
     it('serializes emphasis', () => {
       const doc = schemaHelpers.doc(
@@ -591,6 +620,24 @@ describe('From Markdown to ProseMirror and back', () => {
 
   it('roundtrips a doc with only an unordered list in it', () => {
     const md = '* first item\n\n* second item';
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
+  });
+
+  it('roundtrips a doc with a horizontal rule in it', () => {
+    const md = fl(`
+      # Section 1
+
+      paragraph
+
+      ---
+
+      # Section 2
+
+      * a list
+
+      * of stuff`);
     const parsed = markdownParser.parse(md);
     const result = markdownSerializer.serialize(parsed);
     expect(result).toBe(md);

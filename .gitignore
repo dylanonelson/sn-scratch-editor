@@ -2,3 +2,4 @@
 .*.sw?
 .firebase
 /.npm-cache
+.DS_Store
