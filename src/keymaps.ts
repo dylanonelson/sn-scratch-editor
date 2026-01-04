@@ -16,43 +16,43 @@ import { schema } from './schema';
 import { getListBlockRange } from './schemaHelpers';
 
 function ensureTextSelectionInEmptyNode(command: Command): Command {
-  return function (state, dispatch) {
+  return function (state, dispatch, view) {
     const { $cursor } = state.selection as TextSelection;
     if (Boolean($cursor && $cursor.parent.nodeSize === 2)) {
-      return command(state, dispatch);
+      return command(state, dispatch, view);
     }
     return false;
   };
 }
 
 function ensureEmptyChecklistItemTextSelection(command: Command): Command {
-  return function (state, dispatch) {
+  return function (state, dispatch, view) {
     const { $cursor } = state.selection as TextSelection;
     if (
       Boolean($cursor && $cursor.parent.type === schema.nodes.checklist_item)
     ) {
-      return command(state, dispatch);
+      return command(state, dispatch, view);
     }
     return false;
   };
 }
 
 function ensureListItemTextSelection(command: Command): Command {
-  return function (state, dispatch) {
+  return function (state, dispatch, view) {
     if (!(state.selection instanceof TextSelection)) {
       return false;
     }
     const { $from, $to } = state.selection;
     const listBlockRange = getListBlockRange($from, $to);
     if (Boolean(listBlockRange)) {
-      return command(state, dispatch);
+      return command(state, dispatch, view);
     }
     return false;
   };
 }
 
 function ensureStartOfListItemTextSelection(command: Command): Command {
-  return function (state, dispatch) {
+  return function (state, dispatch, view) {
     const { $from, $to } = state.selection;
     const listBlockRange = getListBlockRange($from, $to);
     console.log(
@@ -65,7 +65,7 @@ function ensureStartOfListItemTextSelection(command: Command): Command {
       Boolean(listBlockRange) &&
       $from.parentOffset === 0
     ) {
-      return command(state, dispatch);
+      return command(state, dispatch, view);
     }
     return false;
   };
