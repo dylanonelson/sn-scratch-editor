@@ -10,6 +10,7 @@ import {
   insertHorizontalRule,
   outdentListSelection,
   swapTextBlock,
+  toggleBlockquote,
   toggleChecklistItemState,
   toggleList,
 } from './toolbarHelpers';
@@ -196,6 +197,10 @@ export class ToolbarPlugin extends Plugin {
     insertHorizontalRule(state, dispatch);
   };
 
+  private toggleBlockquote = () => {
+    toggleBlockquote(this.view);
+  };
+
   private activateLinkModal: Command = (state, dispatch) => {
     const { doc, selection } = state;
     const { $from, $to } = selection;
@@ -363,6 +368,11 @@ export class ToolbarPlugin extends Plugin {
       return this.insertHorizontalRule();
     }
 
+    if (hasCtrl && e.key === 'q') {
+      this.toggleBlockquote();
+      return true;
+    }
+
     if (hasMod && e.key === 'z') {
       return undo(this.view.state, this.view.dispatch);
     }
@@ -490,6 +500,11 @@ export class ToolbarPlugin extends Plugin {
       }
       case schema.nodes.code_block: {
         result.push('code_block');
+        break;
+      }
+      case schema.nodes.blockquote: {
+        result.push('blockquote');
+        break;
       }
       default: {
         result.push(null);
@@ -587,6 +602,10 @@ export class ToolbarPlugin extends Plugin {
       }
       case 'horizontal_rule': {
         this.insertHorizontalRule();
+        break;
+      }
+      case 'blockquote': {
+        this.toggleBlockquote();
         break;
       }
       default: {

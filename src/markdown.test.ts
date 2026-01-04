@@ -240,8 +240,8 @@ describe('parser', () => {
       );
     });
 
-    it("doesn't parse blockquotes", () => {
-      parseTestBlockHelper(
+    it('parses blockquotes', () => {
+      const parsed = markdownParser.parse(
         fl(
           `
         Opening paragraph.
@@ -250,15 +250,11 @@ describe('parser', () => {
       `,
           8,
         ),
-        [
-          [schema.nodes.paragraph, 'Opening paragraph.', {}],
-          [
-            schema.nodes.code_block,
-            '> Winged words',
-            { markdown_escaped: true },
-          ],
-        ],
       );
+      expect(parsed.child(0).type).toBe(schema.nodes.paragraph);
+      expect(parsed.child(0).textContent).toBe('Opening paragraph.');
+      expect(parsed.child(1).type).toBe(schema.nodes.blockquote);
+      expect(parsed.child(1).textContent).toBe('Winged words');
     });
 
     it('parses every level of nested lists', () => {
@@ -541,6 +537,34 @@ describe('serializer', () => {
     });
   });
 
+  describe('blockquote serialization', () => {
+    it('serializes blockquotes', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.blockquote(schemaHelpers.paragraph('Quoted text')),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('> Quoted text');
+    });
+    it('serializes blockquotes inside documents', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('Before'),
+        schemaHelpers.blockquote(schemaHelpers.paragraph('Quoted text')),
+        schemaHelpers.paragraph('After'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Before\n\n> Quoted text\n\nAfter');
+    });
+    it('serializes nested blockquotes', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.blockquote(
+          schemaHelpers.blockquote(schemaHelpers.paragraph('Nested quote')),
+        ),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('> > Nested quote');
+    });
+  });
+
   describe('inline node serialization', () => {
     it('serializes emphasis', () => {
       const doc = schemaHelpers.doc(
@@ -632,6 +656,24 @@ describe('From Markdown to ProseMirror and back', () => {
       paragraph
 
       ---
+
+      # Section 2
+
+      * a list
+
+      * of stuff`);
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
+  });
+
+  it('roundtrips a doc with a blockquote in it', () => {
+    const md = fl(`
+      # Section 1
+
+      paragraph
+
+      > A quoted section
 
       # Section 2
 
