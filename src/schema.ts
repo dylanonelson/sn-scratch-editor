@@ -160,7 +160,7 @@ const spec: SchemaSpec = {
     text: textSpec,
     code_block: codeBlockSpec,
     horizontal_rule: { ...nodes.horizontal_rule },
-    blockquote: { ...nodes.blockquote },
+    blockquote: { ...nodes.blockquote, content: 'paragraph*' },
   },
   marks: {
     link: {

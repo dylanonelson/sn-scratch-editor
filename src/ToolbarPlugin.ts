@@ -433,7 +433,9 @@ export class ToolbarPlugin extends Plugin {
     const { $from, $to } = state.selection;
     const blockRange = $from.blockRange(
       $to,
-      (node) => node.type !== schema.nodes.list_item,
+      (node) =>
+        node.type !== schema.nodes.list_item &&
+        node.type !== schema.nodes.blockquote,
     );
 
     let selected = null;
@@ -453,6 +455,8 @@ export class ToolbarPlugin extends Plugin {
         continue;
       }
       if (selected !== currentType) {
+        // If the selection contains multiple types, don't highlight any of
+        // them.
         selected = null;
         break;
       }

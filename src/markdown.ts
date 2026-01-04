@@ -173,21 +173,7 @@ class ScratchTokenParser {
     ['checklist_item', ['inline']],
     ['inline', []],
     ['hr', []],
-    [
-      'blockquote',
-      [
-        'heading1',
-        'heading2',
-        'heading3',
-        'paragraph',
-        'fence',
-        'bullet_list',
-        'ordered_list',
-        'checklist_item',
-        'blockquote',
-        'hr',
-      ],
-    ],
+    ['blockquote', ['paragraph']],
   ]);
 
   static getTypeName(tokenType: string) {
