@@ -16,15 +16,15 @@ body {
   --h3-gap: 11px;
   --default-item-gap: 5px;
   --default-checkbox-gap: 8px;
-  --text-color: rgba(0, 0, 0, 0.9);
+  --text-color: var(
+    --sn-stylekit-paragraph-text-color,
+    var(--sn-stylekit-foreground-color, rgba(0, 0, 0, 0.9))
+  );
   --h3-text-color: var(
     --sn-stylekit-paragraph-text-color,
     var(--sn-stylekit-foreground-color, rgba(0, 0, 0, 0.7))
   );
-  color: var(
-    --sn-stylekit-paragraph-text-color,
-    var(--sn-stylekit-foreground-color, var(--text-color))
-  );
+  color: var(--text-color);
   font-size: var(--base-font-size);
   font-family: var(--ff-serif), serif;
   scrollbar-color: var(--sn-stylekit-scrollbar-color, #ccc)
@@ -253,6 +253,31 @@ pre code {
   min-width: 1px;
 }
 
+hr {
+  background-color: var(--text-color, #aaa);
+  height: 1px;
+  padding: 0 15px;
+  margin: calc(var(--default-gap) * 2) 8px;
+}
+
+blockquote {
+  border-left: 3px solid var(--sn-stylekit-contrast-foreground-color, #aaa);
+  margin: var(--default-gap) 0;
+  padding-left: 15px;
+}
+
+blockquote p {
+  margin-bottom: var(--default-gap);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/**
+* UI
+*/
+
 #toolbar-wrapper {
   background: var(--background-color, #fff);
   border-bottom: 1px solid var(--sn-stylekit-border-color, #ccc);
@@ -276,7 +301,7 @@ button[data-format]:hover {
 }
 
 button.selected:after {
-  background: var(--sn-stylekit-contrast-background-color, #aaa);
+  background: var(--sn-stylekit-contrast-foreground-color, #aaa);
   bottom: 0;
   content: '';
   display: block;

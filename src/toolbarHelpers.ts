@@ -1,3 +1,4 @@
+import { lift, wrapIn } from 'prosemirror-commands';
 import { NodeRange, NodeType, ResolvedPos } from 'prosemirror-model';
 import {
   liftListItem,
@@ -358,4 +359,33 @@ export function indentListSelection(view: EditorView) {
         ],
       }),
   );
+}
+
+export const insertHorizontalRule: Command = (state, dispatch) => {
+  const {
+    tr,
+    selection: { from, to },
+  } = state;
+  tr.replaceRangeWith(from, to, schema.nodes.horizontal_rule.createAndFill());
+  if (tr.docChanged && dispatch) {
+    dispatch(tr);
+    return true;
+  }
+  return false;
+};
+
+export function toggleBlockquote(view: EditorView): boolean {
+  const { state, dispatch } = view;
+  const { $from } = state.selection;
+
+  // Check if we're inside a blockquote by walking up the document tree
+  for (let depth = $from.depth; depth > 0; depth--) {
+    if ($from.node(depth).type === schema.nodes.blockquote) {
+      // Already in a blockquote, lift out
+      return lift(state, dispatch);
+    }
+  }
+
+  // Not in a blockquote, wrap selection in one
+  return wrapIn(schema.nodes.blockquote)(state, dispatch);
 }

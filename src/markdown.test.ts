@@ -1,15 +1,14 @@
 import { MarkType, Node, NodeType } from 'prosemirror-model';
 import { builders } from 'prosemirror-test-builder';
 import { markdownParser, markdownSerializer } from './markdown';
-import { AUTO_LINK_ATTR, schema } from './schema';
+import { AUTO_LINK_ATTR, MARKDOWN_ESCAPED_ATTR, schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 
 function fl(txt: string, indent: null | number = null) {
-  return txt
-    .split('\n')
-    .map((l) => (indent ? l.slice(indent) : l.trim()))
-    .join('\n');
+  let t = txt.split('\n');
+  if (t[0] === '') t = t.slice(1);
+  return t.map((l) => (indent ? l.slice(indent) : l.trim())).join('\n');
 }
 
 function expectBlockResultTuplesToMatch(result, expected) {
@@ -241,8 +240,8 @@ describe('parser', () => {
       );
     });
 
-    it("doesn't parse blockquotes", () => {
-      parseTestBlockHelper(
+    it('parses blockquotes', () => {
+      const parsed = markdownParser.parse(
         fl(
           `
         Opening paragraph.
@@ -251,15 +250,27 @@ describe('parser', () => {
       `,
           8,
         ),
-        [
-          [schema.nodes.paragraph, 'Opening paragraph.', {}],
-          [
-            schema.nodes.code_block,
-            '> Winged words',
-            { markdown_escaped: true },
-          ],
-        ],
       );
+      expect(parsed.child(0).type).toBe(schema.nodes.paragraph);
+      expect(parsed.child(0).textContent).toBe('Opening paragraph.');
+      expect(parsed.child(1).type).toBe(schema.nodes.blockquote);
+      expect(parsed.child(1).textContent).toBe('Winged words');
+    });
+
+    it('parses nested blockquotes as escaped code blocks', () => {
+      const parsed = markdownParser.parse(
+        fl(
+          `
+        > Text
+        >
+        > - a list
+      `,
+          8,
+        ),
+      );
+      expect(parsed.child(0).type).toBe(schema.nodes.code_block);
+      expect(parsed.child(0).attrs[MARKDOWN_ESCAPED_ATTR]).toBe(true);
+      expect(parsed.child(0).textContent).toBe('> Text\n>\n> - a list');
     });
 
     it('parses every level of nested lists', () => {
@@ -332,6 +343,19 @@ describe('parser', () => {
           ],
         },
       );
+    });
+    it('parses horizontal rules', () => {
+      const parsed = markdownParser.parse(
+        fl(`
+        First
+
+        ---
+
+        Second
+        `),
+      );
+      const ruleNode = parsed.child(1);
+      expect(ruleNode.type.name).toBe(schema.nodes.horizontal_rule.name);
     });
   });
 
@@ -512,6 +536,42 @@ describe('serializer', () => {
     });
   });
 
+  describe('leaf node serialization', () => {
+    it('serializes horizontal rules', () => {
+      const doc = schemaHelpers.doc(schemaHelpers.horizontal_rule());
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('---');
+    });
+    it('serializes horizontal rules inside documents', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('First'),
+        schemaHelpers.horizontal_rule(),
+        schemaHelpers.paragraph('Second'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('First\n\n---\n\nSecond');
+    });
+  });
+
+  describe('blockquote serialization', () => {
+    it('serializes blockquotes', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.blockquote(schemaHelpers.paragraph('Quoted text')),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('> Quoted text');
+    });
+    it('serializes blockquotes inside documents', () => {
+      const doc = schemaHelpers.doc(
+        schemaHelpers.paragraph('Before'),
+        schemaHelpers.blockquote(schemaHelpers.paragraph('Quoted text')),
+        schemaHelpers.paragraph('After'),
+      );
+      const result = markdownSerializer.serialize(doc);
+      expect(result).toBe('Before\n\n> Quoted text\n\nAfter');
+    });
+  });
+
   describe('inline node serialization', () => {
     it('serializes emphasis', () => {
       const doc = schemaHelpers.doc(
@@ -591,6 +651,42 @@ describe('From Markdown to ProseMirror and back', () => {
 
   it('roundtrips a doc with only an unordered list in it', () => {
     const md = '* first item\n\n* second item';
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
+  });
+
+  it('roundtrips a doc with a horizontal rule in it', () => {
+    const md = fl(`
+      # Section 1
+
+      paragraph
+
+      ---
+
+      # Section 2
+
+      * a list
+
+      * of stuff`);
+    const parsed = markdownParser.parse(md);
+    const result = markdownSerializer.serialize(parsed);
+    expect(result).toBe(md);
+  });
+
+  it('roundtrips a doc with a blockquote in it', () => {
+    const md = fl(`
+      # Section 1
+
+      paragraph
+
+      > A quoted section
+
+      # Section 2
+
+      * a list
+
+      * of stuff`);
     const parsed = markdownParser.parse(md);
     const result = markdownSerializer.serialize(parsed);
     expect(result).toBe(md);

@@ -64,6 +64,17 @@ export const markdownSerializer = new MarkdownSerializer(
         defaultMarkdownSerializer.nodes.code_block(state, node, parent, index);
       }
     },
+    horizontal_rule(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.horizontal_rule(
+        state,
+        node,
+        parent,
+        index,
+      );
+    },
+    blockquote(state, node, parent, index) {
+      defaultMarkdownSerializer.nodes.blockquote(state, node, parent, index);
+    },
   },
   {
     ...defaultMarkdownSerializer.marks,
@@ -161,6 +172,8 @@ class ScratchTokenParser {
     ['list_item', ['paragraph', 'ordered_list', 'bullet_list']],
     ['checklist_item', ['inline']],
     ['inline', []],
+    ['hr', []],
+    ['blockquote', ['paragraph']],
   ]);
 
   static getTypeName(tokenType: string) {
@@ -282,7 +295,7 @@ export const markdownParser = new MarkdownParser(
   // @ts-ignore
   parserShim(),
   {
-    blockquote: { block: 'code_block' },
+    blockquote: { block: 'blockquote' },
     bullet_list: { block: 'unordered_list' },
     fence: {
       block: 'code_block',
@@ -309,6 +322,7 @@ export const markdownParser = new MarkdownParser(
         };
       },
     },
+    hr: { node: 'horizontal_rule' },
     em: { mark: 'em' },
     strong: { mark: 'strong' },
     code_inline: {
