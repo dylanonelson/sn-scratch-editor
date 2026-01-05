@@ -2,7 +2,7 @@
 
 set -e
 npm run build
-git status --porcelain
+test -z "$(git status --porcelain)"
 npm run test
 npm run format:check
 
