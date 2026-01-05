@@ -260,6 +260,20 @@ hr {
   margin: calc(var(--default-gap) * 2) 8px;
 }
 
+blockquote {
+  border-left: 3px solid var(--sn-stylekit-contrast-foreground-color, #aaa);
+  margin: var(--default-gap) 0;
+  padding-left: 15px;
+}
+
+blockquote p {
+  margin-bottom: var(--default-gap);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
 /**
 * UI
 */
