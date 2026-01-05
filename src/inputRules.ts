@@ -57,6 +57,12 @@ function listTypeRule(prefix: string, listType: NodeType): InputRule {
         // depth 1.
         return;
       }
+      if ($end.parent.type !== schema.nodes.paragraph) {
+        // We only want to trigger this rule if we are at the beginning of a
+        // paragraph - we don't want to insert lists if we're in a checklist
+        // item or heading.
+        return;
+      }
       // Subtract 2 here, for the start and end of the node.
       const rangeAfterPrefix: [number, number] = [
         end,
@@ -91,7 +97,7 @@ export const inputRulesPlugin = inputRules({
     markWrappingRule('`', schema.marks.code, false),
     markWrappingRule('\\*', schema.marks.strong, false),
     markWrappingRule('_', schema.marks.em, false),
-    listTypeRule('1. ', schema.nodes.ordered_list),
+    listTypeRule('1\\. ', schema.nodes.ordered_list),
     listTypeRule('- ', schema.nodes.unordered_list),
   ],
 });
