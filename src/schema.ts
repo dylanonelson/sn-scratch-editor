@@ -159,6 +159,8 @@ const spec: SchemaSpec = {
     heading3: heading3Spec,
     text: textSpec,
     code_block: codeBlockSpec,
+    horizontal_rule: { ...nodes.horizontal_rule },
+    blockquote: { ...nodes.blockquote, content: 'paragraph+' },
   },
   marks: {
     link: {

@@ -15,10 +15,11 @@ import {
   indentListSelection,
   outdentListSelection,
   swapTextBlock,
+  toggleBlockquote,
   toggleList,
 } from './toolbarHelpers';
 
-const { doc, p, ul, ol, li, h1, h2, h3 } = builders(schema, {
+const { doc, p, ul, ol, li, h1, h2, h3, bq } = builders(schema, {
   p: { nodeType: 'paragraph' },
   h1: { nodeType: 'heading1' },
   ul: { nodeType: 'unordered_list' },
@@ -26,6 +27,7 @@ const { doc, p, ul, ol, li, h1, h2, h3 } = builders(schema, {
   li: { nodeType: 'list_item' },
   h2: { nodeType: 'heading2' },
   h3: { nodeType: 'heading3' },
+  bq: { nodeType: 'blockquote' },
 });
 
 class MockView {
@@ -648,5 +650,49 @@ describe('indentListSelection', () => {
       ),
     );
     expectResultToMatch(docNode, expectedDoc);
+  });
+});
+
+describe('toggleBlockquote', () => {
+  it('should wrap a paragraph in a blockquote', () => {
+    const document = doc(p('Hello world'));
+    const view = createMockView(document, 1, 1);
+
+    toggleBlockquote(view);
+
+    expect(view.state.doc.child(0).type).toBe(schema.nodes.blockquote);
+    expect(view.state.doc.child(0).textContent).toBe('Hello world');
+  });
+
+  it('should wrap multiple paragraphs in a blockquote', () => {
+    const document = doc(p('First'), p('Second'));
+    const view = createMockView(document, 2, 11);
+
+    toggleBlockquote(view);
+
+    expect(view.state.doc.child(0).type).toBe(schema.nodes.blockquote);
+    expect(view.state.doc.child(0).childCount).toBe(2);
+    expect(view.state.doc.textContent).toBe('FirstSecond');
+  });
+
+  it('should unwrap content from a blockquote when already in one', () => {
+    const document = doc(bq(p('Quoted text')));
+    const view = createMockView(document, 2, 2);
+
+    toggleBlockquote(view);
+
+    expect(view.state.doc.child(0).type).toBe(schema.nodes.paragraph);
+    expect(view.state.doc.textContent).toBe('Quoted text');
+  });
+
+  it('should handle nested blockquotes by lifting inner content', () => {
+    const document = doc(bq(bq(p('Nested quote'))));
+    const view = createMockView(document, 3, 3);
+
+    toggleBlockquote(view);
+
+    // After lifting, we should have a single blockquote
+    expect(view.state.doc.child(0).type).toBe(schema.nodes.blockquote);
+    expect(view.state.doc.textContent).toBe('Nested quote');
   });
 });
