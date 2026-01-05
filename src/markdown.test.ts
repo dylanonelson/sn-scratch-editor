@@ -1,7 +1,7 @@
 import { MarkType, Node, NodeType } from 'prosemirror-model';
 import { builders } from 'prosemirror-test-builder';
 import { markdownParser, markdownSerializer } from './markdown';
-import { AUTO_LINK_ATTR, schema } from './schema';
+import { AUTO_LINK_ATTR, MARKDOWN_ESCAPED_ATTR, schema } from './schema';
 
 const schemaHelpers = builders(schema, {});
 
@@ -255,6 +255,22 @@ describe('parser', () => {
       expect(parsed.child(0).textContent).toBe('Opening paragraph.');
       expect(parsed.child(1).type).toBe(schema.nodes.blockquote);
       expect(parsed.child(1).textContent).toBe('Winged words');
+    });
+
+    it('parses nested blockquotes as escaped code blocks', () => {
+      const parsed = markdownParser.parse(
+        fl(
+          `
+        > Text
+        >
+        > - a list
+      `,
+          8,
+        ),
+      );
+      expect(parsed.child(0).type).toBe(schema.nodes.code_block);
+      expect(parsed.child(0).attrs[MARKDOWN_ESCAPED_ATTR]).toBe(true);
+      expect(parsed.child(0).textContent).toBe('> Text\n>\n> - a list');
     });
 
     it('parses every level of nested lists', () => {
@@ -553,15 +569,6 @@ describe('serializer', () => {
       );
       const result = markdownSerializer.serialize(doc);
       expect(result).toBe('Before\n\n> Quoted text\n\nAfter');
-    });
-    it('serializes nested blockquotes', () => {
-      const doc = schemaHelpers.doc(
-        schemaHelpers.blockquote(
-          schemaHelpers.blockquote(schemaHelpers.paragraph('Nested quote')),
-        ),
-      );
-      const result = markdownSerializer.serialize(doc);
-      expect(result).toBe('> > Nested quote');
     });
   });
 

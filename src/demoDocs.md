@@ -34,6 +34,8 @@ You can also see a legend for many of these hotkeys in the alt text of the toolb
 
 - `ctrl + t` creates a checklist item from the current text chunk
 
+- `ctrl + q` turns the current text chunk (paragraphs only) into a block quote
+
 - `cmd + b` / `ctrl + b` toggles bold formatting on and off
 
 - `cmd + i` / `ctrl + i` toggles italic formatting on and off
@@ -52,19 +54,21 @@ You can also see a legend for many of these hotkeys in the alt text of the toolb
 
 - `ctrl + ,` is outdent
 
+- `ctrl + r` inserts a horizontal rule
+
 ## Formatting macros
 
 - smart curly quote and apostrophe substitution
 
-- insert headings by typing `#` or `##` or `###`
+- insert headings by typing `# ` or `## ` or `### `
 
-- insert bulleted lists by typing `-`
+- insert bulleted lists by typing `- `
 
-- insert numbered lists by typing `1.`
+- insert numbered lists by typing `1. `
 
 - insert bold text by wrapping it in `*`
 
-- insert italic text by wrapping it in `_`
+- insert italic text by wrapping it in `_ `
 
 - insert a code block by typing three backticks ` ``` `
 
@@ -90,4 +94,6 @@ Scratch is a work in progress. I have a running list of things I’d like to add
 
 1. tables, or something like them
 
-1. syntax highlighting and one-click copy-to-clipboard for code blocks
+1. syntax highlighting for code blocks
+
+1. nested formatting in block quotes (right now only paragraphs are supported)
