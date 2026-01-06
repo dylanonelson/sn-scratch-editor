@@ -6,15 +6,17 @@ on:
       - master
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-    name: Validate PR
     steps:
-      - uses: actions/checkout@v3
-      - name: Run linting rules and tests
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
         with:
-          node-version: 16.18.0
+          node-version-file: .nvmrc
+
       - run: npm ci
+
       - run: npm run build
+
       - run: npm run validate
