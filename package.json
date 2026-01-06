@@ -7,7 +7,7 @@
     "build": "./scripts/build.sh",
     "build:dist": "webpack --env production",
     "build:docs": "webpack --config=docs-webpack.config.js",
-    "deploy": "./scripts/deploy.sh",
+    "deploy": "firebase deploy",
     "dev:dist": "webpack serve --mode development",
     "dev:docs": "webpack serve --config=docs-webpack.config.js --mode development",
     "format": "prettier . --write",
