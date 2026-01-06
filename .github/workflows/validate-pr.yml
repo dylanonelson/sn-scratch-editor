@@ -4,10 +4,9 @@ on:
   pull_request:
     branches:
       - master
-  workflow_run:
-    workflows: ['Prepare Release']
-    types:
-      - completed
+  push:
+    branches:
+      - 'release/**'
 
 jobs:
   validate:
