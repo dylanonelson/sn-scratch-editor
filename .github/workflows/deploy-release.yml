@@ -16,8 +16,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Extract version from branch name
         id: version
@@ -42,10 +41,9 @@ jobs:
             --title "${{ steps.version.outputs.version }}" \
             --generate-notes
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version-file: .nvmrc
 
       - name: Install firebase-tools
         run: npm install -g firebase-tools

@@ -6,14 +6,17 @@ on:
       - master
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-    name: Validate PR
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+
       - run: npm ci
+
       - run: npm run build
+
       - run: npm run validate

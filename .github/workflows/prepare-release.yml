@@ -20,19 +20,15 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version-file: .nvmrc
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Run validation
-        run: npm run validate
+      - run: npm run validate
 
       - name: Calculate new version
         id: version
@@ -72,8 +68,7 @@ jobs:
              src/ext.json > src/ext.json.tmp
           mv src/ext.json.tmp src/ext.json
 
-      - name: Run build
-        run: npm run build
+      - run: npm run build
 
       - name: Commit changes
         run: |
