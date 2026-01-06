@@ -79,7 +79,7 @@ jobs:
 
       - name: Push branch and create PR
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PREPARE_RELEASE_PAT }}
         run: |
           git push origin release/${{ steps.version.outputs.new_version }}
           gh pr create \
