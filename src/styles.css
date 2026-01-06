@@ -223,7 +223,7 @@ pre code {
   margin-top: var(--default-checkbox-gap);
 }
 
-.checklist-item + *:not(.checklist-item) {
+.checklist-item + *:not(.checklist-item, hr) {
   margin-top: var(--default-gap);
 }
 

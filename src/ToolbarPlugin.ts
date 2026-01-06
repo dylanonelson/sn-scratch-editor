@@ -299,11 +299,7 @@ export class ToolbarPlugin extends Plugin {
       },
       props: {
         handleKeyDown: (_view, e) => {
-          const r = this.handleKeyDown(_view, e);
-          if (r) {
-            _view.focus();
-          }
-          return r;
+          return this.handleKeyDown(_view, e);
         },
       },
     });
@@ -547,8 +543,9 @@ export class ToolbarPlugin extends Plugin {
     const button = target.closest(`[${APPLY_FORMAT_ATTR}]`);
     if (button) {
       e.stopPropagation();
-      this.applyFormat(button.getAttribute(APPLY_FORMAT_ATTR));
-      this.view.focus();
+      const dataFormatStr = button.getAttribute(APPLY_FORMAT_ATTR);
+      this.applyFormat(dataFormatStr);
+      if (dataFormatStr !== 'link') this.view.focus();
     }
   };
 
