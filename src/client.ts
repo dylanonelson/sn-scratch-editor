@@ -1,5 +1,8 @@
 import ComponentManager from '@standardnotes/component-relay';
+import type { DecryptedTransferPayload } from '@standardnotes/snjs';
 import { v4 as uuidv4 } from 'uuid';
+
+type Item = DecryptedTransferPayload<any>;
 
 const SN_ITEM_SAVE_KEY = 'com.dylanonelson.sn-editor';
 
@@ -64,6 +67,9 @@ class Client {
       options: {
         debug: true,
         acceptsThemes: true,
+      },
+      handleRequestForContentHeight: () => {
+        return document.documentElement.scrollHeight || undefined;
       },
       onReady: () => {
         this.componentManager.streamContextItem((item: Item) => {

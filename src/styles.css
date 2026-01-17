@@ -89,6 +89,27 @@ div#extender {
   height: 120px;
 }
 
+div#debug {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  min-height: 30px;
+  background: #ffffe0;
+  display: none;
+}
+
+div#debug.visible {
+  display: block;
+}
+
+div#debug-content {
+  max-height: 300px;
+  font-size: 10px;
+  font-family: monospace;
+  overflow-y: scroll;
+}
+
 h1.sn-editor {
   font-size: var(--h1-font-size);
   font-weight: 300;
