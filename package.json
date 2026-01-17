@@ -55,7 +55,7 @@
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "@standardnotes/component-relay": "^2.2.2",
+    "@standardnotes/component-relay": "github:standardnotes/component-relay#893561d2dc72cd3c66f071b3a509b8b7dcd721de",
     "core-js": "^3.42.0",
     "es-toolkit": "^1.40.0",
     "glob": "^11.1.0",
