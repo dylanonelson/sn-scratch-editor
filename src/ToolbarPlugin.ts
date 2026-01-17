@@ -309,12 +309,14 @@ export class ToolbarPlugin extends Plugin {
     const hasCtrl = e.ctrlKey;
     const hasMod = e.metaKey;
     const hasShift = e.shiftKey;
+    const hasCtrlOnly = hasCtrl && !hasMod && !hasShift;
+    const hasModOnly = hasMod && !hasCtrl && !hasShift;
 
-    if (hasCtrl && e.key === '.') {
+    if (hasCtrlOnly && e.key === '.') {
       indentListSelection(this.view);
       return true;
     }
-    if (hasCtrl && e.key === ',') {
+    if (hasCtrlOnly && e.key === ',') {
       outdentListSelection(this.view);
       return true;
     }
@@ -326,73 +328,73 @@ export class ToolbarPlugin extends Plugin {
       }
       return true;
     }
-    if (hasCtrl && e.key === 't') {
+    if (hasCtrlOnly && e.key === 't') {
       this.toggleChecklistItem();
       return true;
     }
 
-    if (hasMod && e.key === '7') {
+    if (hasModOnly && e.key === '7') {
       this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
       return true;
     }
 
-    if (hasCtrl && e.key === 'u') {
+    if (hasCtrlOnly && e.key === 'u') {
       this.toggleList(schema.nodes.unordered_list, schema.nodes.list_item);
       return true;
     }
 
-    if (hasCtrl && e.key === 'o') {
+    if (hasCtrlOnly && e.key === 'o') {
       this.toggleList(schema.nodes.ordered_list, schema.nodes.list_item);
       return true;
     }
 
-    if (hasCtrl && e.key === '=') {
+    if (hasCtrlOnly && e.key === '=') {
       this.promoteHeading(this.view.state, this.view.dispatch);
       return true;
     }
 
-    if (hasCtrl && e.key === 'j') {
+    if (hasCtrlOnly && e.key === 'j') {
       this.swapTextBlock(schema.nodes.paragraph);
       return true;
     }
 
-    if (hasCtrl && e.code === 'Space') {
+    if (hasCtrlOnly && e.code === 'Space') {
       return toggleChecklistItemState(this.view.state, this.view.dispatch);
     }
 
-    if (hasCtrl && e.key === 'r') {
+    if (hasCtrlOnly && e.key === 'r') {
       return this.insertHorizontalRule();
     }
 
-    if (hasCtrl && e.key === 'q') {
+    if (hasCtrlOnly && e.key === 'q') {
       this.toggleBlockquote();
       return true;
     }
 
-    if (hasMod && e.key === 'z') {
+    if (hasModOnly && e.key === 'z') {
       return undo(this.view.state, this.view.dispatch);
     }
 
-    if (hasMod && e.key === 'y') {
+    if (hasModOnly && e.key === 'y') {
       return redo(this.view.state, this.view.dispatch);
     }
 
-    if (hasMod && e.key === 'i') {
+    if (hasModOnly && e.key === 'i') {
       this.toggleMark(schema.marks.em);
       return true;
     }
 
-    if (hasMod && e.key === 'b') {
+    if (hasModOnly && e.key === 'b') {
       this.toggleMark(schema.marks.strong);
       return true;
     }
 
-    if (hasCtrl && e.key === "'") {
+    if (hasCtrlOnly && e.key === "'") {
       this.toggleMark(schema.marks.code);
       return true;
     }
 
-    if (hasMod && e.key === 'k') {
+    if (hasModOnly && e.key === 'k') {
       this.activateLinkModal(this.view.state, this.view.dispatch);
       return true;
     }
